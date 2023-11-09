@@ -531,7 +531,7 @@ Ahora, si definimos `force-dynamic`, `revalidate` en 100 y en el fetch le ponemo
 #### Funciones dinámicas
 También hay funciones a las que se las denomina funciones dinámicas. Las funciones dinámicas dependen de información de la petición, como `cookies`, `headers`, `useSearchParams` y `searchParams`. Al usar alguna de estas funciones en nuestros segmentos (o funciones llamadas dentro de nuestros segmentos) la ruta optará por un renderizado dinámico.
 
-## Caching
+### Caching
 Cuando trabajamos con aplicaciones React en Vite o Create React App, solemos lidiar con un cache, el cache del navegador. En Next.js tenemos muchos tipos de cache diferente:
 
 Aquí tienes la traducción al español de la tabla MDX:
@@ -549,7 +549,53 @@ Next.js por defecto intentará de cachear tanto como sea posible para mejorar el
 
 El comportamiento del cache va a depender de si tu ruta tiene renderizado estático o dinámico, los datos están cacheados o no o si un request es parte de una visita inicial o una navegación subsecuente. Esto puede marear un poco pero con el tiempo y práctica vamos a ver que los beneficios son muchos.
 
----
+### Revalidación manual
+La revalidación por tiempo es útil pero no para todos los casos, aveces tenemos datos que no cambian muy seguido pero cuando cambian queremos que se actualicen de inmediate. Por ejemplo un producto en una tienda virtual que cambió su precio luego de 15 días y queremos que los usuarios vean el nuevo precio inmediatamente. Para eso podemos usar dos métodos que se ejecutan del lado del servidor `revalidatePath` y `revalidateTag`.
 
-- Manual revalidation
-- generateStaticParams
+#### `revalidatePath`
+Nos permite revalidar el contenido de una ruta en particular, por ejemplo, nuestra ruta `/` si sabemos que agregamos nuevos restaurantes a la base de datos. Como nuestra aplicación no tiene un formulario para agregar nuevos restaurantes o modificar existentes, vamos a crear una ruta de API (Route Handler) utilitaria para que al llamarla, se revalide la ruta `/`.
+
+Para eso vamos a crear un archivo `src/app/api/revalidate/route.ts` con el siguiente contenido:
+
+```ts
+import { revalidatePath } from "next/cache";
+
+export async function GET() {
+  revalidatePath('/')
+
+  return Response.json({success: true})
+}
+```
+
+En un Route Handler podemos exportar funciones con los nombres de los métodos HTTP habituales y se van a llamar cuando la ruta reciba una petición de ese mismo método.
+
+Ahora podemos volver eliminar todos los `revalidate`, `dynamic` y cualquier cosa que haga nuestra ruta `/` dinámica y volver a compilar y correr nuestra aplicación. Si vamos a `http://localhost:3000` deberíamos ver nuestros restaurantes. Luego modifiquemos uno en la base de datos, vayamos manualmente a `http://localhost:3000/api/revalidate` y volvamos a `http://localhost:3000`. Deberíamos ver los datos actualizados.
+
+> Tomá en cuenta que Google Sheets aveces tarda un poco en reflejar los datos publicados así que dale unos segundos.
+
+Es una buena práctica proteger nuestras rutas de API con alguna clave secreta para evitar que usuarios malintencionados ejecuten estos métodos. Tu taréa es definir una variable de entorno `REVALIDATE_SECRET` y usarla en nuestra ruta de API para solo ejecutarla cuando nos manden un parametro `secret` con el valor correcto. Podés usar la documentación oficial de Next.js para ver como usar variables de entorno.
+
+#### `revalidateTag`
+También puede pasar que modifiquemos un dato que afecte varias rutas al mismo tiempo y cuando las aplicaciones crecen es muy difícil poder saber que rutas se ven afectadas por un cambio. Para eso podemos usar `revalidateTag` que nos permite revalidar todas las rutas que tengan un tag en particular.
+
+Agreguemos un tag `restaurants` a nuestros dos llamados en `api.ts`, asi cuando revalidemos el tag `restaurants` se revalidará el contenido tanto para `/` como para cada `/[id]`.
+
+```ts
+const [, ...data] = await fetch('...', {next: {tags: ['restaurants']}}).then(res => res.text()).then(text => text.split('\n'))
+```
+
+Ahora actualizamos nuestra ruta de API utilitaria para usar `revalidateTag` y listo:
+
+```ts
+import { revalidateTag } from "next/cache";
+
+export async function GET() {
+  revalidateTag('restaurants')
+
+  return Response.json({success: true})
+}
+```
+
+---
+Si te gusta mi contenido, seguime en [Twitter](https://twitter.gonzalopozzo.com), en [Twitch](https://twitch.gonzalopozzo.com), en [YouTube](https://youtube.gonzalopozzo.com), doname un [Cafecito](https://cafecito.gonzalopozzo.com) o volvete [sponsor en github](https://github.com/sponsors/goncy) ✨
+       
