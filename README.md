@@ -471,6 +471,20 @@ Con renderizado estático nuestras rutas se renderizan en tiempo de compilación
 
 El renderizado estático es muy útil para páginas que no cambian frecuentemente o no incluyen información personalizada sobre el usuario. También podemos combinar el renderizado estático con obtener data del lado del cliente para crear aplicaciones dinámicas y rápidas.
 
+Nuestra ruta `/` tuvo un renderizado estático por defecto, pero por que nuestra ruta de `/[id]` no? Bueno, porque Next.js no sabe cuales son los `id` de nuestros restaurantes, por ende no puede renderizarlos en tiempo de compilación. Pero, si en nuestrá página `/[id]/page.tsx` definimos una función `generateStaticParams` que devuelva los ids, los va a generar en tiempo de compilación de manera estática:
+
+```jsx
+export async function generateStaticParams() {
+  const restaurants = await api.list()
+ 
+  return restaurants.map((restaurant) => ({
+    id: restaurant.id,
+  }))
+}
+```
+
+> También podemos exportar una variable `dynamicParams` como `false` en nuestra página, si queremos que devuelva un 404 para cualquier ruta no definida en `generateStaticParams`
+
 ### Renderizado dinámico
 Con renderizado dinámico nuestras rutas se renderizan cada vez que un usuario ingresa a una ruta. El renderizado dinámico es útil cuando una ruta contiene información personalizada de un usuario, cuando la información de la página no puede calcularse antes de tiempo o cuando la información cambia de manera muy frecuente.
 
@@ -502,9 +516,40 @@ const [, ...data] = await fetch('...', { revalidate: 100 }).then(res => res.text
 
 Eso va a hacer que cada luego de 100 segundos de haber obtenido los datos, la próxima vez que un usuario ingrese a la ruta, se le van a servir datos de cache y en segundo plano se van a obtener datos nuevos, van a sobre-escribir la cache y la próxima vez que un usuario ingrese a la ruta, se le van a servir los datos nuevos. A esto se lo conoce como `time-based revalidation`.
 
+#### Configuración de segmento de ruta
+Las rutas pueden exportar constantes de configuración para definir ciertos comportamientos, incluyendo la revalidación y estrategia de renderizado. Podríamos hacer lo siguiente en nuestro `page.tsx`:
+
+```tsx
+export const dynamic = 'force-dynamic' // default: auto
+export const revalidate = 100 // default: false
+```
+
+Existen muchas otras configuraciones las cuales podés ver [acá](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config).
+
+Ahora, si definimos `force-dynamic`, `revalidate` en 100 y en el fetch le ponemos `revalidate` en 50. Que configuración se sobrepone al resto? La respuesta es fácil, la de menor revalidación, en este caso como definimos `force-dynamic` los datos se van a obtener de origen en cada petición.
+
+#### Funciones dinámicas
+También hay funciones a las que se las denomina funciones dinámicas. Las funciones dinámicas dependen de información de la petición, como `cookies`, `headers`, `useSearchParams` y `searchParams`. Al usar alguna de estas funciones en nuestros segmentos (o funciones llamadas dentro de nuestros segmentos) la ruta optará por un renderizado dinámico.
+
+## Caching
+Cuando trabajamos con aplicaciones React en Vite o Create React App, solemos lidiar con un cache, el cache del navegador. En Next.js tenemos muchos tipos de cache diferente:
+
+Aquí tienes la traducción al español de la tabla MDX:
+
+| Mecanismo                    | Qué                             | Dónde    | Propósito                                                  | Duración                                    |
+| ---------------------------- | ------------------------------- | -------- | ---------------------------------------------------------- | ------------------------------------------- |
+| Memorización de Solicitudes  | Valores de retorno de funciones | Servidor | Reutilizar datos en un árbol de componentes React          | Duración de la solicitud                    |
+| Caché de Datos               | Datos                           | Servidor | Almacenar datos entre solicitudes de usuario y despliegues | Persistente (puede ser validado nuevamente) |
+| Caché de Ruta Completa       | HTML y carga RSC                | Servidor | Reducir el costo de renderización y mejorar el rendimiento | Persistente (puede ser validado nuevamente) |
+| Caché de Enrutamiento        | Carga RSC                       | Cliente  | Reducir las solicitudes al servidor durante la navegación  | Sesión de usuario o basado en el tiempo     |
+
+Next.js por defecto intentará de cachear tanto como sea posible para mejorar el rendimiento y reducir los costos. Cuando tenemos un segmento dinámico pero una petición de datos todavía tiene cache relevante, en vez de ir al orígen, Next.js intentará de obtenerlo desde el cache de datos, abajo podemos ver un diagrama de como funcionan los diferentes tipos de cache.
+
+![](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fcaching-overview.png&w=3840&q=75&dpl=dpl_Ejtt9BCyCFNeRJdBoVsM9Es9x8xe)
+
+El comportamiento del cache va a depender de si tu ruta tiene renderizado estático o dinámico, los datos están cacheados o no o si un request es parte de una visita inicial o una navegación subsecuente. Esto puede marear un poco pero con el tiempo y práctica vamos a ver que los beneficios son muchos.
+
 ---
 
-TODO:
-
-- Building
-- Rendering strategies
+- Manual revalidation
+- generateStaticParams
