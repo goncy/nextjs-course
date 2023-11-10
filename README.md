@@ -771,7 +771,6 @@ TODO:
 - Pre-renderizado (botón de favorito, debería fallar acceder a window por el pre-render)
 - Lazy loading (next/dynamic con SSR en false)
 
-
-
 ---
 Si te gusta mi contenido, seguime en [Twitter](https://twitter.gonzalopozzo.com), en [Twitch](https://twitch.gonzalopozzo.com), en [YouTube](https://youtube.gonzalopozzo.com), doname un [Cafecito](https://cafecito.gonzalopozzo.com) o volvete [sponsor en github](https://github.com/sponsors/goncy) ✨
+
