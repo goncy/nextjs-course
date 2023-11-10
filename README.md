@@ -38,79 +38,86 @@ A lo largo del curso, utilizaremos algunos conceptos clave que es importante que
 - **Bundle (Paquete):** Archivo que contiene parte o todo el código de la aplicación.
 - **Boilerplate (Código base):** Porción de código repetitivo con poca variación.
 
-¡Estamos listos para comenzar! ¡Vamos a sumergirnos en el fascinante mundo de Next.js con App Directory!
+# Índice
 
-## Índice
-- [Que es Next.js?](#que-es-nextjs)
-- [Creando una aplicación con Next.js](#creando-una-aplicación-con-nextjs)
-  - [Tecnologías en el proyecto](#tecnologías-en-el-proyecto)
-  - [Estructura del proyecto](#estructura-del-proyecto)
-- [Ambientes de renderizado (Servidor y Cliente)](#ambientes-de-renderizado-servidor-y-cliente)
-  - [Server Components](#server-components)
-  - [Client Components](#client-components)
-  - [Cuando usar Server Components y Client Components](#cuando-usar-server-components-y-client-components)
-- [Mostrando los restaurantes](#mostrando-los-restaurantes)
-- [Mostrando un restaurante](#mostrando-un-restaurante)
-  - [Router](#router)
-  - [Rutas dinámicas](#rutas-dinámicas)
-  - [Colocación](#colocación)
-- [Navegación](#navegación)
-- [Estados de carga](#estados-de-carga)
-- [Manejo de errores](#manejo-de-errores)
-- [Usando una base de datos](#usando-una-base-de-datos)
-- [Buildeando nuestra aplicación](#buildeando-nuestra-aplicación)
-- [Estrategias de renderizado](#estrategias-de-renderizado)
-  - [Renderizado estático](#renderizado-estático-por-defecto)
-  - [Renderizado dinámico](#renderizado-dinámico)
-- [Caching](#caching)
-  - [Configuraciones de revalidación de cache](#configuraciones-de-revalidación-de-cache)
-    - [cache: no-store](#cache-no-store)
-    - [revalidate: <number>](#revalidate-number)
-    - [Configuración de segmento de ruta](#configuración-de-segmento-de-ruta)
-    - [Funciones dinámicas](#funciones-dinámicas)
-- [Revalidación manual](#revalidación-manual)
-  - [revalidatePath](#revalidatepath)
-  - [revalidateTag](#revalidatetag)
-- [Parámetros de URL](#parámetros-de-url)
-- [Agrupado de rutas](#agrupado-de-rutas)
-- [Server Actions](#server-actions)
-- [Guardar en favoritos (localStorage)](#guardar-en-favoritos-localstorage)
-  - [Pre-renderizado](#pre-renderizado)
-  - [Lazy loading](#lazy-loading)
+1. [¿Qué es Next.js?](#que-es-nextjs)
+2. [Creación de una Aplicación con Next.js](#creando-una-aplicación-con-nextjs)
+   - 2.1 [Tecnologías en el Proyecto](#tecnologías-en-el-proyecto)
+   - 2.2 [Estructura del Proyecto](#estructura-del-proyecto)
+3. [Ambientes de Renderizado (Servidor y Cliente)](#ambientes-de-renderizado-servidor-y-cliente)
+   - 3.1 [Server Components](#server-components)
+   - 3.2 [Client Components](#client-components)
+   - 3.3 [Cuándo Usar Server Components y Client Components](#cuando-usar-server-components-y-client-components)
+4. [Mostrando los Restaurantes](#mostrando-los-restaurantes)
+5. [Mostrando un Restaurante](#mostrando-un-restaurante)
+   - 5.1 [Router](#router)
+   - 5.2 [Rutas Dinámicas](#rutas-dinámicas)
+   - 5.3 [Colocación](#colocación)
+6. [Navegación](#navegación)
+7. [Estados de Carga](#estados-de-carga)
+8. [Manejo de Errores](#manejo-de-errores)
+9. [Uso de una Base de Datos](#usando-una-base-de-datos)
+10. [Construyendo Nuestra Aplicación](#buildeando-nuestra-aplicación)
+11. [Estrategias de Renderizado](#estrategias-de-renderizado)
+    - 11.1 [Renderizado Estático](#renderizado-estático-por-defecto)
+    - 11.2 [Renderizado Dinámico](#renderizado-dinámico)
+12. [Caching](#caching)
+    - 12.1 [Configuraciones de Revalidación de Caché](#configuraciones-de-revalidación-de-cache)
+        - 12.1.1 [cache: no-store](#cache-no-store)
+        - 12.1.2 [revalidate: `<number>`](#revalidate-number)
+        - 12.1.3 [Configuración de Segmento de Ruta](#configuración-de-segmento-de-ruta)
+        - 12.1.4 [Funciones Dinámicas](#funciones-dinámicas)
+13. [Revalidación Manual](#revalidación-manual)
+    - 13.1 [revalidatePath](#revalidatepath)
+    - 13.2 [revalidateTag](#revalidatetag)
+14. [Parámetros de URL](#parámetros-de-url)
+15. [Agrupación de Rutas](#agrupado-de-rutas)
+16. [Server Actions](#server-actions)
+17. [Guardado en Favoritos (localStorage)](#guardar-en-favoritos-localstorage)
+    - 17.1 [Pre-renderizado](#pre-renderizado)
+    - 17.2 [Lazy Loading](#lazy-loading)
 
 
-## Que es Next.js?
-[Next.js](https://nextjs.org/) es un framework híbrido (se ejecuta en el servidor y en el cliente) de React que nos provee de una serie de herramientas y funcionalidades para crear aplicaciones web de una manera más sencilla y eficiente. Next.js se encarga de toda la configuración necesaria de React y sus herramientas para que nosotros podamos enfocarnos en desarrollar nuestra aplicación.
+## ¿Qué es Next.js?
 
-## Creando una aplicación con Next.js
-La manera más fácil de crear una aplicación Next.js en nuestra computadora es usando el paquete `create-next-app` de npm. Este paquete nos permite crear una aplicación Next.js con todas las configuraciones necesarias para que podamos empezar a desarrollar nuestra aplicación.
+[Next.js](https://nextjs.org/) es un framework híbrido que opera tanto en el servidor como en el cliente, construido sobre React. Proporciona herramientas y funcionalidades que simplifican el desarrollo de aplicaciones web. Next.js se encarga de toda la configuración necesaria de React y sus herramientas para que nosotros podamos enfocarnos en desarrollar nuestra aplicación.
+
+## Creando una Aplicación con Next.js
+
+La forma más sencilla de iniciar una aplicación Next.js en nuestra máquina es mediante el paquete `create-next-app` de npm. Este paquete facilita la creación de una aplicación Next.js con todas las configuraciones esenciales para comenzar a desarrollar.
 
 ```bash
 npx create-next-app@latest --example "https://github.com/goncy/nextjs-course" --example-path "code/starter" restaurancy
 ```
-> Los parametros `--example` y `--example-path` se encargan de crear la aplicación con el código necesario para este curso, si querés crear un proyecto propio podés omitirlos.
+> Puedes omitir los parámetros `--example` y `--example-path` si deseas crear un proyecto personalizado.
 
-Luego de que el comando termine de ejecutarse nos va a crear una carpeta con el nombre `restaurancy` y todos los archivos necesarios para correr nuestra aplicación.
+Una vez completada la ejecución del comando, se generará una carpeta llamada `restaurancy` con todos los archivos necesarios para ejecutar la aplicación.
 
-Ahora vamos a ejecutar los siguientes comandos:
+A continuación, ejecutemos los siguientes comandos:
+
 ```bash
 cd restaurancy
 npm run dev
 ```
-Y luego de unos segundos deberiamos ver un mensaje como este:
+
+Después de unos segundos, deberías ver un mensaje como este:
+
 ```bash
   ▲ Next.js <versión de Next.js>
   - Local:        http://localhost:3000
 ```
-Si abrimos el navegador en la dirección `http://localhost:3000` deberíamos ver una página como la siguiente:
+
+Si abres el navegador en la dirección `http://localhost:3000`, deberías visualizar una página de bienvenida similar a la siguiente:
 
 ![Página de bienvenida de Next.js](./images/starter.jpg)
 
-### Tecnologías en el proyecto
-Además de Next.js y React, este proyecto usa [TypeScript](https://www.typescriptlang.org/) para agregar tipado y [Tailwind CSS](https://tailwindcss.com/) para manejar estilos. Si no conoces TypeScript o Tailwind CSS y no querés usarlos no te preocupes, no escribas tipos en TypeScript y no uses las clases de Tailwind CSS y reemplazalo por lo que quieras para manejar los estilos.
+### Tecnologías en el Proyecto
 
-### Estructura del proyecto
-En la raíz de nuestros proyecto nos vamos a encontrar varios archivos de configuración y otras cosas que vamos a ignorar por el momento. Lo que nos interesa por ahora es la carpeta `src` y su contenido.
+Además de Next.js y React, este proyecto utiliza [TypeScript](https://www.typescriptlang.org/) para añadir tipado y [Tailwind CSS](https://tailwindcss.com/) para gestionar estilos. No te preocupes si no estás familiarizado con TypeScript o Tailwind CSS; puedes optar por no escribir tipos en TypeScript y evitar el uso de las clases de Tailwind CSS, sustituyéndolas por el método que prefieras para manejar estilos.
+
+### Estructura del Proyecto
+
+En la raíz del proyecto, encontrarás varios archivos de configuración y otros elementos que podemos ignorar por el momento. Por ahora, nos centraremos en la carpeta `src` y su contenido.
 
 ```bash
 ├── src/
@@ -122,13 +129,13 @@ En la raíz de nuestros proyecto nos vamos a encontrar varios archivos de config
 └── api.ts
 ```
 
-- `globals.css`: Archivo de estilos globales de la aplicación. Incluye los estilos de Tailwind CSS.
-- `favicon.ico`: Icono por defecto de la aplicación para ser mostrado en la pestaña del navegador.
-- `layout.tsx`: Archivo especial de Next.js que nos permite definir un envoltorio para nuestra aplicación (o página). En este caso, es el encargado de definir la estructura de la página (html y body), importar los estilos globales y agregar un header, footer y contenedor para nuestra página. El archivo de `layout.tsx` recibe una prop `children` que es el contenido de la página que nuestro usuario visite.
-- `page.tsx`: Archivo especial de Next.js que nos permite definir una página. En este caso, al estar definido en la raíz de nuestro directorio `app`, es la página que se va a mostrar al usuario cuando ingrese al inicio (a la ruta `/`)
-- `api.ts`: Archivo que define algunos métodos que vamos a usar a lo largo del curso para obtener información sobre restaurantes. Por el momento solo devuelve datos de prueba pero más adelante vamos a usarlo para obtener datos reales.
+- `globals.css`: Este archivo contiene estilos globales para la aplicación, incluyendo los estilos de Tailwind CSS.
+- `favicon.ico`: Icono predeterminado de la aplicación, visible en la pestaña del navegador.
+- `layout.tsx`: Este archivo, específico de Next.js, nos permite definir un envoltorio para nuestra aplicación o página. En este caso, se encarga de establecer la estructura básica de la página (html y body), importar estilos globales, y agregar un encabezado, un pie de página y un contenedor para el contenido de la página. Recibe una prop `children`, que representa el contenido de la página que verá el usuario.
+- `page.tsx`: Otra característica especial de Next.js que nos permite definir una página. Dado que está en la raíz de nuestro directorio `app`, será la página que se mostrará al usuario al acceder al inicio (ruta `/`).
+- `api.ts`: Este archivo define algunos métodos que utilizaremos a lo largo del curso para obtener información sobre restaurantes. Por ahora, solo devuelve datos de prueba, pero más adelante lo emplearemos para obtener datos reales.
 
-Date un tiempo para modificar el contenido de los archivos y ver como afecta a la aplicación. Mientras el servidor de desarrollo esté corriendo basta con guardar un archivo para ver los cambios reflejados en pantalla.
+Tómate un tiempo para modificar el contenido de estos archivos y observa cómo afecta a la aplicación. Mientras el servidor de desarrollo esté en ejecución, bastará con guardar un archivo para ver los cambios reflejados en la pantalla.
 
 ## Ambientes de renderizado (Servidor y Cliente)
 Hay [dos ambientes](https://nextjs.org/docs/app/building-your-application/rendering#rendering-environments) donde las aplicaciones web se pueden renderizar: el cliente y el servidor.
