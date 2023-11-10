@@ -765,11 +765,109 @@ export default async function Home({searchParams}: {searchParams: {q?: string}})
 Los Server Actions requieren que especifiquemos la directive `'use server'` en la función de nuestra acción (o en la parte superior del archivo si vamos a tener un archivo con muchas acciones). Luego pasamos esta función a la propiedad `action` de nuestro formulario. Al hacer submit del formulario se va a ejecutar la función `searchAction` y se va a redireccionar a la ruta `/` con el valor del campo `q` como query string.
 
 > Ahora podés borrar la carpeta `components` y el grupo `(index)`. O mover el Server Action al componente `SearchBox`, decidí vos.
----
 
-TODO:
-- Pre-renderizado (botón de favorito, debería fallar acceder a window por el pre-render)
-- Lazy loading (next/dynamic con SSR en false)
+## Guardar en favoritos (localStorage)
+Vamos a implementar la funcionalidad de guardar en favoritos. Para eso vamos a ir a nuestro componente de `RestaurantCard.tsx` (o como sea que lo hayas llamado de ejercicios anteriores, si no lo hiciste, crealo donde te parezca) y vamos a agregarle un botón de corazón que al clickearlo guarde el id del restaurante en localStorage.
+
+```tsx
+'use client'
+
+import { Restaurant } from "@/types";
+import Link from "next/link";
+
+export default function RestaurantCard({restaurant}: {restaurant: Restaurant}) {
+  const isFavourite = window.localStorage.getItem('favorites')?.includes(restaurant.id)
+
+  return (
+    <article>
+      <img
+        alt={restaurant.name}
+        className="mb-3 h-[300px] w-full object-cover"
+        src={restaurant.image}
+      />
+      <h2 className="inline-flex gap-2 text-lg font-bold items-center">
+        <Link href={`/${restaurant.id}`}>
+          <span>{restaurant.name}</span>
+        </Link>
+        <small className="inline-flex gap-1">
+          <span>⭐</span>
+          <span>{restaurant.score}</span>
+          <span className="font-normal opacity-75">({restaurant.ratings})</span>
+        </small>
+        <button className={`text-red-500 text-xl ${isFavourite ? 'opacity-100' : 'opacity-20'}`}>♥</button>
+      </h2>
+      <p className="opacity-90">{restaurant.description}</p>
+    </article>
+  );
+}
+```
+
+Nuestro componente va a ser un Client Component ya que necesitamos estar en el cliente para poder acceder a localStorage que es una API del navegador. Pero sin embargo vemos el siguiente error cuando renderizamos el componente:
+
+![](./images/window-undefined.jpg)
+
+### Pre-renderizado
+En Next.js todos los componentes son pre-renderizados en el servidor por defecto. Esto significa que un componente (aunque sea un Client Component) va a ser ejecutado en el servidor y luego en el cliente. Esto nos permite generar una previsualización (no interactiva) mientras el JavaScript se descarga del lado del cliente, una vez que esto sucede, nuestra aplicación se hidrata y se vuelve interactiva.
+
+Pero, al ser ejecutado en el servidor, no tenemos acceso a `window`, por eso tenemos que asegurarnos de que nuestro componente se renderice solamente en el cliente.
+
+### Lazy loading
+En Next.js podemos usar la función `dynamic` importada desde [`next/dynamic`](https://nextjs.org/docs/app/building-your-application/optimizing/lazy-loading#nextdynamic) para hacer lazy loading de nuestros componentes. Esto nos permite importar un componente de manera dinámica, solo cuando sea necesario. También nos permite definir si un componente debería o no ser renderizado en el servidor mediante la propiedad `ssr`.
+
+Vamos a actualizar el código de nuestro componente `RestaurantCard` para que contenga dos componentes, uno para la información y uno para el botón de favorito. El componente de información va a ser pre-renderizado en el servidor y el componente de favorito va a ser renderizado solo en el cliente mediante `dynamic`.
+
+```tsx
+'use client'
+
+import { Restaurant } from "@/types";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+
+function FavoriteButton({restaurant}: {restaurant: Restaurant}) {
+  const isFavourite = window.localStorage.getItem('favorites')?.includes(restaurant.id)
+
+  return (
+    <button className={`text-red-500 text-xl ${isFavourite ? 'opacity-100' : 'opacity-20'}`}>♥</button>
+  )
+}
+
+// Creamos un componente dinámico para que no se renderice en el servidor
+const DynamicFavoriteButton = dynamic(async () => FavoriteButton, {ssr: false})
+
+export default function RestaurantCard({restaurant}: {restaurant: Restaurant}) {
+
+  return (
+    <article>
+      <img
+        alt={restaurant.name}
+        className="mb-3 h-[300px] w-full object-cover"
+        src={restaurant.image}
+      />
+      <h2 className="inline-flex gap-2 text-lg font-bold items-center">
+        <Link href={`/${restaurant.id}`}>
+          <span>{restaurant.name}</span>
+        </Link>
+        <small className="inline-flex gap-1">
+          <span>⭐</span>
+          <span>{restaurant.score}</span>
+          <span className="font-normal opacity-75">({restaurant.ratings})</span>
+        </small>
+        <DynamicFavoriteButton restaurant={restaurant} />
+      </h2>
+      <p className="opacity-90">{restaurant.description}</p>
+    </article>
+  );
+}
+```
+
+Muy bien, si actualizamos la key `favorites` manualmente en localStorage para incluir el id de alguno de nuestros restaurantes lo vamos a ver correctamente:
+
+![](./images/favorites.jpg)
+
+Te dejo un par de tareas:
+- Nuestro componente `RestaurantCard` contiene dos componentes, el componente que contiene la información no necesita ninguna actividad, por ende podría seguir siendo un Server Component. Mové el componente del botón de favorito a otro archivo e importalo.
+  - Podrías convertir `RestaurantCard` en una carpeta y agregarle un `index.tsx` y un `FavoriteButton.tsx` dentro. De esa manera los componentes seguirían colocados lo más cerca de donde son relevantes posible. Pero manejalo a tu gusto.
+- Implementá la funcionalidad de agregar y quitar favoritos en el botón de favorito. Al cargar la página debería mostrar el estado actual y al clickear el botón debería mostrarse actualizado y persistir ese estado al recargar la página.
 
 ---
 Si te gusta mi contenido, seguime en [Twitter](https://twitter.gonzalopozzo.com), en [Twitch](https://twitch.gonzalopozzo.com), en [YouTube](https://youtube.gonzalopozzo.com), doname un [Cafecito](https://cafecito.gonzalopozzo.com) o volvete [sponsor en github](https://github.com/sponsors/goncy) ✨
