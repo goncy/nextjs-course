@@ -526,7 +526,7 @@ export const revalidate = 100 // default: false
 
 Existen muchas otras configuraciones las cuales podés ver [acá](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config).
 
-Ahora, si definimos `force-dynamic`, `revalidate` en 100 y en el fetch le ponemos `revalidate` en 50. Que configuración se sobrepone al resto? La respuesta es fácil, la de menor revalidación, en este caso como definimos `force-dynamic` los datos se van a obtener de origen en cada petición.
+Ahora, si definimos `force-dynamic`, `revalidate` en 100 y en el fetch le ponemos `revalidate` en 50. Que configuración se sobrepone al resto? La respuesta es fácil, la de menor revalidación, en este caso como definimos `force-dynamic` los datos se van a obtener de origen en cada petición. Igualmente no suele ser algo por lo que tengamos que preocuparnos, Next.js siempre va a optimizar lo más posible para que nuestra aplicación sea lo más rápida posible.
 
 #### Funciones dinámicas
 También hay funciones a las que se las denomina funciones dinámicas. Las funciones dinámicas dependen de información de la petición, como `cookies`, `headers`, `useSearchParams` y `searchParams`. Al usar alguna de estas funciones en nuestros segmentos (o funciones llamadas dentro de nuestros segmentos) la ruta optará por un renderizado dinámico.
@@ -548,6 +548,8 @@ Next.js por defecto intentará de cachear tanto como sea posible para mejorar el
 ![](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fcaching-overview.png&w=3840&q=75&dpl=dpl_Ejtt9BCyCFNeRJdBoVsM9Es9x8xe)
 
 El comportamiento del cache va a depender de si tu ruta tiene renderizado estático o dinámico, los datos están cacheados o no o si un request es parte de una visita inicial o una navegación subsecuente. Esto puede marear un poco pero con el tiempo y práctica vamos a ver que los beneficios son muchos.
+
+> Saber esto sobre caching ayuda a entender como Next.js funciona, pero no es contenido esencial para ser productivo en Next.js.
 
 ### Revalidación manual
 La revalidación por tiempo es útil pero no para todos los casos, aveces tenemos datos que no cambian muy seguido pero cuando cambian queremos que se actualicen de inmediate. Por ejemplo un producto en una tienda virtual que cambió su precio luego de 15 días y queremos que los usuarios vean el nuevo precio inmediatamente. Para eso podemos usar dos métodos que se ejecutan del lado del servidor `revalidatePath` y `revalidateTag`.

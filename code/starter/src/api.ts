@@ -126,20 +126,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const api = {
   list: async (): Promise<Restaurant[]> => {
-    const [, ...data] = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vTnULUz5xvw34Fg0b4OXEszG835bjzKr1HW_DHFb4agSDgmpTh4XwdbmyWerDI4UuWNJ1t5oew6j34U/pub?output=csv', {next: {tags: ['restaurants']}}).then(res => res.text()).then(text => text.split('\n'))
-
-    const restaurants: Restaurant[] = data.map((row) => {
-      const [id, name, description, address, score, ratings, image] = row.split(',')
-      return {
-        id,
-        name,
-        description,
-        address,
-        score: Number(score),
-        ratings: Number(ratings),
-        image
-      }
-    })
+    await sleep(750);
 
     return restaurants;
   },
