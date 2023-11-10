@@ -38,16 +38,16 @@ A lo largo del curso, utilizaremos algunos conceptos clave que es importante que
 - **Bundle (Paquete):** Archivo que contiene parte o todo el código de la aplicación.
 - **Boilerplate (Código base):** Porción de código repetitivo con poca variación.
 
-# Índice
+## Índice
 
-1. [¿Qué es Next.js?](#que-es-nextjs)
+1. [¿Qué es Next.js?](#¿qué-es-nextjs)
 2. [Creación de una Aplicación con Next.js](#creando-una-aplicación-con-nextjs)
    - 2.1 [Tecnologías en el Proyecto](#tecnologías-en-el-proyecto)
    - 2.2 [Estructura del Proyecto](#estructura-del-proyecto)
 3. [Ambientes de Renderizado (Servidor y Cliente)](#ambientes-de-renderizado-servidor-y-cliente)
    - 3.1 [Server Components](#server-components)
    - 3.2 [Client Components](#client-components)
-   - 3.3 [Cuándo Usar Server Components y Client Components](#cuando-usar-server-components-y-client-components)
+   - 3.3 [Cuándo Usar Server Components y Client Components](#cuándo-usar-server-components-y-client-components)
 4. [Mostrando los Restaurantes](#mostrando-los-restaurantes)
 5. [Mostrando un Restaurante](#mostrando-un-restaurante)
    - 5.1 [Router](#router)
@@ -57,12 +57,12 @@ A lo largo del curso, utilizaremos algunos conceptos clave que es importante que
 7. [Estados de Carga](#estados-de-carga)
 8. [Manejo de Errores](#manejo-de-errores)
 9. [Uso de una Base de Datos](#usando-una-base-de-datos)
-10. [Construyendo Nuestra Aplicación](#buildeando-nuestra-aplicación)
+10. [Compilando Nuestra Aplicación](#compilando-nuestra-aplicación)
 11. [Estrategias de Renderizado](#estrategias-de-renderizado)
     - 11.1 [Renderizado Estático](#renderizado-estático-por-defecto)
     - 11.2 [Renderizado Dinámico](#renderizado-dinámico)
 12. [Caching](#caching)
-    - 12.1 [Configuraciones de Revalidación de Caché](#configuraciones-de-revalidación-de-cache)
+    - 12.1 [Configuraciones de Revalidación de Caché](#configuraciones-de-revalidación-de-caché)
         - 12.1.1 [cache: no-store](#cache-no-store)
         - 12.1.2 [revalidate: `<number>`](#revalidate-number)
         - 12.1.3 [Configuración de Segmento de Ruta](#configuración-de-segmento-de-ruta)
@@ -486,7 +486,7 @@ const api = {
 
 ¡Listo! Ahora, al recargar la página, deberíamos ver los datos de Google Sheets. Ten en cuenta que Next.js maneja su propio caché, así que si no ves los cambios, prueba con <kbd>ctrl</kbd> + <kbd>f5</kbd> (<kbd>cmd</kbd> + <kbd>f5</kbd> si usas Mac). Ahora te toca a ti modificar el método `fetch` para traer los datos de un restaurante en particular.
 
-## Construyendo Nuestra Aplicación
+## Compilando Nuestra Aplicación
 
 Ahora que tenemos una aplicación más o menos completa, vamos a compilarla y ejecutarla localmente para ver más acertadamente qué tan bien funcionaría en un entorno productivo. Para ello, terminemos el comando de nuestro servidor de desarrollo y ejecutemos los siguientes comandos:
 
