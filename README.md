@@ -612,57 +612,59 @@ Ahora, si definimos `force-dynamic` y `revalidate` en 100, y en el fetch le pone
 
 También hay funciones a las que se las denomina [funciones dinámicas](https://nextjs.org/docs/app/building-your-application/rendering/server-components#dynamic-functions). Estas funciones dependen de información de la petición, como [`cookies`](https://nextjs.org/docs/app/api-reference/functions/cookies), [`headers`](https://nextjs.org/docs/app/api-reference/functions/headers), [`useSearchParams`](https://nextjs.org/docs/app/api-reference/functions/use-search-params) y [`searchParams`](https://nextjs.org/docs/app/api-reference/file-conventions/page#searchparams-optional). Al usar alguna de estas funciones en nuestros segmentos (o funciones llamadas dentro de nuestros segmentos), la ruta optará por un renderizado dinámico.
 
-### Revalidación manual
-La revalidación por tiempo es útil pero no para todos los casos, a veces tenemos datos que no cambian muy seguido pero cuando cambian queremos que se actualicen de inmediato. Por ejemplo, un producto en una tienda virtual que cambió su precio luego de 15 días y queremos que los usuarios vean el nuevo precio inmediatamente. Para eso podemos usar dos métodos que se ejecutan del lado del servidor [`revalidatePath`](https://nextjs.org/docs/app/api-reference/functions/revalidatePath) y [`revalidateTag`](https://nextjs.org/docs/app/api-reference/functions/revalidateTag).
+## Revalidación Manual
 
-#### `revalidatePath`
-Nos permite revalidar el contenido de una ruta en particular, por ejemplo, nuestra ruta `/` si sabemos que agregamos nuevos restaurantes a la base de datos. Como nuestra aplicación no tiene un formulario para agregar nuevos restaurantes o modificar existentes, vamos a crear una ruta de API (Route Handler) utilitaria para que al llamarla, se revalide la ruta `/`.
+La revalidación por tiempo es útil, pero no es adecuada para todos los casos. En algunas situaciones, tenemos datos que no cambian con frecuencia, pero cuando cambian, queremos que se actualicen de inmediato. Por ejemplo, un producto en una tienda virtual que cambió su precio después de 15 días y queremos que los usuarios vean el nuevo precio inmediatamente. Para lograr esto, podemos utilizar dos métodos que se ejecutan del lado del servidor: [`revalidatePath`](https://nextjs.org/docs/app/api-reference/functions/revalidatePath) y [`revalidateTag`](https://nextjs.org/docs/app/api-reference/functions/revalidateTag).
 
-Para eso vamos a crear un archivo `src/app/api/revalidate/route.ts` con el siguiente contenido:
+### `revalidatePath`
 
-```ts
+Este método nos permite revalidar el contenido de una ruta en particular, como nuestra ruta `/`, si sabemos que hemos agregado nuevos restaurantes a la base de datos. Dado que nuestra aplicación no tiene un formulario para agregar nuevos restaurantes o modificar existentes, vamos a crear una ruta de API utilitaria para que, al llamarla, se revalide la ruta `/`.
+
+Creamos un archivo `src/app/api/revalidate/route.ts` con el siguiente contenido:
+
+```typescript
 import { revalidatePath } from "next/cache";
 
 export async function GET() {
-  revalidatePath('/')
+  revalidatePath('/');
 
-  return Response.json({success: true})
+  return Response.json({ success: true });
 }
 ```
 
-En un Route Handler podemos exportar funciones con los nombres de los métodos HTTP habituales y se van a llamar cuando la ruta reciba una petición de ese mismo método.
+En un Route Handler, podemos exportar funciones con los nombres de los métodos HTTP habituales, y se llamarán cuando la ruta reciba una petición del mismo método.
 
-Ahora podemos volver eliminar todos los `revalidate`, `dynamic` y cualquier cosa que haga nuestra ruta `/` dinámica y volver a compilar y correr nuestra aplicación. Si vamos a `http://localhost:3000` deberíamos ver nuestros restaurantes. Luego modifiquemos uno en la base de datos, vayamos manualmente a `http://localhost:3000/api/revalidate` y volvamos a `http://localhost:3000`. Deberíamos ver los datos actualizados.
+Ahora podemos eliminar todos los `revalidate`, `dynamic` y cualquier cosa que haga que nuestra ruta `/` sea dinámica. Luego, volvemos a compilar y ejecutar nuestra aplicación. Si vamos a `http://localhost:3000`, deberíamos ver nuestros restaurantes. Luego, modificamos uno en la base de datos, vamos manualmente a `http://localhost:3000/api/revalidate` y volvemos a `http://localhost:3000`. Deberíamos ver los datos actualizados.
 
-> Tomá en cuenta que Google Sheets aveces tarda un poco en reflejar los datos publicados así que dale unos segundos.
+Es una buena práctica proteger nuestras rutas de API con alguna clave secreta para evitar que usuarios malintencionados ejecuten estos métodos. Tu tarea es definir una variable de entorno `REVALIDATE_SECRET` y usarla en nuestra ruta de API para ejecutarla solo cuando nos envíen un parámetro `secret` con el valor correcto. Puedes usar la documentación oficial de Next.js para ver cómo usar variables de entorno.
 
-Es una buena práctica proteger nuestras rutas de API con alguna clave secreta para evitar que usuarios malintencionados ejecuten estos métodos. Tu taréa es definir una variable de entorno `REVALIDATE_SECRET` y usarla en nuestra ruta de API para solo ejecutarla cuando nos manden un parametro `secret` con el valor correcto. Podés usar la documentación oficial de Next.js para ver como usar variables de entorno.
+### `revalidateTag`
 
-#### `revalidateTag`
-También puede pasar que modifiquemos un dato que afecte varias rutas al mismo tiempo y cuando las aplicaciones crecen es muy difícil poder saber que rutas se ven afectadas por un cambio. Para eso podemos usar `revalidateTag` que nos permite revalidar todas las rutas que tengan un tag en particular.
+Puede suceder que modifiquemos un dato que afecte a varias rutas al mismo tiempo, y cuando las aplicaciones crecen, es muy difícil saber qué rutas se ven afectadas por un cambio. Para abordar esto, podemos usar `revalidateTag`, que nos permite revalidar todas las rutas que tengan un tag en particular.
 
-Agreguemos un tag `restaurants` a nuestros dos llamados en `api.ts`, asi cuando revalidemos el tag `restaurants` se revalidará el contenido tanto para `/` como para cada `/[id]`.
+Agregamos un tag `restaurants` a nuestros dos llamados en `api.ts`, así, cuando revalidemos el tag `restaurants`, se revalidará el contenido tanto para `/` como para cada `/[id]`.
 
-```ts
-const [, ...data] = await fetch('...', {next: {tags: ['restaurants']}}).then(res => res.text()).then(text => text.split('\n'))
+```typescript
+const [, ...data] = await fetch('...', { next: { tags: ['restaurants'] } }).then(res => res.text()).then(text => text.split('\n'));
 ```
 
-Ahora actualizamos nuestra ruta de API utilitaria para usar `revalidateTag` y listo:
+Ahora, actualizamos nuestra ruta de API utilitaria para usar `revalidateTag`:
 
-```ts
+```typescript
 import { revalidateTag } from "next/cache";
 
 export async function GET() {
-  revalidateTag('restaurants')
+  revalidateTag('restaurants');
 
-  return Response.json({success: true})
+  return Response.json({ success: true });
 }
 ```
 
 ## Parámetros de URL
-Manejar estado de nuestra aplicación en la URL es una buena práctica, nos permite compartir links, volver a una página en particular y más. También nos permite delegar en el router el manejo de la navegación y seguir usando Server Components a pesar de tener interactividad en nuestra aplicación (ya que al cambiar la ruta hacemos otra petición).
 
-Vamos a crear un componente `src/app/components/SearchBox.tsx` que contenga un campo, dentro de un formulario. Al hacer submit del formulario vamos a actualizar la URL con el valor del campo y dejar a Next.js hacer el resto. Vamos a agregarle el siguiente contenido:
+Manejar el estado de nuestra aplicación en la URL es una buena práctica; nos permite compartir enlaces, volver a una página en particular y más. También nos permite delegar en el router el manejo de la navegación y seguir usando Server Components a pesar de tener interactividad en nuestra aplicación, ya que al cambiar la ruta hacemos otra petición.
+
+Creamos un componente `src/app/components/SearchBox.tsx` que contiene un campo dentro de un formulario. Al enviar el formulario, actualizamos la URL con el valor del campo y dejamos que Next.js haga el resto. Agregamos el siguiente contenido:
 
 ```tsx
 'use client'
@@ -670,8 +672,8 @@ Vamos a crear un componente `src/app/components/SearchBox.tsx` que contenga un c
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SearchBox() {
-  const {push} = useRouter()
-  const searchParams = useSearchParams()
+  const { push } = useRouter();
+  const searchParams = useSearchParams();
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     // Prevenimos que la página se refresque al enviar el formulario
@@ -693,9 +695,8 @@ export default function SearchBox() {
   );
 }
 ```
-> Al necesitar interactividad, nuestro componente debe ser un Client Component
 
-Ahora agregamos la caja de búsqueda en nuestro `src/app/page.tsx` y probamos que funcione.
+Ahora, agregamos la caja de búsqueda en nuestro `src/app/page.tsx` y probamos que funcione.
 
 ```tsx
 ...
@@ -713,11 +714,9 @@ export default async function Home() {
   )
 ```
 
-![](./images/search-box.jpg)
+¡Bien! Al enviar el formulario, nos redirige correctamente. Ahora hay que hacer que funcione la búsqueda. Para eso, modificamos nuestro `api.ts` para que tenga un método `search` que reciba una `query` y filtre los restaurantes por nombre o descripción:
 
-Bien, al hacer submit del formulario nos redirige correctamente, ahora hay que hacer que funcione la búsqueda. Para eso vamos a modificar nuestro `api.ts` para que tenga un método `search` que reciba un `query` y filtre los restaurantes por nombre o descripción:
-
-```ts
+```typescript
 const api = {
   ...,
   search: async (query: string): Promise<Restaurant[]> => {
@@ -730,26 +729,25 @@ const api = {
 }
 ```
 
-> Como estamos obteniendo el contenido en `.csv` de Google Sheets no podemos hacer el filtrado en la API y debemos obtener todos los resultados y filtrarlos en el servidor. No es algo óptimo para una aplicación real pero dado que el `fetch` siempre va a ser igual nos vamos a beneficiar del Data Cache de Next.js en vez de descargarnos un nuevo `.csv` en cada búsqueda.
+Dado que estamos obteniendo el contenido en `.csv` de Google Sheets, no podemos hacer el filtrado en la API, y debemos obtener todos los resultados y filtrarlos en el servidor. No es algo óptimo para una aplicación real, pero dado que el `fetch` siempre será igual, nos beneficiaremos del Data Cache de Next.js en lugar de descargar un nuevo `.csv` en cada búsqueda.
 
-Y vamos a pasarle el `searchParams.q` (todas las `page` reciben la prop `searchParams`) a `api.search` en vez de `api.list` en nuestra `src/app/page.tsx`:
+Luego, pasamos `searchParams.q` (todas las `page` reciben la prop `searchParams`) a `api.search` en lugar de `api.list` en nuestro `src/app/page.tsx`:
 
 ```tsx
-export default async function Home({searchParams}: {searchParams: {q: string}}) {
+export default async function Home({ searchParams }: { searchParams: { q: string } }) {
   const restaurants = await api.search(searchParams.q);
 
   ...
 }
 ```
 
-> Utilizar `searchParams` en una `page` hace que el segmento sea dinámico ya que necesita ejecutarse en cada petición para obtener los valores correctos.
+Utilizar `searchParams` en una `page` hace que el segmento sea dinámico, ya que necesita ejecutarse en cada petición para obtener los valores correctos.
 
-![](./images/search-box-1.jpg)
+¡Bien! Nuestra búsqueda funciona correctamente. Pero... Si un usuario busca algo que no existe, no se muestra nada. Asegúrate de mostrar algún mensaje cuando no haya resultados como tarea.
 
-Bien! Nuestra búsqueda funciona correctamente. Pero... Si un usuario busca algo que no existe no se muestra nada. Asegurate de mostrar algun mensaje cuando no haya resultados como tarea.
+## Agrupado de Rutas
 
-## Agrupado de rutas
-Esto es algo personal, pero ahora nos quedó una carpeta `components` dentro del directorio `app`, que tiene un solo archivo que es relavante para una sola página (`/app/page.tsx`), no me gusta que esté a nivel de `app` porque no es algo que se comparta entre todas las páginas. Podríamos sacar la carpeta `components` fuera de `app` pero pasaría lo mismo. Por suerte en App Directory podemos [agrupar rutas](https://nextjs.org/docs/app/building-your-application/routing/route-groups) y archivos de la siguiente manera:
+Esto es algo personal, pero ahora nos queda una carpeta `components` dentro del directorio `app`, que tiene un solo archivo que es relevante para una sola página (`/app/page.tsx`). No me gusta que esté a nivel de `app` porque no es algo que se comparta entre todas las páginas. Podríamos sacar la carpeta `components` fuera de `app`, pero pasaría lo mismo. Afortunadamente, en App Directory podemos [agrupar rutas](https://nextjs.org/docs/app/building-your-application/routing/route-groups) y archivos de la siguiente manera:
 
 ```bash
 └── app/
@@ -766,19 +764,21 @@ Esto es algo personal, pero ahora nos quedó una carpeta `components` dentro del
         │   └── SearchBox.tsx
         └── page.tsx
 ```
-> (index) es solo un nombre, puede llamarse (loquequieras)
 
-Al crear una carpeta envuelta en (parentesis) podemos no solamente acomodar mejor nuestros archivos sino que podríamos definir diferentes `layout` / `loading` / `error` para grupos de rutas que están a un mismo nivel (o hasta tener layouts anidados). Ahora nuestra carpeta components está colocada lo más cerca de donde es relevante posible. No te olvides de actualizar las importaciones para que nuestra aplicación siga funcionando.
+> `(index)` es solo un nombre; puede llamarse como desees.
+
+Al crear una carpeta envuelta en `(parentesis)`, no solo podemos organizar mejor nuestros archivos, sino que también podríamos definir diferentes `layout` / `loading` / `error` para grupos de rutas que están al mismo nivel (o incluso tener layouts anidados). Ahora, nuestra carpeta `components` está colocada lo más cerca de donde es relevante posible. No te olvides de actualizar las importaciones para que nuestra aplicación siga funcionando.
 
 ## Server Actions
-Mmm... Ahora que me doy cuenta puede ser que no necesitemos un Client Component o un componente de búsqueda. Podríamos usar un Server Action directamente en `src/app/page.tsx`.
 
-Los [Server Actions](https://nextjs.org/docs/app/api-reference/functions/server-actions) nos permiten ejecutar código del lado del servidor cuando el usuario envía un formulario. Nos da acceso a los datos incluidos en ese formulario así que podríamos usarlo para hacer la búsqueda. Vamos a ir a `src/app/page.tsx` y vamos a reemplazar nuestro componente de búsqueda por lo siguiente:
+Ahora que lo pienso, puede ser que no necesitemos un Client Component o un componente de búsqueda. Podríamos usar un Server Action directamente en `src/app/page.tsx`.
+
+Los [Server Actions](https://nextjs.org/docs/app/api-reference/functions/server-actions) nos permiten ejecutar código del lado del servidor cuando el usuario envía un formulario. Nos dan acceso a los datos incluidos en ese formulario, por lo que podríamos usarlos para hacer la búsqueda. Vamos a ir a `src/app/page.tsx` y vamos a reemplazar nuestro componente de búsqueda por lo siguiente:
 
 ```tsx
 import { redirect } from "next/navigation";
 
-export default async function Home({searchParams}: {searchParams: {q?: string}}) {
+export default async function Home({ searchParams }: { searchParams: { q?: string } }) {
   const restaurants = await api.search(searchParams.q);
 
   async function searchAction(formData: FormData) {
@@ -797,12 +797,13 @@ export default async function Home({searchParams}: {searchParams: {q?: string}})
         ...
 ```
 
-Los Server Actions requieren que especifiquemos la directive `'use server'` en la función de nuestra acción (o en la parte superior del archivo si vamos a tener un archivo con muchas acciones). Luego pasamos esta función a la propiedad `action` de nuestro formulario. Al hacer submit del formulario se va a ejecutar la función `searchAction` y se va a redireccionar a la ruta `/` con el valor del campo `q` como query string.
+Los Server Actions requieren que especifiquemos la directiva `'use server'` en la función de nuestra acción (o en la parte superior del archivo si vamos a tener un archivo con muchas acciones). Luego, pasamos esta función a la propiedad `action` de nuestro formulario. Al enviar el formulario, se ejecutará la función `searchAction` y se redireccionará a la ruta `/` con el valor del campo `q` como query string.
 
-> Ahora podés borrar la carpeta `components` y el grupo `(index)`. O mover el Server Action al componente `SearchBox`, decidí vos.
+Ahora puedes borrar la carpeta `components` y el grupo `(index)` o mover el Server Action al componente `SearchBox`. Decide lo que prefieras.
 
-## Guardar en favoritos (localStorage)
-Vamos a implementar la funcionalidad de guardar en favoritos. Para eso vamos a ir a nuestro componente de `RestaurantCard.tsx` (o como sea que lo hayas llamado de ejercicios anteriores, si no lo hiciste, crealo donde te parezca) y vamos a agregarle un botón de corazón que al clickearlo guarde el id del restaurante en localStorage.
+## Guardar en Favoritos (localStorage)
+
+Vamos a implementar la funcionalidad de guardar en favoritos. Para eso, vamos a ir a nuestro componente `RestaurantCard.tsx` (o como sea que lo hayas llamado en ejercicios anteriores). Agregaremos un botón de corazón que, al hacer clic, guardará el ID del restaurante en `localStorage`.
 
 ```tsx
 'use client'
@@ -837,28 +838,29 @@ export default function RestaurantCard({restaurant}: {restaurant: Restaurant}) {
 }
 ```
 
-Nuestro componente va a ser un Client Component ya que necesitamos estar en el cliente para poder acceder a localStorage que es una API del navegador. Pero sin embargo vemos el siguiente error cuando renderizamos el componente:
+Nuestro componente será un Client Component ya que necesitamos estar en el cliente para poder acceder a `localStorage`, que es una API del navegador. Sin embargo, cuando renderizamos el componente, vemos el siguiente error:
 
 ![](./images/window-undefined.jpg)
 
 ### Pre-renderizado
-En Next.js todos los componentes son pre-renderizados en el servidor por defecto. Esto significa que un componente (aunque sea un Client Component) va a ser ejecutado en el servidor y luego en el cliente. Esto nos permite generar una previsualización (no interactiva) mientras el JavaScript se descarga del lado del cliente, una vez que esto sucede, nuestra aplicación se hidrata y se vuelve interactiva.
 
-Pero, al ser ejecutado en el servidor, no tenemos acceso a `window`, por eso tenemos que asegurarnos de que nuestro componente se renderice solamente en el cliente.
+En Next.js, todos los componentes son pre-renderizados en el servidor por defecto. Esto significa que un componente (aunque sea un Client Component) se ejecutará en el servidor y luego en el cliente. Esto nos permite generar una previsualización (no interactiva) mientras el JavaScript se descarga del lado del cliente. Una vez que esto sucede, nuestra aplicación se hidrata y se vuelve interactiva.
 
-### Lazy loading
-En Next.js podemos usar la función `dynamic` importada desde [`next/dynamic`](https://nextjs.org/docs/app/building-your-application/optimizing/lazy-loading#nextdynamic) para hacer lazy loading de nuestros componentes. Esto nos permite importar un componente de manera dinámica, solo cuando sea necesario. También nos permite definir si un componente debería o no ser renderizado en el servidor mediante la propiedad `ssr`.
+Sin embargo, al ejecutarse en el servidor, no tenemos acceso a `window`. Por eso, debemos asegurarnos de que nuestro componente se renderice solo en el cliente.
 
-Vamos a actualizar el código de nuestro componente `RestaurantCard` para que contenga dos componentes, uno para la información y uno para el botón de favorito. El componente de información va a ser pre-renderizado en el servidor y el componente de favorito va a ser renderizado solo en el cliente mediante `dynamic`.
+### Lazy Loading
+
+En Next.js, podemos usar la función `dynamic` importada desde [`next/dynamic`](https://nextjs.org/docs/app/building-your-application/optimizing/lazy-loading#nextdynamic) para realizar lazy loading de nuestros componentes. Esto nos permite importar un componente de manera dinámica, solo cuando sea necesario. También nos permite definir si un componente debería o no ser renderizado en el servidor mediante la propiedad `ssr`.
+
+Hemos actualizado el código de nuestro componente `RestaurantCard` para que contenga dos componentes: uno para la información y otro para el botón de favorito. El componente de información se pre-renderizará en el servidor y el componente de favorito se renderizará solo en el cliente mediante `dynamic`.
 
 ```tsx
 'use client'
 
-import { Restaurant } from "@/types";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 
-function FavoriteButton({restaurant}: {restaurant: Restaurant}) {
+function FavoriteButton({restaurant}) {
   const isFavourite = window.localStorage.getItem('favorites')?.includes(restaurant.id)
 
   return (
@@ -867,10 +869,9 @@ function FavoriteButton({restaurant}: {restaurant: Restaurant}) {
 }
 
 // Creamos un componente dinámico para que no se renderice en el servidor
-const DynamicFavoriteButton = dynamic(async () => FavoriteButton, {ssr: false})
+const DynamicFavoriteButton = dynamic(async () => FavoriteButton, { ssr: false });
 
-export default function RestaurantCard({restaurant}: {restaurant: Restaurant}) {
-
+export default function RestaurantCard({ restaurant }) {
   return (
     <article>
       <img
@@ -895,14 +896,15 @@ export default function RestaurantCard({restaurant}: {restaurant: Restaurant}) {
 }
 ```
 
-Muy bien, si actualizamos la key `favorites` manualmente en localStorage para incluir el id de alguno de nuestros restaurantes lo vamos a ver correctamente:
+Si actualizamos manualmente la clave `favorites` en `localStorage` para incluir el ID de alguno de nuestros restaurantes, deberíamos verlo correctamente.
 
 ![](./images/favorites.jpg)
 
-Te dejo un par de tareas:
-- Nuestro componente `RestaurantCard` contiene dos componentes, el componente que contiene la información no necesita ninguna actividad, por ende podría seguir siendo un Server Component. Mové el componente del botón de favorito a otro archivo e importalo.
-  - Podrías convertir `RestaurantCard` en una carpeta y agregarle un `index.tsx` y un `FavoriteButton.tsx` dentro. De esa manera los componentes seguirían colocados lo más cerca de donde son relevantes posible. Pero manejalo a tu gusto.
-- Implementá la funcionalidad de agregar y quitar favoritos en el botón de favorito. Al cargar la página debería mostrar el estado actual y al clickear el botón debería mostrarse actualizado y persistir ese estado al recargar la página.
+Re dejo algunas tareas:
+
+- Nuestro componente `RestaurantCard` contiene dos componentes. El componente que contiene la información no necesita ninguna actividad, por ende, podría seguir siendo un Server Component. Mueve el componente del botón de favorito a otro archivo e impórtalo.
+  - Puedes convertir `RestaurantCard` en una carpeta y agregarle un `index.tsx` y un `FavoriteButton.tsx` dentro. De esa manera, los componentes seguirían colocados lo más cerca de donde son relevantes posible. Pero maneja esto a tu gusto.
+- Implementa la funcionalidad de agregar y quitar favoritos en el botón de favorito. Al cargar la página, debería mostrar el estado actual, y al hacer clic en el botón, debería mostrar el estado actualizado y persistir ese estado al recargar la página.
 
 ---
 Si te gusta mi contenido, seguime en [Twitter](https://twitter.gonzalopozzo.com), en [Twitch](https://twitch.gonzalopozzo.com), en [YouTube](https://youtube.gonzalopozzo.com), doname un [Cafecito](https://cafecito.gonzalopozzo.com) o volvete [sponsor en github](https://github.com/sponsors/goncy) ✨
