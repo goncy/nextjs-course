@@ -217,8 +217,9 @@ Aunque hay excepciones para cada uno, esta lista resume cuándo deberías usar c
 | Utilizar hooks personalizados que dependen del estado, efectos o APIs exclusivas del navegador        | ⛔                       | ✅                     |
 | Utilizar [Componentes de Clase de React](https://react.dev/reference/react/Component)                 | ⛔                       | ✅                     |
 
-## Mostrando los restaurantes
-Ahora que ya tenemos un poco de teoría, vamos a ver realmente como usar Server Components en nuestra aplicación. ¿Recordás el archivo `api.ts` que dijimos que ibamos a usar para obtener datos? Bueno, ahora vamos a usarlo. Si abrimos el archivo vamos a ver que define una interfaz para `Restaurant` con algunos campos.
+## Mostrando los Restaurantes
+
+Ahora que ya tenemos un poco de teoría, vamos a ver realmente como usar Server Components en nuestra aplicación. ¿Recuerdas el archivo `api.ts` que mencionamos para obtener datos? Ahora es el momento de utilizarlo. Al abrir el archivo, observaremos que define una interfaz para `Restaurant` con varios campos.
 
 ```ts
 interface Restaurant {
@@ -232,7 +233,7 @@ interface Restaurant {
 }
 ```
 
-También hay un objeto `api` con un método `list` que nos devuelve una `Promise` con un array de `Restaurant`. Vamos a ver como podemos usar ese método en nuestro Server Component `page.tsx`.
+Además, encontraremos un objeto `api` con un método `list` que devuelve una `Promise` con un array de `Restaurant`. Veamos cómo podemos utilizar este método en nuestro Server Component `page.tsx`.
 
 ```jsx
 import api from "@/api";
@@ -246,9 +247,7 @@ export default async function Home() {
 }
 ```
 
-Si ahora miramos la consola (no la del navegador, sino la terminal, donde corrimos `npm run dev`) vamos a ver un listado de `Restaurant`. Pero, ¡¿cómo es posible este suceso?! 🤯
-
-Como dijimos antes, los Server Components no se vuelven a renderizar. Por ende podemos convertir nuestro componente en una función asíncrona y esperar a que la `Promise` se resuelva con los datos de los restaurantes y en la línea de abajo podemos usar esos datos para renderizarlos en nuestra página. Vamos a iterar sobre `restaurants` y devolver una grilla de restaurantes mostrando su imágen, título, descripción y rating.
+Al observar la consola (no la del navegador, sino la terminal donde ejecutamos `npm run dev`), veremos un listado de `Restaurant`. ¿Cómo es esto posible? 🤯 Como mencionamos anteriormente, los Server Components no se vuelven a renderizar. Por lo tanto, podemos convertir nuestro componente en una función asíncrona y esperar a que la `Promise` se resuelva con los datos de los restaurantes. Luego, utilizamos esos datos para renderizarlos en nuestra página. Iteraremos sobre `restaurants` y crearemos una grilla que muestre la imagen, el título, la descripción y el rating de cada restaurante.
 
 ```jsx
 import api from "@/api";
@@ -283,29 +282,30 @@ export default async function Home() {
 }
 ```
 
-Y el resultado es el siguiente:
-![Listado de restaurantes](./images/restaurants-grid.jpg)
+El resultado es el siguiente:
+![Listado de Restaurantes](./images/restaurants-grid.jpg)
 
-Entonces, aprendimos que además de ejecutarse en el servidor y todos los beneficios que contamos antes, los Server Components pueden usar `async await` y nos ayudan a reducir el boilerplate y complejidad de nuestra aplicación al obtener datos.
+En resumen, hemos aprendido que, además de ejecutarse en el servidor y aprovechar todos los beneficios mencionados anteriormente, los Server Components pueden utilizar `async/await`. Esto nos ayuda a reducir el boilerplate y la complejidad de nuestra aplicación al obtener datos de manera eficiente.
 
-> Bonus: Dale tu propio toque mágico de estilos a la grilla de restaurantes.
+> **Bonus:** Personaliza la grilla de restaurantes con tu propio toque mágico de estilos. ¡Diviértete explorando y mejorando la presentación visual!
 
-## Mostrando un restaurante
-Ahora vamos a crear una ruta para poder visualizar cada restaurant de manera individual. Para eso primero tenemos que entender un poco más como funciona el router de Next.js, y conocer algunas de sus convenciones de archivos.
+## Mostrando un Restaurante
+
+Vamos a crear una ruta para visualizar cada restaurante de manera individual. Antes de sumergirnos en el código, echemos un vistazo al funcionamiento del router de Next.js y comprendamos algunas de sus convenciones de archivos.
 
 ### Router
-Next.js con App Directory posee un router construido sobre React Server Components, el cual soporta layouts compartidos, enrutamiento anidado, estados de carga, manejo de errores, y mucho más. El enrutamiento de App Router está basado en archivos, lo que significa que podemos crear rutas y segmentos simplemente creando archivos y carpetas. Ahora lo importante, qué archivos y carpetas tenemos que crear? Bueno, ya sabemos de la existencia de `layout.tsx` y `page.tsx`, pero cómo podemos usarlos para crear otras rutas? Qué otras convenciones existen? Veamos algunas de las que vamos a usar en este curso:
+Next.js, con App Directory, utiliza un router construido sobre React Server Components que soporta layouts compartidos, enrutamiento anidado, manejo de estados de carga, manejo de errores y más. El enrutamiento de App Router se basa en archivos, lo que significa que podemos crear rutas y segmentos simplemente creando archivos y carpetas. Entonces, ¿qué archivos y carpetas debemos crear? Ya conocemos `layout.tsx` y `page.tsx`, pero ¿cómo podemos usarlos para crear otras rutas? Veamos algunas convenciones que vamos a utilizar en este curso:
 
-- `layout.tsx`: Envuelve a un `page.tsx`, nos permite compartir un layout entre varias páginas.
-- `page.tsx`: Define una página, recibe por props parámetros, y parámetros de búsqueda.
-- `loading.tsx`: Página de carga, se muestra mientras se está cargando una página, cuando la página termina de cargar, se reemplaza por el contenido de `page.tsx`.
-- `error.tsx`: Página de error, se muestra al haber una excepción o error en la ejecución de una página o layout.
+- `layout.tsx`: Envuelve a `page.tsx`, permitiendo compartir un layout entre varias páginas.
+- `page.tsx`: Define una página, recibe parámetros y parámetros de búsqueda como props.
+- `loading.tsx`: Página de carga que se muestra mientras la página se está cargando; cuando la carga termina, se reemplaza por el contenido de `page.tsx`.
+- `error.tsx`: Página de error que se muestra al haber una excepción o error en la ejecución de una página o layout.
 - `route.tsx`: Define una ruta de API, se ejecuta en el servidor y devuelve datos usando un objeto `Response`.
 
-Eso debería ser suficiente por ahora en tanto a archivos (si querés ver todos, podés hacerlo [acá](https://nextjs.org/docs/app/building-your-application/routing#file-conventions))
+Eso debería ser suficiente por ahora en cuanto a archivos (puedes revisar más [aquí](https://nextjs.org/docs/app/building-your-application/routing#file-conventions)).
 
-### Rutas dinámicas
-Si bien vimos varios archivos, más arriba hablamos también de carpetas y de anidarlas. Como hacemos para crear una ruta para mostrar un restaurant basado en su `id`? De la siguiente manera:
+### Rutas Dinámicas
+Hemos hablado de archivos, pero también mencionamos carpetas y su anidación. ¿Cómo creamos una ruta para mostrar un restaurante basado en su `id`? La estructura de carpetas y archivos se vería así:
 
 ```bash
 ├── src/
@@ -318,12 +318,12 @@ Si bien vimos varios archivos, más arriba hablamos también de carpetas y de an
 └── api.ts
 ```
 
-Creemos la carpeta y archivo `src/app/[id]/page.tsx` y agreguemos el siguiente contenido:
+Ahora, creemos la carpeta y el archivo `src/app/[id]/page.tsx` y añadamos el siguiente contenido:
 
 ```jsx
 import api from "@/api";
 
-export default async function RestaurantPage({params: {id}}: {params: {id: string}}) {
+export default async function RestaurantPage({ params: { id } }: { params: { id: string } }) {
   const restaurant = await api.fetch(id);
 
   return (
@@ -347,22 +347,24 @@ export default async function RestaurantPage({params: {id}}: {params: {id: strin
 }
 ```
 
-Si ahora entramos a la ruta `/1` deberíamos ver algo así:
+Al ingresar a la ruta `/1`, deberíamos ver algo así:
 ![Página de un restaurante](./images/restaurant-details.jpg)
 
-Veamos como fue que pasó esto. Ya sabemos que los componentes por defecto son Server Components, así que hicimos que sea `async` y usamos nuestro método `api.fetch` para obtener los datos del restaurante. Además, aprendimos algo nuevo, el archivo `page.tsx` recibe como props una propiedad `params` que contiene los parámetros de la ruta. En este caso, como nuestra ruta es `/[id]`, el parámetro se llama `id`. Por lo tanto, podemos desestructurar `params` y obtener el `id`. Luego usamos ese `id` para obtener los datos del restaurante y renderizarlos en la página.
+Veamos cómo sucedió esto. Recordamos que los componentes por defecto son Server Components, así que hicimos que sea `async` y utilizamos nuestro método `api.fetch` para obtener los datos del restaurante. Además, aprendimos algo nuevo: el archivo `page.tsx` recibe como props una propiedad `params` que contiene los parámetros de la ruta. En este caso, como nuestra ruta es `/[id]`, el parámetro se llama `id`. Desestructuramos `params` para obtener el `id` y lo usamos para obtener los datos del restaurante y renderizarlos en la página.
 
-Ahora tenemos un pequeño problema: acabamos de repetir todo el código de la tarjeta del restaurant, podríamos crear un componente y reutilizarlo (te voy a dejar esa tarea a vos). Pero... ¿Dónde irían los componentes que no son páginas / layouts o archivos especiales?
+Ahora tenemos un pequeño problema: acabamos de repetir todo el código de la tarjeta del restaurante. Podríamos crear un componente y reutilizarlo (te dejo esa tarea a ti). Pero... ¿Dónde deberían ir los componentes que no son páginas, layouts o archivos especiales?
 
 ### Colocación
-Si bien el router de Next.js es basado en archivos, solamente los archivos con nombres especiales se convierten en rutas de nuestra aplicación, por ende podríamos crear una carpeta `components` dentro de `app` (o anidada donde la necesitemos) y no debería traernos ningún problema. Sin embargo, queda en vos como lo quieras hacer, si querés crear una carpeta `components` (o lo que quieras) fuera de `app` (pero dentro de `src`) podés hacerlo.
+Aunque el router de Next.js se basa en archivos, solo los archivos con nombres especiales se convierten en rutas de nuestra aplicación. Por lo tanto, podríamos crear una carpeta `components` dentro de `app` (o anidada donde la necesitemos) sin ningún problema. Sin embargo, la elección es tuya; si deseas crear una carpeta `components` (o como desees) fuera de `app` (pero dentro de `src`), también puedes hacerlo.
 
-![](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fproject-organization-colocation.png&w=3840&q=75&dpl=dpl_DzaGxTbCZzXMDg4XPPbArRct6JPH)
+![Estructura de carpetas](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fproject-organization-colocation.png&w=3840&q=75&dpl=dpl_DzaGxTbCZzXMDg4XPPbArRct6JPH)
 
-Ahora si, andá a crear ese componente y reutilizalo en `page.tsx` y `[id]/page.tsx`.
+Ahora sí, ve y crea ese componente. Luego, reutilízalo en `page.tsx` y `[id]/page.tsx`.
 
 ## Navegación
-En Next.js tenemos el componente `Link`, que extiende la etiqueta `<a>` para agregarle funcionalidades de pre-carga y pre-renderizado. El componente `Link` nos permite navegar entre páginas de nuestra aplicación sin tener que recargar la página. Se usa de manera muy similar a la etiqueta `<a>` y lo podemos importar desde `next/link`. Agreguemos a nuestra grilla de restaurantes un link para poder navegar a la página de cada restaurante.
+
+
+En Next.js, tenemos el componente `Link`, que extiende la etiqueta `<a>` para agregarle funcionalidades de pre-carga y pre-renderizado. Este componente nos permite navegar entre páginas de nuestra aplicación sin tener que recargar la página. Se usa de manera muy similar a la etiqueta `<a>` y lo podemos importar desde `next/link`. Agreguemos a nuestra grilla de restaurantes un enlace para poder navegar a la página de cada restaurante.
 
 ```jsx
 import Link from "next/link";
@@ -377,7 +379,7 @@ export default async function Home() {
       {restaurants.map((restaurant) => {
         return (
             ...
-              <Link href={`/${restaurant.id}`}>
+              <Link href={`/${restaurant.id}`} key={restaurant.id}>
                 {restaurant.name}
               </Link>
             ...
@@ -388,12 +390,13 @@ export default async function Home() {
 }
 ```
 
-Bien, ahora te toca a vos. Agregá a la página de detalle del restaurante, un link para volver a la página de inicio y un link al header en el layout para que al clickearlo nos lleve al inicio.
+Ahora te toca a ti. Agrega a la página de detalle del restaurante un enlace para volver a la página de inicio y otro enlace al encabezado en el layout para que, al hacer clic, nos lleve al inicio.
 
-## Estados de carga
-Nuestras páginas cargan bastante rápido (estamos simulando un retardo de 750ms), vayamos a `api.ts` y cambiemos ese `750` por `7500`. Si recargamos, vemos efectivamente que la página tarda 7.5 segundos en cargar. El problema es que mientras la página carga, el usuario no ve nada y no sabe si la página no anda, si su internet anda mal o que está pasando. En Next.js podemos definir un archivo `loading.tsx`, el cual está construido sobre [React Suspense](https://react.dev/reference/react/Suspense). Mientras nuestra página esté suspendida (mientras haya operaciones bloqueantes como un `await` de un Server Component asíncrono) se va a mostrar el contenido de `loading.tsx`. Una vez que esas operaciones terminen, se va a reemplazar el contenido de `loading.tsx` por el contenido de `page.tsx`. Esto nos permite no solamente mostrarle al usuario que "algo está cargando" sino que también nos permite enviar todas las partes de nuestra aplicación que no dependan de esas operaciones bloqueantes, como los componentes que ya terminaron sus operaciones, los layouts y más.
+## Estados de Carga
 
-Vamos a crear el archivo `src/app/loading.tsx` y agreguemos el siguiente contenido:
+Nuestras páginas cargan bastante rápido (estamos simulando un retardo de 750 ms). Vamos a `api.ts` y cambiemos ese `750` por `7500`. Si recargamos, veremos que la página tarda 7.5 segundos en cargar. El problema es que mientras la página carga, el usuario no ve nada y no sabe si la página no funciona, si su internet anda mal o qué está pasando. En Next.js, podemos definir un archivo `loading.tsx`, el cual está construido sobre [React Suspense](https://react.dev/reference/react/Suspense). Mientras nuestra página esté suspendida (mientras haya operaciones bloqueantes como un `await` de un Server Component asíncrono), se mostrará el contenido de `loading.tsx`. Una vez que esas operaciones terminen, se reemplazará el contenido de `loading.tsx` por el contenido de `page.tsx`. Esto nos permite no solo mostrarle al usuario que "algo está cargando", sino que también nos permite enviar todas las partes de nuestra aplicación que no dependan de esas operaciones bloqueantes, como los componentes que ya terminaron sus operaciones, los layouts y más.
+
+Creemos el archivo `src/app/loading.tsx` y agreguemos el siguiente contenido:
 
 ```jsx
 export default function Loading() {
@@ -403,26 +406,27 @@ export default function Loading() {
 }
 ```
 
-Ahora si recargamos la página, vamos a ver que mientras se está cargando, se muestra el texto "Loading..." y una vez que termina de cargar, se reemplaza por el contenido de `page.tsx`. Pero, también vemos que si vamos a la ruta `/1`, también se muestra el texto "Loading...", por qué si el `loading.tsx` está definido en la raíz de nuestro proyecto? Esto sucede por que `loading.tsx` es una abstracción sobre React Suspense, cuando una parte de nuestra aplicación se suspenda, va a buscar hacia arriba el Suspense Boundary más cercano y va a usarlo. Si quisieramos, podríamos definir un `loading.tsx` dentro de `[id]` y se usaría en vez del de la raíz, pero por ahora estamos bien con este.
+Ahora, al recargar la página, veremos que mientras se está cargando, se muestra el texto "Loading..." y una vez que termina de cargar, se reemplaza por el contenido de `page.tsx`. Pero también notamos que si vamos a la ruta `/1`, también se muestra el texto "Loading...". ¿Por qué si el `loading.tsx` está definido en la raíz de nuestro proyecto? Esto sucede porque `loading.tsx` es una abstracción sobre React Suspense. Cuando una parte de nuestra aplicación se suspende, busca hacia arriba el Suspense Boundary más cercano y lo utiliza. Si quisieramos, podríamos definir un `loading.tsx` dentro de `[id]` y se usaría en vez del de la raíz, pero por ahora estamos bien con este.
 
-## Manejo de errores
-De momento nuestra aplicación usa datos de prueba por lo que es poco probable que ocurran errores, pero puede ser que alguien intente acceder a una página que no existe o que simplemente queramos estar preparados para el día de mañana. Vamos a crear el archivo `src/app/error.tsx` y agreguemos el siguiente contenido:
+## Manejo de Errores
+
+De momento, nuestra aplicación usa datos de prueba, por lo que es poco probable que ocurran errores. Sin embargo, puede ser que alguien intente acceder a una página que no existe o que simplemente queramos estar preparados para el día de mañana. Creemos el archivo `src/app/error.tsx` y agreguemos el siguiente contenido:
 
 ```jsx
 'use client'
 
-export default function ErrorPage({error}: {error: Error}) {
+export default function ErrorPage({ error }: { error: Error }) {
   console.error(error);
 
   return (
     <div>Something went wrong, try again!</div>
-  )
+  );
 }
 ```
 
-Si intentamos de entrar a una ruta inexistente, como `/123` vamos a ver una ventana de error (en desarrollo) y el contenido de nuestra página de error correctamente. Un detalles es que el archivo `error.tsx` siempre debe ser un Client Component, ya que recibe por props, opcionalmente, una función `reset` a la que podemos llamar para intentar re-renderizar nuestra página con el mismo input que tenía.
+Si intentamos entrar a una ruta inexistente, como `/123`, veremos una ventana de error (en desarrollo) y el contenido de nuestra página de error correctamente. Un detalle es que el archivo `error.tsx` siempre debe ser un Client Component, ya que recibe por props, opcionalmente, una función `reset` a la que podemos llamar para intentar re-renderizar nuestra página con el mismo input que tenía.
 
-El archivo `error.tsx` funciona con un React Error Boundary cuyo comportamiento es similar al Suspense Boundary, buscando hacia arriba el Error Boundary más cercano. Por ende si algo falla en `/1` o en `/` se va a usar el mismo `error.tsx`.
+El archivo `error.tsx` funciona con un React Error Boundary cuyo comportamiento es similar al Suspense Boundary, buscando hacia arriba el Error Boundary más cercano. Por ende, si algo falla en `/1` o en `/`, se usará el mismo `error.tsx`.
 
 ## Usando una base de datos
 Vamos a mover nuestros datos de prueba a una base de datos para poder modificarlos cuando queramos, en este caso vamos a usar Google Sheets, ya que es fácil, gratis y sin configuración, vos podés usar la base de datos que quieras! Para eso vamos a [https://sheets.new](https://sheets.new) y creamos una nueva hoja con los mismos datos que nuestra data de prueba.
