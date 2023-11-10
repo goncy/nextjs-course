@@ -1,9 +1,9 @@
 # Curso introductorio a Next.js con App Directory.
-Bienvenida/o al curso introductorio a Next.js con App Directory. En este curso aprenderás las bases de Next.js con usando App Directory mientras creas una aplicación web de un catálogo de restaurantes llamada Restaurancy.
+Bienvenida/o al curso introductorio a Next.js con App Directory. En este curso aprenderás las bases de Next.js usando App Directory mientras creas una aplicación web de un catálogo de restaurantes llamada Restaurancy.
 
 Este curso está pensado para ser incremental, es decir, cada lección se basa en la anterior. Por lo tanto, te recomendamos seguir el orden de las lecciones.
 
-Algunos conceptos pueden ser difíciles de entender o puede no tener sentido el por qué hacemos las cosas de cierta manera. No te preocupes, es normal. Al final del curso, o a medida que vayas haciendo más ejercicios y aplicaciones los conceptos van a ir cobrando más sentido. También tomá en cuenta que hay muchas maneras de llegar a los mismos resultado así que si algo no te parece bien, no dudes en aplicar tu enfoque.
+Es posible que algunos conceptos resulten complicados de entender o que a veces no sea evidente por qué hacemos las cosas de determinada manera. No te preocupes, es normal. A medida que avances en el curso, resolviendo más ejercicios y creando más aplicaciones, estos conceptos irán adquiriendo mayor claridad y sentido. También tomá en cuenta que hay muchas maneras de llegar a los mismos resultados por lo que si algo no te parece bien, no dudes en aplicar tu enfoque.
 
 Si el contenido del curso no te basta para resolver los ejercicios o entender un tema, no dudes en apoyarte en la documentación oficial, tanto de [Next.js](https://docs.nextjs.org/) como de [React](https://react.dev/reference/react).
 
@@ -29,7 +29,7 @@ A lo largo del curso nos vamos a referir a ciertos conceptos que es importante q
 * Leaf / Leaves: Hoja / Hojas, es un nodo que no tiene hijos. Por ejemplo, en el caso de React, un componente que no tiene otros componentes dentro.
 * URL segment: Segmento de una URL, por ejemplo, en la URL `restaurancy.com/restaurante/goncy`, `restaurante` y `goncy` son URL segments.
 * URL path: Todo lo que viene después del dominio, por ejemplo, en la URL `restaurancy.com/restaurante/goncy`, `/restaurante/goncy` es el URL path.
-* Build: Es el proceso de convertir (compilar, minificar y más) nuestro código en un bundle preparado para producción.
+* Build: Es el proceso de convertir (compilar, minificar y más) nuestro código en un bundle listo para ser desplegado en un servidor.
 * Bundle: Es un archivo que contiene todo (o parte) del código de nuestra aplicación. En aplicaciones híbridas tenemos el server bundle que es quien contiene las dependencias de la aplicación que se ejecutan en el servidor y el client bundle que es quien contiene las dependencias de la aplicación que se ejecutan en el cliente.
 * Boilerplate: Es una porción de código repetitivo que se utiliza con frecuencia y tiene poca o nula variación.
 
