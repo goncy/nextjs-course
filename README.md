@@ -137,51 +137,52 @@ En la raíz del proyecto, encontrarás varios archivos de configuración y otros
 
 Tómate un tiempo para modificar el contenido de estos archivos y observa cómo afecta a la aplicación. Mientras el servidor de desarrollo esté en ejecución, bastará con guardar un archivo para ver los cambios reflejados en la pantalla.
 
-## Ambientes de renderizado (Servidor y Cliente)
-Hay [dos ambientes](https://nextjs.org/docs/app/building-your-application/rendering#rendering-environments) donde las aplicaciones web se pueden renderizar: el cliente y el servidor.
+## Ambientes de Renderizado (Servidor y Cliente)
+
+Existen [dos ambientes](https://nextjs.org/docs/app/building-your-application/rendering#rendering-environments) en los cuales las aplicaciones web pueden renderizarse: el cliente y el servidor.
 
 ![](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fclient-and-server-environments.png&w=3840&q=75&dpl=dpl_DzaGxTbCZzXMDg4XPPbArRct6JPH)
 
-El `cliente` se refiere al navegador en el dispositivo del usuario, que envía una petición al `servidor` para recibir el código de tu aplicación y la convierte en una interfaz visual para el usuario.
+El término `cliente` hace referencia al navegador en el dispositivo del usuario, que envía una solicitud al `servidor` para recibir el código de tu aplicación y convertirlo en una interfaz visual para el usuario.
 
-El `servidor` se refiere a una computadora en un data center que almacena el código de tu aplicación y recibe peticiones de los clientes, devolviendo una respuesta.
+Por otro lado, el término `servidor` se refiere a una computadora en un centro de datos que almacena el código de tu aplicación y recibe solicitudes de los clientes, proporcionando respuestas a estas solicitudes.
 
-Podemos pensar al `servidor` como el lugar donde comienzan las cosas, está oculto del usuario y tenemos acceso a nuestros secretos y credenciales. El `cliente` es donde terminan las cosas y tenemos acceso a información del usuario, como su navegador, datos y más.
+Podemos visualizar esta transición como un flujo unidireccional desde el servidor hacia el cliente. Una vez que una solicitud se completa en el servidor y se transfiere al cliente, no puede regresar al servidor (si se necesita volver al servidor, se realiza una nueva solicitud, por ejemplo, accediendo a una nueva ruta). La línea imaginaria que separa el servidor del cliente se conoce como `network boundary`.
 
-Ayuda el pensar esta transición como un flujo unidireccional del servidor al cliente. Una vez que una petición se termina de ejecutar en el servidor y pasa al cliente, no puede volver al servidor (si necesitás volver al servidor, haces una nueva petición, por ejemplo accediendo a una nueva ruta), a esta línea imaginaria que separa el servidor del cliente se la conoce como `network boundary`.
-
-Este concepto podría no resultar del todo claro en este momento, pero cobrará mayor sentido a medida que adquiramos más práctica.
+Este concepto puede no resultar completamente claro en este momento, pero tomará mayor sentido a medida que adquiramos más práctica.
 
 ### Server Components
-Por defecto, todos los componentes creados en la carpeta `app` son [React Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components). Los Server Components son componentes que se ejecutan solamente en el servidor y tienen como objetivo describir como debería verse una porción de nuestra interfaz. Los Server Components solo se ejecutan cuando el usuario accede a una ruta o segmento y no se vuelven a ejecutar nuevamente en el cliente, el cliente solo los muestra (recordemos que una vez que se termina de ejecutar la petición en el servidor, no puede volver). Esto quiere decir que no pueden manejar eventos del usuario, estados locales, ni hooks, pero pueden acceder directamente a datos de servidor, base de datos, variables de entorno privadas, y todo lo que se pueda hacer en el servidor.
 
-Sin embargo, una aplicación tradicional se compone también de componentes dinámicos e interactivos que requieren interacciones del usuario, eventos y más. Para eso podemos usar `Client Components`. Los Server Components pueden importar y usar Client Components pero los Client Components no pueden importar Server Components. No te preocupes si esto todavía no hace sentido, vamos a verlo en acción más adelante.
+Por defecto, todos los componentes creados en la carpeta `app` son [React Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components). Los Server Components son componentes que se ejecutan exclusivamente en el servidor y tienen como objetivo describir cómo debería lucir una porción de nuestra interfaz. Estos componentes solo se ejecutan cuando el usuario accede a una ruta o segmento y no vuelven a ejecutarse en el cliente. El cliente simplemente los muestra (recordemos que una vez que se completa la ejecución de la solicitud en el servidor, no puede volver). Esto implica que no pueden manejar eventos del usuario, estados locales ni hooks, pero pueden acceder directamente a datos del servidor, bases de datos, variables de entorno privadas y todo lo que se pueda hacer en el servidor.
 
-Podemos usar Server Components dentro de Server Components de manera indefinida, pero, en el momento en el que usamos un Client Component, delimitamos nuestro `network boundary`.
+Sin embargo, una aplicación típica también está compuesta por componentes dinámicos e interactivos que requieren interacciones del usuario, eventos y más. Para estos casos, podemos usar `Client Components`. Los Server Components pueden importar y usar Client Components, pero los Client Components no pueden importar Server Components. No te preocupes si esto aún no tiene mucho sentido; veremos cómo funciona más adelante.
 
-Si intentamos usar un hook o suscribirnos a un evento en un Server Component vamos a obtener un error.
+Podemos utilizar Server Components dentro de otros Server Components de manera indefinida, pero, en el momento en que usamos un Client Component, marcamos nuestro `network boundary`.
+
+Si intentamos usar un hook o suscribirnos a un evento en un Server Component, obtendremos un error.
 
 ```jsx
-import { useState } from 'react' // 🚨 ReactServerComponentsError 🚨: You're importing a component that needs useState. It only works in a Client Component but none of its parents are marked with "use client", so they're Server Components by default.
+import { useState } from 'react' // 🚨 ReactServerComponentsError 🚨: Estás importando un componente que necesita useState. Solo funciona en un Client Component, pero ninguno de sus padres está marcado con "use client", por lo que son Server Components por defecto.
 
 export default function Page() {
   return (...)
 }
 ```
 
-Ahora la pregunta del millón, ¿por qué renderizariamos algo en el servidor? Bueno, acá un listado de beneficios sobre ejecutar cosas en el servidor:
-- Obtención de datos: Podemos obtener nuestros datos desde un servidor más cercano a nuestro orígen de datos, haciendo la obtención más rápida y eficiente.
-- Seguridad: Al ejecutar desde el servidor podemos mantener toda la data sensible como tokens, credenciales y más, ocultas del usuario.
-- Caching: Cuando cacheamos datos en el cliente ese caché es único para cada usuario, en cambio, cuando cacheamos datos en el servidor, ese caché es compartido entre todos los usuarios, lo que nos permite ahorrar recursos y mejorar la performance de nuestra aplicación.
-- Bundle size: Mucho del trabajo que antes debíamos hacer en el cliente ahora lo podemos hacer en el servidor, minimizando la cantidad de código que debemos enviar al cliente.
-- Pintado inicial y FCP (First Contentful Paint): En el servidor podemos generar HTML y CSS que se envía al cliente de manera inmediata sin necesidad de esperar que el JavaScript se descargue y ejecute en el cliente.
-- SEO: El HTML renderizado por el servidor puede ser usado por los motores de búsqueda para indexar nuestra aplicación.
-- Streaming: Podemos enviar contenido al cliente a medida que se va generando, en vez de esperar a que se genere todo el contenido para enviarlo al cliente. Esto permite al usuario ver el contenido más rápido.
+Ahora, la pregunta clave es: ¿por qué renderizaríamos algo en el servidor? Bueno, aquí hay una lista de beneficios al ejecutar tareas en el servidor:
+- Obtención de datos: Podemos obtener nuestros datos desde un servidor más cercano a nuestra fuente de datos, lo que hace que la obtención sea más rápida y eficiente.
+- Seguridad: Al ejecutarse desde el servidor, podemos mantener toda la información sensible, como tokens, credenciales y más, oculta al usuario.
+- Caching: Cuando almacenamos en caché datos en el cliente, esa caché es única para cada usuario. En cambio, cuando almacenamos en caché datos en el servidor, esa caché se comparte entre todos los usuarios, lo que nos permite ahorrar recursos y mejorar el rendimiento de nuestra aplicación.
+- Tamaño del bundle: Muchas tareas que antes debíamos realizar en el cliente ahora las podemos hacer en el servidor, minimizando la cantidad de código que debemos enviar al cliente.
+- Pintado inicial y FCP (First Contentful Paint): En el servidor, podemos generar HTML y CSS que se envían al cliente de inmediato, sin necesidad de esperar a que se descargue y ejecute JavaScript en el cliente.
+- SEO: El HTML renderizado por el servidor puede ser utilizado por los motores de búsqueda para indexar nuestra aplicación.
+- Streaming: Podemos enviar contenido al cliente a medida que se va generando, en lugar de esperar a que se genere todo el contenido para enviarlo al cliente. Esto permite al usuario ver el contenido más rápido.
 
 ### Client Components
-Los `Client Components` nos permiten escribir interfaces interactivas y dinámicas que se ejecutan en el cliente. Los Client Components pueden usar hooks, estados locales, eventos, APIs del navegador y más. Podemos pensar a los Client Components como "los componentes de siempre", los componentes de React que solemos usar en nuestras aplicaciones con Vite o Create React App (pero con algunas diferencias, como que se renderizan una vez en el servidor antes de renderizarse en el cliente, podés leer más [acá](https://nextjs.org/docs/app/building-your-application/rendering/client-components#how-are-client-components-rendered)).
 
-Para marcar un componente como Client Component, debemos agregar la directive `"use client"` al inicio del archivo. 
+Los `Client Components` nos permiten escribir interfaces interactivas y dinámicas que se ejecutan en el cliente. Los Client Components pueden usar hooks, estados locales, eventos, APIs del navegador y más. Podemos pensar en los Client Components como "los componentes habituales que usamos en React", los componentes de React que solemos usar en nuestras aplicaciones con Vite o Create React App (aunque con algunas diferencias, como que se renderizan una vez en el servidor antes de renderizarse en el cliente; puedes leer más [aquí](https://nextjs.org/docs/app/building-your-application/rendering/client-components#how-are-client-components-rendered)).
+
+Para marcar un componente como Client Component, debemos agregar la directiva `"use client"` al inicio del archivo.
 
 ```jsx
 'use client'
@@ -200,8 +201,9 @@ export default function Counter() {
 }
 ```
 
-### Cuando usar Server Components y Client Components
-Si bien hay excepciones para cada uno, esta lista resumen cuando deberías usar cada uno la mayoría de las veces.
+### Cuándo Usar Server Components y Client Components
+
+Aunque hay excepciones para cada uno, esta lista resume cuándo deberías usar cada uno la mayoría de las veces.
 
 | ¿Qué debes hacer?                                                                                     | Componente del Servidor  | Componente del Cliente |
 | ----------------------------------------------------------------------------------------------------- | ------------------------ | ---------------------- |
