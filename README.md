@@ -900,11 +900,26 @@ Si actualizamos manualmente la clave `favorites` en `localStorage` para incluir 
 
 ![](./images/favorites.jpg)
 
-Re dejo algunas tareas:
+Te dejo algunas tareas:
 
 - Nuestro componente `RestaurantCard` contiene dos componentes. El componente que contiene la información no necesita ninguna actividad, por ende, podría seguir siendo un Server Component. Mueve el componente del botón de favorito a otro archivo e impórtalo.
   - Puedes convertir `RestaurantCard` en una carpeta y agregarle un `index.tsx` y un `FavoriteButton.tsx` dentro. De esa manera, los componentes seguirían colocados lo más cerca de donde son relevantes posible. Pero maneja esto a tu gusto.
 - Implementa la funcionalidad de agregar y quitar favoritos en el botón de favorito. Al cargar la página, debería mostrar el estado actual, y al hacer clic en el botón, debería mostrar el estado actualizado y persistir ese estado al recargar la página.
+
+---
+
+## Felicitaciones
+¡Bien hecho por llegar hasta aquí! 🎉 Planeo mantener este curso actualizado, así que, si te gustó, no dudes en volver en algún momento.
+
+A lo largo de este curso, creamos juntos una pequeña aplicación y exploramos puntos que considero esenciales para desarrollar aplicaciones en Next.js. Pero esto no marca el fin del camino; la verdadera mejora y aprendizaje vienen al poner manos a la obra.
+
+Los martes suelo transmitir en Twitch, donde desarrollo desafíos técnicos reales de empresas en vivo. También hablamos sobre tecnología, respondemos preguntas y más. Si el horario no te sirve, la mayoría de las transmisiones quedan guardadas en mi canal de YouTube.
+
+Si buscas practicar de manera activa, te recomiendo probar algunos de los desafíos que he creado [aquí](https://github.com/goncy/interview-challenges). Y si tienes preguntas que quisieras resolver en comunidad, ¡únete a nuestro [Discord](https://discord.goncy.dev)!
+
+Espero que hayas disfrutado del curso. Si encuentras algo que crees que podría mejorarse o notas algún error, ¡los Pull Requests son bienvenidos! Abajo encontrarás mis redes sociales y los lugares donde puedes hacer donaciones si te gustó mi contenido.
+
+¡Nos vemos! 🚀
 
 ---
 Si te gusta mi contenido, seguime en [Twitter](https://twitter.gonzalopozzo.com), en [Twitch](https://twitch.gonzalopozzo.com), en [YouTube](https://youtube.gonzalopozzo.com), doname un [Cafecito](https://cafecito.gonzalopozzo.com) o volvete [sponsor en github](https://github.com/sponsors/goncy) ✨
