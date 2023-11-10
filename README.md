@@ -63,6 +63,9 @@ A lo largo del curso nos vamos a referir a ciertos conceptos que es importante q
 - [Revalidación manual](#revalidación-manual)
   - [revalidatePath](#revalidatepath)
   - [revalidateTag](#revalidatetag)
+- [Parámetros de URL](#parámetros-de-url)
+- [Agrupado de rutas](#agrupado-de-rutas)
+- [Server Actions](#server-actions)
 
 
 ## Que es Next.js?
@@ -93,21 +96,23 @@ Si abrimos el navegador en la dirección `http://localhost:3000` deberíamos ver
 ![Página de bienvenida de Next.js](./images/starter.jpg)
 
 ### Tecnologías en el proyecto
-Además de Next.js y React, este proyecto usa TypeScript para agregar tipado y Tailwindcss para manejar estilos. Si no conoces TypeScript o Tailwindcss y no querés usarlos no te preocupes, no escribas tipos en TypeScript y no uses las clases de Tailwindcss y usá lo que quieras para manejar los estilos.
+Además de Next.js y React, este proyecto usa TypeScript para agregar tipado y Tailwindcss para manejar estilos. Si no conoces TypeScript o Tailwindcss y no querés usarlos no te preocupes, no escribas tipos en TypeScript y no uses las clases de Tailwindcss y reemplazalo por lo que quieras para manejar los estilos.
 
 ### Estructura del proyecto
 En la raíz de nuestros proyecto nos vamos a encontrar varios archivos de configuración y otras cosas que vamos a ignorar por el momento. Lo que nos interesa por ahora es la carpeta `src` y su contenido.
 
 ```bash
-├── src
-│   └── app
+├── src/
+│   └── app/
 │       ├── globals.css
+│       ├── favicon.ico
 │       ├── layout.tsx
 │       └── page.tsx
 └── api.ts
 ```
 
 - `globals.css`: Archivo de estilos globales de la aplicación. Incluye los estilos de Tailwindcss.
+- `favicon.ico`: Icono por defecto de la aplicación para ser mostrado en la pestaña del navegador.
 - `layout.tsx`: El archivo `layout.tsx` es un archivo especial de Next.js que nos permite definir un envoltorio para nuestra aplicación (o página). En este caso, el layout es el encargado de definir la estructura de la página (html y body), importar los estilos globales y agregar un header, footer y contenedor para nuestra página. El archivo de `layout.tsx` recibe una prop `children` que es el contenido de la página que nuestro usuario visite.
 - `page.tsx`: El archivo `page.tsx` también es un archivo especial de Next.js que nos permite definir una página. En este caso, al estar definido en la raíz de nuestro directorio `app`, es la página que se va a mostrar al usuario cuando ingrese al inicio (a la ruta `/`)
 - `api.ts`: El archivo `api.ts` define algunos métodos que vamos a usar a lo largo del curso para obtener información sobre restaurantes. Por el momento solo devuelve datos de prueba pero más adelante vamos a usarlo para obtener datos reales.
@@ -115,7 +120,7 @@ En la raíz de nuestros proyecto nos vamos a encontrar varios archivos de config
 Date un tiempo para modificar el contenido de los archivos y ver como afecta a la aplicación. Mientras el servidor de desarrollo esté corriendo basta con guardar un archivo para ver los cambios reflejados en pantalla.
 
 ## Ambientes de renderizado (Servidor y Cliente)
-Hay dos ambientes donde las aplicaciones web se pueden renderizar: el cliente y el servidor.
+Hay [dos ambientes](https://nextjs.org/docs/app/building-your-application/rendering#rendering-environments) donde las aplicaciones web se pueden renderizar: el cliente y el servidor.
 
 ![](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fclient-and-server-environments.png&w=3840&q=75&dpl=dpl_DzaGxTbCZzXMDg4XPPbArRct6JPH)
 
@@ -283,13 +288,13 @@ Eso debería ser suficiente por ahora en tanto a archivos (si querés ver todos,
 Si bien vimos varios archivos, más arriba hablamos también de carpetas y de anidar. Como hacemos para crear una ruta para mostrar un restaurant basado en su `id`? De la siguiente manera:
 
 ```bash
-├── src
-│ └── app
-│    ├── globals.css
-│    ├── layout.tsx
-│    ├── page.tsx
-│    └── [id]
-│      └── page.tsx
+├── src/
+│   └── app/
+│       ├── globals.css
+│       ├── layout.tsx
+│       ├── page.tsx
+│       └── [id]/
+│           └── page.tsx
 └── api.ts
 ```
 
@@ -489,7 +494,7 @@ Con renderizado estático nuestras rutas se renderizan en tiempo de compilación
 
 El renderizado estático es muy útil para páginas que no cambian frecuentemente o no incluyen información personalizada sobre el usuario. También podemos combinar el renderizado estático con obtener data del lado del cliente para crear aplicaciones dinámicas y rápidas.
 
-Nuestra ruta `/` tuvo un renderizado estático por defecto, pero por que nuestra ruta de `/[id]` no? Bueno, porque Next.js no sabe cuales son los `id` de nuestros restaurantes, por ende no puede renderizarlos en tiempo de compilación. Pero, si en nuestrá página `/[id]/page.tsx` definimos una función `generateStaticParams` que devuelva los ids, los va a generar en tiempo de compilación de manera estática:
+Nuestra ruta `/` tuvo un renderizado estático por defecto, pero por que nuestra ruta de `/[id]` no? Bueno, porque Next.js no sabe cuales son los `id` de nuestros restaurantes, por ende no puede renderizarlos en tiempo de compilación. Pero, si en nuestrá página `/[id]/page.tsx` definimos una función [`generateStaticParams`](https://nextjs.org/docs/app/api-reference/functions/generate-static-params) que devuelva los ids, los va a generar en tiempo de compilación de manera estática:
 
 ```jsx
 export async function generateStaticParams() {
@@ -570,10 +575,10 @@ Existen muchas otras configuraciones las cuales podés ver [acá](https://nextjs
 Ahora, si definimos `force-dynamic`, `revalidate` en 100 y en el fetch le ponemos `revalidate` en 50. Que configuración se sobrepone al resto? La respuesta es fácil, la de menor revalidación, en este caso como definimos `force-dynamic` los datos se van a obtener de origen en cada petición. Igualmente no suele ser algo por lo que tengamos que preocuparnos, Next.js siempre va a optimizar lo más posible para que nuestra aplicación sea lo más rápida posible.
 
 #### Funciones dinámicas
-También hay funciones a las que se las denomina funciones dinámicas. Las funciones dinámicas dependen de información de la petición, como `cookies`, `headers`, `useSearchParams` y `searchParams`. Al usar alguna de estas funciones en nuestros segmentos (o funciones llamadas dentro de nuestros segmentos) la ruta optará por un renderizado dinámico.
+También hay funciones a las que se las denomina [funciones dinámicas](https://nextjs.org/docs/app/building-your-application/rendering/server-components#dynamic-functions). Las funciones dinámicas dependen de información de la petición, como [`cookies`](https://nextjs.org/docs/app/api-reference/functions/cookies), [`headers`](https://nextjs.org/docs/app/api-reference/functions/headers), [`useSearchParams`](https://nextjs.org/docs/app/api-reference/functions/use-search-params) y [`searchParams`](https://nextjs.org/docs/app/api-reference/file-conventions/page#searchparams-optional). Al usar alguna de estas funciones en nuestros segmentos (o funciones llamadas dentro de nuestros segmentos) la ruta optará por un renderizado dinámico.
 
 ### Revalidación manual
-La revalidación por tiempo es útil pero no para todos los casos, aveces tenemos datos que no cambian muy seguido pero cuando cambian queremos que se actualicen de inmediate. Por ejemplo un producto en una tienda virtual que cambió su precio luego de 15 días y queremos que los usuarios vean el nuevo precio inmediatamente. Para eso podemos usar dos métodos que se ejecutan del lado del servidor `revalidatePath` y `revalidateTag`.
+La revalidación por tiempo es útil pero no para todos los casos, aveces tenemos datos que no cambian muy seguido pero cuando cambian queremos que se actualicen de inmediate. Por ejemplo un producto en una tienda virtual que cambió su precio luego de 15 días y queremos que los usuarios vean el nuevo precio inmediatamente. Para eso podemos usar dos métodos que se ejecutan del lado del servidor [`revalidatePath`](https://nextjs.org/docs/app/api-reference/functions/revalidatePath) y [`revalidateTag`](https://nextjs.org/docs/app/api-reference/functions/revalidateTag).
 
 #### `revalidatePath`
 Nos permite revalidar el contenido de una ruta en particular, por ejemplo, nuestra ruta `/` si sabemos que agregamos nuevos restaurantes a la base de datos. Como nuestra aplicación no tiene un formulario para agregar nuevos restaurantes o modificar existentes, vamos a crear una ruta de API (Route Handler) utilitaria para que al llamarla, se revalide la ruta `/`.
@@ -619,10 +624,150 @@ export async function GET() {
 }
 ```
 
+## Parámetros de URL
+Manejar estado de nuestra aplicación en la URL es una buena práctica, nos permite compartir links, volver a una página en particular y más. También nos permite delegar en el router el manejo de la navegación y seguir usando Server Components a pesar de tener interactividad en nuestra aplicación (ya que al cambiar la ruta hacemos otra petición).
+
+Vamos a crear un componente `src/app/components/SearchBox.tsx` que contenga un campo, dentro de un formulario. Al hacer submit del formulario vamos a actualizar la URL con el valor del campo y dejar a Next.js hacer el resto. Vamos a agregarle el siguiente contenido:
+
+```tsx
+'use client'
+
+import { useRouter, useSearchParams } from "next/navigation";
+
+export default function SearchBox() {
+  const {push} = useRouter()
+  const searchParams = useSearchParams()
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    // Prevenimos que la página se refresque al enviar el formulario
+    event.preventDefault();
+
+    // Obtenemos el valor del input
+    const query = event.currentTarget.query.value;
+
+    // Redireccionamos al index con una query
+    push(`/?q=${query}`);
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="inline-flex gap-2 mb-4">
+      {/* Inicializamos el input para que contenga el valor actual de la query */}
+      <input defaultValue={searchParams.get('q') || ''} className="px-2" name="query" />
+      <button className="p-2 bg-white/20">Search</button>
+    </form>
+  );
+}
+```
+> Al necesitar interactividad, nuestro componente debe ser un Client Component
+
+Ahora agregamos la caja de búsqueda en nuestro `src/app/page.tsx` y probamos que funcione.
+
+```tsx
+...
+
+import SearchBox from "./components/SearchBox";
+
+export default async function Home() {
+  const restaurants = await api.list();
+
+  return (
+    <section>
+      <SearchBox />
+      <section className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
+        ...
+  )
+```
+
+![](./images/search-box.jpg)
+
+Bien, al hacer submit del formulario nos redirige correctamente, ahora hay que hacer que funcione la búsqueda. Para eso vamos a modificar nuestro `api.ts` para que tenga un método `search` que reciba un `query` y filtre los restaurantes por nombre o descripción:
+
+```ts
+const api = {
+  ...,
+  search: async (query: string): Promise<Restaurant[]> => {
+    const results = await api.list();
+
+    return results.filter((restaurant) => {
+      return restaurant.name.toLowerCase().includes(query.toLowerCase());
+    })
+  }
+}
+```
+
+> Como estamos obteniendo el contenido en `.csv` de Google Sheets no podemos hacer el filtrado en la API y debemos obtener todos los resultados y filtrarlos en el servidor. No es algo óptimo para una aplicación real pero dado que el `fetch` siempre va a ser igual nos vamos a beneficiar del Data Cache de Next.js en vez de descargarnos un nuevo `.csv` en cada búsqueda.
+
+Y vamos a pasarle el `searchParams.q` (todas las `page` reciben la prop `searchParams`) a `api.search` en vez de `api.list` en nuestra `src/app/page.tsx`:
+
+```tsx
+export default async function Home({searchParams}: {searchParams: {q: string}}) {
+  const restaurants = await api.search(searchParams.q);
+
+  ...
+}
+```
+
+> Utilizar `searchParams` en una `page` hace que el segmento sea dinámico ya que necesita ejecutarse en cada petición para obtener los valores correctos.
+
+![](./images/search-box-1.jpg)
+
+Bien! Nuestra búsqueda funciona correctamente. Pero... Si un usuario busca algo que no existe no se muestra nada. Asegurate de mostrar algun mensaje cuando no haya resultados como tarea.
+
+## Agrupado de rutas
+Esto es algo personal, pero ahora nos quedó una carpeta `components` dentro del directorio `app`, que tiene un solo archivo que es relavante para una sola página (`/app/page.tsx`), no me gusta que esté a nivel de `app` porque no es algo que se comparta entre todas las páginas. Podríamos sacar la carpeta `components` fuera de `app` pero pasaría lo mismo. Por suerte en App Directory podemos [agrupar rutas](https://nextjs.org/docs/app/building-your-application/routing/route-groups) y archivos de la siguiente manera:
+
+```bash
+└── app/
+    ├── globals.css
+    ├── layout.tsx
+    ├── loading.tsx
+    ├── error.tsx
+    ├── api/
+    │   └── route.ts
+    ├── [id]/
+    │   └── page.tsx
+    └── (index)
+        ├── components/
+        │   └── SearchBox.tsx
+        └── page.tsx
+```
+> (index) es solo un nombre, puede llamarse (loquequieras)
+
+Al crear una carpeta envuelta en (parentesis) podemos no solamente acomodar mejor nuestros archivos sino que podríamos definir diferentes `layout` / `loading` / `error` para grupos de rutas que están a un mismo nivel (o hasta tener layouts anidados). Ahora nuestra carpeta components está colocada lo más cerca de donde es relevante posible. No te olvides de actualizar las importaciones para que nuestra aplicación siga funcionando.
+
+## Server Actions
+Mmm... Ahora que me doy cuenta puede ser que no necesitemos un Client Component o un componente de búsqueda. Podríamos usar un Server Action directamente en `src/app/page.tsx`.
+
+Los [Server Actions](https://nextjs.org/docs/app/api-reference/functions/server-actions) nos permiten ejecutar código del lado del servidor cuando el usuario envía un formulario. Nos da acceso a los datos incluidos en ese formulario así que podríamos usarlo para hacer la búsqueda. Vamos a ir a `src/app/page.tsx` y vamos a reemplazar nuestro componente de búsqueda por lo siguiente:
+
+```tsx
+import { redirect } from "next/navigation";
+
+export default async function Home({searchParams}: {searchParams: {q?: string}}) {
+  const restaurants = await api.search(searchParams.q);
+
+  async function searchAction(formData: FormData) {
+    'use server'
+
+    redirect(`/?q=${formData.get('query')}`);
+  }
+
+  return (
+    <section>
+      <form action={searchAction} className="inline-flex gap-2 mb-4">
+        <input defaultValue={searchParams.q || ''} className="px-2" name="query" />
+        <button className="p-2 bg-white/20">Search</button>
+      </form>
+      <section className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
+        ...
+```
+
+Los Server Actions requieren que especifiquemos la directive `'use server'` en la función de nuestra acción (o en la parte superior del archivo si vamos a tener un archivo con muchas acciones). Luego pasamos esta función a la propiedad `action` de nuestro formulario. Al hacer submit del formulario se va a ejecutar la función `searchAction` y se va a redireccionar a la ruta `/` con el valor del campo `q` como query string.
+
+> Ahora podés borrar la carpeta `components` y el grupo `(index)`. O mover el Server Action al componente `SearchBox`, decidí vos.
 ---
 
 TODO:
-- Parámetros de URL (search box con route push)
 - Pre-renderizado (botón de favorito, debería fallar acceder a window por el pre-render)
 - Lazy loading (next/dynamic con SSR en false)
 
