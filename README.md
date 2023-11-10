@@ -46,6 +46,24 @@ A lo largo del curso nos vamos a referir a ciertos conceptos que es importante q
   - [Router](#router)
   - [Rutas dinámicas](#rutas-dinámicas)
   - [Colocación](#colocación)
+- [Navegación](#navegación)
+- [Estados de carga](#estados-de-carga)
+- [Manejo de errores](#manejo-de-errores)
+- [Usando una base de datos](#usando-una-base-de-datos)
+- [Buildeando nuestra aplicación](#buildeando-nuestra-aplicación)
+- [Estrategias de renderizado](#estrategias-de-renderizado)
+  - [Renderizado estático](#renderizado-estático-por-defecto)
+  - [Renderizado dinámico](#renderizado-dinámico)
+- [Caching](#caching)
+  - [Configuraciones de revalidación de cache](#configuraciones-de-revalidación-de-cache)
+    - [cache: no-store](#cache-no-store)
+    - [revalidate: <number>](#revalidate-number)
+    - [Configuración de segmento de ruta](#configuración-de-segmento-de-ruta)
+    - [Funciones dinámicas](#funciones-dinámicas)
+- [Revalidación manual](#revalidación-manual)
+  - [revalidatePath](#revalidatepath)
+  - [revalidateTag](#revalidatetag)
+
 
 ## Que es Next.js?
 Next.js es un framework híbrido (se ejecuta en el servidor y en el cliente) de React que nos provee de una serie de herramientas y funcionalidades para crear aplicaciones web de una manera más sencilla y eficiente. Next.js se encarga de toda la configuración necesaria de React y sus herramientas para que nosotros podamos enfocarnos en desarrollar nuestra aplicación.
@@ -488,16 +506,39 @@ export async function generateStaticParams() {
 ### Renderizado dinámico
 Con renderizado dinámico nuestras rutas se renderizan cada vez que un usuario ingresa a una ruta. El renderizado dinámico es útil cuando una ruta contiene información personalizada de un usuario, cuando la información de la página no puede calcularse antes de tiempo o cuando la información cambia de manera muy frecuente.
 
-Para optar una ruta a renderizado dinámico podemos hacer varias cosas:
+Para optar una ruta a renderizado dinámico podemos estipular configuraciones de caching a nivel `fetch`, ruta / segmento o al usar funciones dinámicas, hablaremos de esto en la proxima sección.
+
+## Caching
+Cuando trabajamos con aplicaciones React en Vite o Create React App, solemos lidiar con un cache, el cache del navegador. En Next.js tenemos muchos tipos de cache diferente:
+
+Aquí tienes la traducción al español de la tabla MDX:
+
+| Mecanismo                    | Qué                             | Dónde    | Propósito                                                  | Duración                                    |
+| ---------------------------- | ------------------------------- | -------- | ---------------------------------------------------------- | ------------------------------------------- |
+| Memorización de Solicitudes  | Valores de retorno de funciones | Servidor | Reutilizar datos en un árbol de componentes React          | Duración de la solicitud                    |
+| Caché de Datos               | Datos                           | Servidor | Almacenar datos entre solicitudes de usuario y despliegues | Persistente (puede ser validado nuevamente) |
+| Caché de Ruta Completa       | HTML y carga RSC                | Servidor | Reducir el costo de renderización y mejorar el rendimiento | Persistente (puede ser validado nuevamente) |
+| Caché de Enrutamiento        | Carga RSC                       | Cliente  | Reducir las solicitudes al servidor durante la navegación  | Sesión de usuario o basado en el tiempo     |
+
+Next.js por defecto intentará de cachear tanto como sea posible para mejorar el rendimiento y reducir los costos. Cuando tenemos un segmento dinámico pero una petición de datos todavía tiene cache relevante, en vez de ir al orígen, Next.js intentará de obtenerlo desde el cache de datos, abajo podemos ver un diagrama de como funcionan los diferentes tipos de cache.
+
+![](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fcaching-overview.png&w=3840&q=75&dpl=dpl_Ejtt9BCyCFNeRJdBoVsM9Es9x8xe)
+
+El comportamiento del cache va a depender de si tu ruta tiene renderizado estático o dinámico, los datos están cacheados o no o si un request es parte de una visita inicial o una navegación subsecuente. Esto puede marear un poco pero con el tiempo y práctica vamos a ver que los beneficios son muchos.
+
+> Saber esto sobre caching ayuda a entender como Next.js funciona, pero no es contenido esencial para ser productivo en Next.js.
+
+### Configuraciones de revalidación de cache
+Cuconfiguraciones-de-revalidación-de-cache Next.js no siempre queremos contenido 100% estático o 100% dinámico, por eso tenemos varias maneras de estipular como queremos que se maneje el cache.
 
 #### `cache: no-store`
-Definir la propiedad `cache` en un fetch de nuestra página en `no-store`, por ejemplo ir a nuestro `api.ts` y actualizar nuestro fetch de `list` de la siguiente manera:
+Definir la propiedad `cache: 'no-store'` en un fetch que se use en una página o segmento. Por ejemplo ir a nuestro `api.ts` y actualizar nuestro fetch de `list` de la siguiente manera:
 
 ```ts
 const [, ...data] = await fetch('...', { cache: 'no-store' }).then(res => res.text()).then(text => text.split('\n'))
 ```
 
-Esto le va a indicar a Next.js que cada vez que una ruta deba obtener los datos de `list`, no debe usar la cache. Para probar si funcionó, terminá el servidor, y volvé a ejecutar:
+Esto le va a indicar a Next.js que cada vez que una ruta deba obtener los datos de `list`, no debe usar la cache de datos. Para probar si funcionó, terminá el servidor, y volvé a ejecutar:
 
 ```bash
 npm run build
@@ -530,26 +571,6 @@ Ahora, si definimos `force-dynamic`, `revalidate` en 100 y en el fetch le ponemo
 
 #### Funciones dinámicas
 También hay funciones a las que se las denomina funciones dinámicas. Las funciones dinámicas dependen de información de la petición, como `cookies`, `headers`, `useSearchParams` y `searchParams`. Al usar alguna de estas funciones en nuestros segmentos (o funciones llamadas dentro de nuestros segmentos) la ruta optará por un renderizado dinámico.
-
-### Caching
-Cuando trabajamos con aplicaciones React en Vite o Create React App, solemos lidiar con un cache, el cache del navegador. En Next.js tenemos muchos tipos de cache diferente:
-
-Aquí tienes la traducción al español de la tabla MDX:
-
-| Mecanismo                    | Qué                             | Dónde    | Propósito                                                  | Duración                                    |
-| ---------------------------- | ------------------------------- | -------- | ---------------------------------------------------------- | ------------------------------------------- |
-| Memorización de Solicitudes  | Valores de retorno de funciones | Servidor | Reutilizar datos en un árbol de componentes React          | Duración de la solicitud                    |
-| Caché de Datos               | Datos                           | Servidor | Almacenar datos entre solicitudes de usuario y despliegues | Persistente (puede ser validado nuevamente) |
-| Caché de Ruta Completa       | HTML y carga RSC                | Servidor | Reducir el costo de renderización y mejorar el rendimiento | Persistente (puede ser validado nuevamente) |
-| Caché de Enrutamiento        | Carga RSC                       | Cliente  | Reducir las solicitudes al servidor durante la navegación  | Sesión de usuario o basado en el tiempo     |
-
-Next.js por defecto intentará de cachear tanto como sea posible para mejorar el rendimiento y reducir los costos. Cuando tenemos un segmento dinámico pero una petición de datos todavía tiene cache relevante, en vez de ir al orígen, Next.js intentará de obtenerlo desde el cache de datos, abajo podemos ver un diagrama de como funcionan los diferentes tipos de cache.
-
-![](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fcaching-overview.png&w=3840&q=75&dpl=dpl_Ejtt9BCyCFNeRJdBoVsM9Es9x8xe)
-
-El comportamiento del cache va a depender de si tu ruta tiene renderizado estático o dinámico, los datos están cacheados o no o si un request es parte de una visita inicial o una navegación subsecuente. Esto puede marear un poco pero con el tiempo y práctica vamos a ver que los beneficios son muchos.
-
-> Saber esto sobre caching ayuda a entender como Next.js funciona, pero no es contenido esencial para ser productivo en Next.js.
 
 ### Revalidación manual
 La revalidación por tiempo es útil pero no para todos los casos, aveces tenemos datos que no cambian muy seguido pero cuando cambian queremos que se actualicen de inmediate. Por ejemplo un producto en una tienda virtual que cambió su precio luego de 15 días y queremos que los usuarios vean el nuevo precio inmediatamente. Para eso podemos usar dos métodos que se ejecutan del lado del servidor `revalidatePath` y `revalidateTag`.
