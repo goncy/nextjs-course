@@ -428,10 +428,11 @@ Si intentamos entrar a una ruta inexistente, como `/123`, veremos una ventana de
 
 El archivo `error.tsx` funciona con un React Error Boundary cuyo comportamiento es similar al Suspense Boundary, buscando hacia arriba el Error Boundary más cercano. Por ende, si algo falla en `/1` o en `/`, se usará el mismo `error.tsx`.
 
-## Usando una base de datos
-Vamos a mover nuestros datos de prueba a una base de datos para poder modificarlos cuando queramos, en este caso vamos a usar Google Sheets, ya que es fácil, gratis y sin configuración, vos podés usar la base de datos que quieras! Para eso vamos a [https://sheets.new](https://sheets.new) y creamos una nueva hoja con los mismos datos que nuestra data de prueba.
+## Usando una Base de Datos
 
-Podes usar ChatGPT para convertir la data de prueba, igual soy bueno y te lo dejo acá abajo (copialo, pegalo en la primer celda de google sheets y seleccioná "dividir texto en columnas")
+Vamos a trasladar nuestros datos de prueba a una base de datos para poder modificarlos cuando queramos. En este caso, usaremos Google Sheets, ya que es fácil, gratuito y no requiere configuración. Si no te gusta, puedes usar la base de datos que prefieras. Para ello, accedamos a [https://sheets.new](https://sheets.new) y creemos una nueva hoja con los mismos datos que nuestra data de prueba.
+
+Puedes utilizar ChatGPT para convertir la data de prueba. De todos modos, aquí tienes los datos (cópialos, pégalo en la primera celda de Google Sheets y selecciona "dividir texto en columnas"):
 
 ```csv
 id,name,description,address,score,ratings,image
@@ -449,20 +450,20 @@ id,name,description,address,score,ratings,image
 12,The Ice Cream Parlor,"A family-friendly restaurant with a wide variety of ice cream flavors.",852 Oak Ave. Anytown USA,4.9,150,https://source.unsplash.com/480x300/?restaurant&random=12
 ```
 
-Luego, para poder acceder a esta data desde nuestra app, debemos ir a `Archivo > Compartir > Publicar en la web`, publicar y copiar el link que nos da para acceder a la data en formato `.csv`.
+Luego, para acceder a esta data desde nuestra app, vayamos a `Archivo > Compartir > Publicar en la web`, publiquemos y copiemos el enlace que nos da para acceder a la data en formato `.csv`.
 
-![](./images/share-web-0.jpg)
-![](./images/share-web-1.jpg)
+![Compartir en la web](./images/share-web-0.jpg)
+![Compartir en la web](./images/share-web-1.jpg)
 
-Una vez que tengamos el link, vamos a nuestro `api.ts` y vamos a cambiar nuestro método `list` para que use la data de Google Sheets.
+Una vez que tengamos el enlace, vayamos a nuestro `api.ts` y cambiemos nuestro método `list` para que use la data de Google Sheets.
 
 ```ts
 const api = {
   list: async (): Promise<Restaurant[]> => {
-    // Obtenemos la información de Google Sheets en formato texto y la dividimos por líneas, nos saltamos la primer línea porque es el encabezado
+    // Obtenemos la información de Google Sheets en formato texto y la dividimos por líneas, nos saltamos la primera línea porque es el encabezado
     const [, ...data] = await fetch('...').then(res => res.text()).then(text => text.split('\n'))
 
-    // Convertimos cada línea en un objeto Restaurant, asegurate de que los campos no posean `,`
+    // Convertimos cada línea en un objeto Restaurant, asegúrate de que los campos no posean `,`
     const restaurants: Restaurant[] = data.map((row) => {
       const [id, name, description, address, score, ratings, image] = row.split(',')
       return {
@@ -483,63 +484,66 @@ const api = {
 }
 ```
 
-¡Listo! Ahora si recargamos la página deberíamos ver los datos de Google Sheets. Ten en cuenta que Next.js maneja su propio caché, así que si no ves los cambios probá con <kbd>ctrl</kbd> + <kbd>f5</kbd> (<kbd>cmd</kbd> + <kbd>f5</kbd> si usas Mac). Ahora te dejo a vos modificar el método `fetch` para traer los datos de un restaurante en particular.
+¡Listo! Ahora, al recargar la página, deberíamos ver los datos de Google Sheets. Ten en cuenta que Next.js maneja su propio caché, así que si no ves los cambios, prueba con <kbd>ctrl</kbd> + <kbd>f5</kbd> (<kbd>cmd</kbd> + <kbd>f5</kbd> si usas Mac). Ahora te toca a ti modificar el método `fetch` para traer los datos de un restaurante en particular.
 
-## Buildeando nuestra aplicación
-Ahora que tenemos una aplicación más o menos completa, vamos a compilarla y correrla en local para ver más acertadamente que tan bien funcionaría en un entorno productivo. Para eso vamos terminar el comando de nuestro servidor de desarrollo y ejecutamos los siguientes comandos:
+## Construyendo Nuestra Aplicación
+
+Ahora que tenemos una aplicación más o menos completa, vamos a compilarla y ejecutarla localmente para ver más acertadamente qué tan bien funcionaría en un entorno productivo. Para ello, terminemos el comando de nuestro servidor de desarrollo y ejecutemos los siguientes comandos:
 
 ```bash
 npm run build
 npm start
 ```
 
-Luego de unos segundos vamos a ver algo como esto:
+Después de unos segundos, veremos algo como esto:
 
-![](./images/build-output.jpg)
+![Salida de la compilación](./images/build-output.jpg)
 
-Si vamos a `http://localhost:3000` deberíamos ver nuestra aplicación funcionando. ¡Y funciona! Pero... Si vamos a la ruta `/` no se muestra el componente de carga, todo funciona, como por arte de mágia, pero ¿por qué? Antes intentemos algo, vayamos a nuestra hoja de Google Sheets, actualicemos un título, volvamos a nuestra app y recarguemos, con <kbd>ctrl</kbd> + <kbd>f5</kbd>.
+Si vamos a `http://localhost:3000`, deberíamos ver nuestra aplicación funcionando. ¡Y funciona! Pero... Si vamos a la ruta `/`, no se muestra el componente de carga. Todo funciona, como por arte de magia, pero ¿por qué? Antes, intentemos algo. Vayamos a nuestra hoja de Google Sheets, actualicemos un título, volvamos a nuestra app y recarguemos con <kbd>ctrl</kbd> + <kbd>f5</kbd>.
 
 Mmm... No funciona.
 
-Vayamos a la ruta del elemento que modificamos. Mmm... acá si funciona, hasta se muestra el componente de carga. Si volvemos al index la data no concuerda. ¿Qué está pasando?
+Vayamos a la ruta del elemento que modificamos. Mmm... acá sí funciona, hasta se muestra el componente de carga. Si volvemos al index, la data no concuerda. ¿Qué está pasando?
 
-Veamos devuelta la imágen de más arriba:
+Veamos de nuevo la imagen de más arriba:
 
-![](./images/build-output.jpg)
+![Salida de la compilación](./images/build-output.jpg)
 
-Podemos ver que la ruta de `/` tiene un ícono de `○` (abajo nos dice que significa estático)
-Mientras que nuestra ruta de `/[id]` tiene un ícono de `λ` (abajo nos dice que significa server)
+Podemos ver que la ruta de `/` tiene un ícono de `○` (abajo nos dice que significa estático), mientras que nuestra ruta de `/[id]` tiene un ícono de `λ` (abajo nos dice que significa server).
 
-## Estrategias de renderizado
-En Next.js tenemos dos principales estrategias de renderizado, estática y dinámica.
+## Estrategias de Renderizado
+
+En Next.js, existen dos estrategias principales de renderizado: estática y dinámica.
 
 ### Renderizado estático (por defecto)
-Con renderizado estático nuestras rutas se renderizan en tiempo de compilación, esto permite que los datos estén disponibles desde la primer visita de un usuario. Estos datos se persisten a lo largo del tiempo y las siguientes visitas de un usuario no impactaran en nuestro origen de datos. Esto nos permite tener una aplicación con un tiempo de carga muy rápido y un bajo consumo de recursos.
 
-El renderizado estático es muy útil para páginas que no cambian frecuentemente o no incluyen información personalizada sobre el usuario. También podemos combinar el renderizado estático con obtener data desde el cliente para crear aplicaciones dinámicas y rápidas.
+Con el renderizado estático, nuestras rutas se renderizan en tiempo de compilación. Esto permite que los datos estén disponibles desde la primera visita de un usuario. Estos datos se persisten a lo largo del tiempo, y las siguientes visitas de un usuario no impactarán nuestro origen de datos. Esto nos permite tener una aplicación con un tiempo de carga muy rápido y un bajo consumo de recursos.
 
+El renderizado estático es muy útil para páginas que no cambian con frecuencia o no incluyen información personalizada sobre el usuario. También podemos combinar el renderizado estático con obtener datos desde el cliente para crear aplicaciones dinámicas y rápidas.
 
-Nuestra ruta `/` tuvo un renderizado estático por defecto, pero ¿por qué nuestra ruta de `/[id]` no? Bueno, porque Next.js no sabe cuales son los `id` de nuestros restaurantes, por ende no puede renderizarlos en tiempo de compilación. Pero, si en nuestrá página `/[id]/page.tsx` definimos una función [`generateStaticParams`](https://nextjs.org/docs/app/api-reference/functions/generate-static-params) que devuelva los ids, los va a generar en tiempo de compilación de manera estática:
+Nuestra ruta `/` tuvo un renderizado estático por defecto, pero ¿por qué nuestra ruta de `/[id]` no? Bueno, porque Next.js no sabe cuáles son los `id` de nuestros restaurantes, por lo tanto, no puede renderizarlos en tiempo de compilación. Sin embargo, si en nuestra página `/[id]/page.tsx` definimos una función [`generateStaticParams`](https://nextjs.org/docs/app/api-reference/functions/generate-static-params) que devuelva los ids, los generará en tiempo de compilación de manera estática:
 
 ```jsx
 export async function generateStaticParams() {
-  const restaurants = await api.list()
+  const restaurants = await api.list();
  
   return restaurants.map((restaurant) => ({
     id: restaurant.id,
-  }))
+  }));
 }
 ```
 
-> También podemos exportar una variable `dynamicParams` como `false` en nuestra página, si queremos que devuelva un 404 para cualquier ruta no definida en `generateStaticParams`
+> También podemos exportar una variable `dynamicParams` como `false` en nuestra página si queremos que devuelva un 404 para cualquier ruta no definida en `generateStaticParams`.
 
 ### Renderizado dinámico
-Con renderizado dinámico nuestras rutas se renderizan cada vez que un usuario ingresa a ellas. El renderizado dinámico es útil cuando una ruta contiene información personalizada de un usuario, cuando la información de la página no puede calcularse antes de tiempo, o cuando la información cambia de manera muy frecuente.
 
-Para optar una ruta a renderizado dinámico podemos estipular configuraciones de caching a nivel `fetch`, ruta / segmento, o al usar funciones dinámicas, hablaremos de esto en la proxima sección.
+Con el renderizado dinámico, nuestras rutas se renderizan cada vez que un usuario ingresa a ellas. El renderizado dinámico es útil cuando una ruta contiene información personalizada de un usuario, cuando la información de la página no puede calcularse antes de tiempo o cuando la información cambia con mucha frecuencia.
+
+Para optar por una ruta con renderizado dinámico, podemos establecer configuraciones de caché a nivel de `fetch`, ruta/segmento o al usar funciones dinámicas. Hablaremos de esto en la próxima sección.
 
 ## Caching
-Cuando trabajamos con aplicaciones React en Vite o Create React App, solemos lidiar con un solo cache, el cache del navegador. En Next.js tenemos muchos tipos de cache diferente:
+
+Cuando trabajamos con aplicaciones React en Vite, Create React App o similares, generalmente lidiamos con un solo caché, el caché del navegador. En Next.js, tenemos muchos tipos de caché diferentes:
 
 Aquí tienes la traducción al español de la tabla MDX:
 
@@ -550,58 +554,63 @@ Aquí tienes la traducción al español de la tabla MDX:
 | Caché de Ruta Completa       | HTML y carga RSC                | Servidor | Reducir el costo de renderización y mejorar el rendimiento | Persistente (puede ser validado nuevamente) |
 | Caché de Enrutamiento        | Carga RSC                       | Cliente  | Reducir las solicitudes al servidor durante la navegación  | Sesión de usuario o basado en el tiempo     |
 
-Next.js por defecto intentará de cachear tanto como sea posible para mejorar el rendimiento y reducir los costos. Cuando tenemos un segmento dinámico pero una petición de datos todavía tiene cache relevante, en vez de ir al orígen, Next.js intentará de obtenerlo desde el cache de datos, abajo podemos ver un diagrama de como funcionan los diferentes tipos de cache.
+Next.js, por defecto, intentará cachear tanto como sea posible para mejorar el rendimiento y reducir los costos. Cuando tenemos un segmento dinámico pero una petición de datos todavía tiene caché relevante, en lugar de ir al origen, Next.js intentará obtenerlo desde el caché de datos. A continuación, podemos ver un diagrama de cómo funcionan los diferentes tipos de caché.
 
-![](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fcaching-overview.png&w=3840&q=75&dpl=dpl_Ejtt9BCyCFNeRJdBoVsM9Es9x8xe)
+![Overview de Caché](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fcaching-overview.png&w=3840&q=75&dpl=dpl_Ejtt9BCyCFNeRJdBoVsM9Es9x8xe)
 
-El comportamiento del cache va a depender de si tu ruta tiene renderizado estático o dinámico, los datos están cacheados o no o si un request es parte de una visita inicial o una navegación subsecuente. Esto puede marear un poco pero con el tiempo y práctica vamos a ver que los beneficios son muchos.
+El comportamiento del caché dependerá de si tu ruta tiene renderizado estático o dinámico, si los datos están en caché o no, o si una solicitud es parte de una visita inicial o una navegación subsecuente. Esto puede parecer un poco abrumador, pero con el tiempo y la práctica, veremos que los beneficios son muchos.
 
-> Saber esto sobre caching ayuda a entender como Next.js funciona, pero no es contenido esencial para ser productivo en Next.js.
+> Saber esto sobre el caching ayuda a entender cómo funciona Next.js, pero no es contenido esencial para ser productivo en Next.js.
 
-### Configuraciones de revalidación de cache
-No siempre queremos contenido 100% estático o 100% dinámico, por eso tenemos varias maneras de estipular cómo queremos que se maneje el cache.
+### Configuraciones de Revalidación de Caché
+
+No siempre queremos contenido 100% estático o 100% dinámico, por eso tenemos varias maneras de estipular cómo queremos que se maneje el caché.
 
 #### `cache: no-store`
-Definir la propiedad `cache: 'no-store'` en un fetch que se use en una página o segmento. Por ejemplo ir a nuestro `api.ts` y actualizar nuestro fetch de `list` de la siguiente manera:
+
+Define la propiedad `cache: 'no-store'` en un fetch que se use en una página o segmento. Por ejemplo, ve a nuestro `api.ts` y actualiza nuestro fetch de `list` de la siguiente manera:
 
 ```ts
 const [, ...data] = await fetch('...', { cache: 'no-store' }).then(res => res.text()).then(text => text.split('\n'))
 ```
 
-Esto le va a indicar a Next.js que cada vez que una ruta deba obtener los datos de `list`, no debe usar la caché de datos. Para probar si funcionó, terminá el servidor(<kbd>ctrl</kbd> + <kbd>c</kbd> / <kbd>cmd</kbd> + <kbd>c</kbd>), y volvé a ejecutar:
+Esto le indicará a Next.js que cada vez que una ruta deba obtener los datos de `list`, no debe usar la caché de datos. Para probar si funcionó, detén el servidor (`ctrl` + `c` / `cmd` + `c`), y vuelve a ejecutar:
 
 ```bash
 npm run build
 npm start
 ```
 
-![](./images/build-output.jpg)
+![Salida de la compilación](./images/build-output.jpg)
 
-Ahora no solo debería funcionar, sino que podemos ver en el build output que la ruta `/` está marcada como `server`.
+Ahora no solo debería funcionar, sino que también podemos ver en el detalle de la compilación que la ruta `/` está marcada como `server`.
 
 #### `revalidate: number`
-Si no queremos que cada petición traiga información nueva cada vez, sino que queremos que "revalide" esa información cada cierto tiempo, podemos definir la propiedad `revalidate` en nuestros `fetch` de la siguiente manera:
+
+Si no queremos que cada petición traiga información nueva cada vez, sino que queremos que "revalide" esa información cada cierto tiempo, podemos definir la propiedad `revalidate` en nuestros fetch de la siguiente manera:
 
 ```ts
 const [, ...data] = await fetch('...', { revalidate: 100 }).then(res => res.text()).then(text => text.split('\n'))
 ```
 
-Eso va a hacer que cada luego de 100 segundos de haber obtenido los datos, la próxima vez que un usuario ingrese a la ruta, se le van a servir datos de caché y en segundo plano se van a obtener datos nuevos, van a sobre-escribir la caché y la próxima vez que un usuario ingrese a la ruta, se le van a servir los datos nuevos. A esto se lo conoce como `time-based revalidation`.
+Esto hará que después de 100 segundos de haber obtenido los datos, la próxima vez que un usuario ingrese a la ruta, se le servirán datos de la caché y, en segundo plano, se obtendrán datos nuevos. Estos datos sobrescribirán la caché y la próxima vez que un usuario ingrese a la ruta, se le servirán los datos nuevos. A esta estrategia se la conoce como `stale-while-revalidate` y definirla por un tiempo determinado se lo conoce como `time-based revalidation`.
 
-#### Configuración de segmento de ruta
-Las rutas pueden exportar constantes de configuración para definir ciertos comportamientos, incluyendo la revalidación y estrategia de renderizado. Podríamos hacer lo siguiente en nuestro `page.tsx`:
+#### Configuración de Segmento de Ruta
+
+Las rutas pueden exportar constantes de configuración para definir ciertos comportamientos, incluyendo la revalidación y la estrategia de renderizado. Podríamos hacer lo siguiente en nuestro `page.tsx`:
 
 ```tsx
-export const dynamic = 'force-dynamic' // default: auto
-export const revalidate = 100 // default: false
+export const dynamic = 'force-dynamic' // por defecto: auto
+export const revalidate = 100 // por defecto: false
 ```
 
-Existen muchas otras configuraciones las cuales podés ver [acá](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config).
+Existen muchas otras configuraciones que puedes ver [aquí](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config).
 
-Ahora, si definimos `force-dynamic`, `revalidate` en 100 y en el fetch le ponemos `revalidate` en 50. ¿Qué configuración se sobrepone al resto? La respuesta es fácil, la de menor revalidación, en este caso como definimos `force-dynamic` los datos se van a obtener de origen en cada petición. Igualmente no suele ser algo por lo que tengamos que preocuparnos, Next.js siempre va a optimizar lo más posible para que nuestra aplicación sea lo más rápida posible.
+Ahora, si definimos `force-dynamic` y `revalidate` en 100, y en el fetch le ponemos `revalidate` en 50. ¿Qué configuración se sobrepone al resto? La respuesta es fácil: la de menor revalidación. En este caso, como definimos `force-dynamic`, los datos se obtendrán de origen en cada petición. Igualmente, por lo general, no suele ser algo por lo que tengamos que preocuparnos, ya que Next.js siempre optimizará lo más posible para que nuestra aplicación sea lo más rápida posible.
 
-#### Funciones dinámicas
-También hay funciones a las que se las denomina [funciones dinámicas](https://nextjs.org/docs/app/building-your-application/rendering/server-components#dynamic-functions). Las funciones dinámicas dependen de información de la petición, como [`cookies`](https://nextjs.org/docs/app/api-reference/functions/cookies), [`headers`](https://nextjs.org/docs/app/api-reference/functions/headers), [`useSearchParams`](https://nextjs.org/docs/app/api-reference/functions/use-search-params) y [`searchParams`](https://nextjs.org/docs/app/api-reference/file-conventions/page#searchparams-optional). Al usar alguna de estas funciones en nuestros segmentos (o funciones llamadas dentro de nuestros segmentos) la ruta optará por un renderizado dinámico.
+#### Funciones Dinámicas
+
+También hay funciones a las que se las denomina [funciones dinámicas](https://nextjs.org/docs/app/building-your-application/rendering/server-components#dynamic-functions). Estas funciones dependen de información de la petición, como [`cookies`](https://nextjs.org/docs/app/api-reference/functions/cookies), [`headers`](https://nextjs.org/docs/app/api-reference/functions/headers), [`useSearchParams`](https://nextjs.org/docs/app/api-reference/functions/use-search-params) y [`searchParams`](https://nextjs.org/docs/app/api-reference/file-conventions/page#searchparams-optional). Al usar alguna de estas funciones en nuestros segmentos (o funciones llamadas dentro de nuestros segmentos), la ruta optará por un renderizado dinámico.
 
 ### Revalidación manual
 La revalidación por tiempo es útil pero no para todos los casos, a veces tenemos datos que no cambian muy seguido pero cuando cambian queremos que se actualicen de inmediato. Por ejemplo, un producto en una tienda virtual que cambió su precio luego de 15 días y queremos que los usuarios vean el nuevo precio inmediatamente. Para eso podemos usar dos métodos que se ejecutan del lado del servidor [`revalidatePath`](https://nextjs.org/docs/app/api-reference/functions/revalidatePath) y [`revalidateTag`](https://nextjs.org/docs/app/api-reference/functions/revalidateTag).
