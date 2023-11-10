@@ -1,37 +1,44 @@
-# Curso introductorio a Next.js con App Directory.
-Bienvenida/o al curso introductorio a Next.js con App Directory. En este curso aprenderás las bases de Next.js usando App Directory mientras creas una aplicación web de un catálogo de restaurantes llamada Restaurancy.
+# Curso Introductorio a Next.js con App Directory
 
-Este curso está pensado para ser incremental, es decir, cada lección se basa en la anterior. Por lo tanto, te recomendamos seguir el orden de las lecciones.
+¡Bienvenido/a al curso introductorio a Next.js con App Directory! Durante este curso, exploraremos los fundamentos de Next.js utilizando App Directory para construir una aplicación web: Restaurancy, un catálogo de restaurantes.
 
-Es posible que algunos conceptos resulten complicados de entender o que a veces no sea evidente por qué hacemos las cosas de determinada manera. No te preocupes, es normal. A medida que avances en el curso, resolviendo más ejercicios y creando más aplicaciones, estos conceptos irán adquiriendo mayor claridad y sentido. También tomá en cuenta que hay muchas maneras de llegar a los mismos resultados por lo que si algo no te parece bien, no dudes en aplicar tu enfoque.
+El diseño de este curso se plantea de manera incremental, donde cada lección se basa en la anterior. Te recomendamos seguir el orden de las lecciones para obtener el máximo beneficio.
 
-Si el contenido del curso no te basta para resolver los ejercicios o entender un tema, no dudes en apoyarte en la documentación oficial, tanto de [Next.js](https://docs.nextjs.org/) como de [React](https://react.dev/reference/react).
+Es natural que algunos conceptos puedan resultar complicados al principio o que no siempre sea evidente el motivo detrás de ciertas decisiones. No te preocupes, a medida que avances en el curso y te enfrentes a más ejercicios, así como a la creación de aplicaciones, estos conceptos irán cobrando mayor claridad y sentido. Ten en cuenta que hay diversas formas de lograr los mismos resultados, así que si tienes ideas diferentes, ¡adelante!
+
+Si en algún momento sientes que el contenido del curso no es suficiente para abordar los ejercicios o comprender un tema en particular, no dudes en recurrir a la documentación oficial, ya sea de [Next.js](https://docs.nextjs.org/) o de [React](https://react.dev/reference/react).
 
 ## Requisitos
+
+Asegúrate de cumplir con los siguientes requisitos antes de comenzar el curso:
+
 - Conocimientos básicos de HTML, CSS y JavaScript.
-  - Si no tienes conocimientos de HTML, CSS y JavaScript, te recomendamos hacer la certificación de [Responsive Web Design](https://www.freecodecamp.org/learn/responsive-web-design) de freeCodeCamp.
+  - Si no estás familiarizado con HTML, CSS y JavaScript, te recomendamos realizar la certificación de [Responsive Web Design](https://www.freecodecamp.org/learn/responsive-web-design) de freeCodeCamp.
 - Conocimientos básicos de React.
-  - Si no tienes conocimientos de React, te recomendamos hacer [el curso oficial de React](https://react.dev/learn) o el de [React Foundations de Next.js](https://nextjs.org/learn/react-foundations).
-- Node.js instalado en tu computadora.
-- Editor de código de tu preferencia.
-  - También puedes optar por un entorno online como [CodeSandbox](https://codesandbox.io) si no quieres / puedes instalar nada en tu computadora.
+  - En caso de no tener experiencia en React, te sugerimos completar [el curso oficial de React](https://react.dev/learn) o el de [React Foundations de Next.js](https://nextjs.org/learn/react-foundations).
+- Tener Node.js instalado en tu computadora.
+- Contar con un editor de código de tu preferencia.
+  - También puedes optar por un entorno en línea, como [CodeSandbox](https://codesandbox.io), si no deseas o no puedes instalar nada en tu computadora.
 
 ## Terminología
-A lo largo del curso nos vamos a referir a ciertos conceptos que es importante que conozcas (no es necesario que te lo aprendas de memoria) para poder seguir el curso.
 
-* Routing: Enrutamiento, se encarga de decidir, basado en la URL, que contenido mostrarle al usuario.
-* Caching: Caché, es un espacio de almacenamiento temporal que se usa para guardar datos que se van a usar en el futuro.
-* Rendering: Renderizado, es el proceso de convertir un componente en una representación visual.
-* Layout: Envoltorio de una página, generalmente solo define la estructura o diseño exterior de una página o sub-página.
-* Nested layout / pages / etc: Layouts, páginas, etc. anidados. Por ejemplo, un layout anidado es un layout que se encuentra dentro de otro layout.
-* Tree: Arbol, es una convención para visualizar una estructura jerárquica. Por ejemplo en una aplicación React tradicional tenemos nuestro componente `App` que tiene un componente `Header`, `Main` y `Footer` que a su vez tienen otros componentes.
-* Subtree: Pararnos sobre cualquiera de esos componentes mencionados más arriba y mirar hacia adentro es como mirar un árbol en sí, un subtree es solamente un árbol dentro de otro árbol.
-* Leaf / Leaves: Hoja / Hojas, es un nodo que no tiene hijos. Por ejemplo, en el caso de React, un componente que no tiene otros componentes dentro.
-* URL segment: Segmento de una URL, por ejemplo, en la URL `restaurancy.com/restaurante/goncy`, `restaurante` y `goncy` son URL segments.
-* URL path: Todo lo que viene después del dominio, por ejemplo, en la URL `restaurancy.com/restaurante/goncy`, `/restaurante/goncy` es el URL path.
-* Build: Es el proceso de convertir (compilar, minificar y más) nuestro código en un bundle listo para ser desplegado en un servidor.
-* Bundle: Es un archivo que contiene todo (o parte) del código de nuestra aplicación. En aplicaciones híbridas tenemos el server bundle que es quien contiene las dependencias de la aplicación que se ejecutan en el servidor y el client bundle que es quien contiene las dependencias de la aplicación que se ejecutan en el cliente.
-* Boilerplate: Es una porción de código repetitivo que se utiliza con frecuencia y tiene poca o nula variación.
+A lo largo del curso, utilizaremos algunos conceptos clave que es importante que conozcas, aunque no necesariamente debes memorizar. Estos son:
+
+- **Routing (Enrutamiento):** Decide, basado en la URL, qué contenido mostrar al usuario.
+- **Caching (Caché):** Espacio de almacenamiento temporal para guardar datos que se utilizarán en el futuro.
+- **Rendering (Renderizado):** Proceso de convertir un componente en una representación visual.
+- **Layout (Diseño):** Envoltorio de una página que define la estructura o diseño exterior.
+- **Nested layout/pages/etc (Diseño/páginas/etc. anidados):** Por ejemplo, un diseño anidado está dentro de otro diseño.
+- **Tree (Árbol):** Convención para visualizar una estructura jerárquica.
+- **Subtree (Subárbol):** Un árbol dentro de otro árbol.
+- **Leaf/Leaves (Hoja/Hojas):** Nodo sin hijos, como un componente sin componentes internos.
+- **URL segment (Segmento de URL):** Por ejemplo, en la URL `restaurancy.com/restaurante/goncy`, `restaurante` y `goncy` son segmentos de URL.
+- **URL path (Ruta de URL):** Lo que sigue al dominio, como `/restaurante/goncy` en `restaurancy.com/restaurante/goncy`.
+- **Build (Compilación):** Proceso de convertir el código en un paquete listo para ser desplegado.
+- **Bundle (Paquete):** Archivo que contiene parte o todo el código de la aplicación.
+- **Boilerplate (Código base):** Porción de código repetitivo con poca variación.
+
+¡Estamos listos para comenzar! ¡Vamos a sumergirnos en el fascinante mundo de Next.js con App Directory!
 
 ## Índice
 - [Que es Next.js?](#que-es-nextjs)
@@ -67,6 +74,9 @@ A lo largo del curso nos vamos a referir a ciertos conceptos que es importante q
 - [Parámetros de URL](#parámetros-de-url)
 - [Agrupado de rutas](#agrupado-de-rutas)
 - [Server Actions](#server-actions)
+- [Guardar en favoritos (localStorage)](#guardar-en-favoritos-localstorage)
+  - [Pre-renderizado](#pre-renderizado)
+  - [Lazy loading](#lazy-loading)
 
 
 ## Que es Next.js?
