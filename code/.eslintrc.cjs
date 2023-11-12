@@ -72,6 +72,8 @@ module.exports = {
         reservedFirst: true,
       },
     ],
+    "@typescript-eslint/no-misused-promises": "off",
+    "@typescript-eslint/restrict-template-expressions": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-shadow": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
