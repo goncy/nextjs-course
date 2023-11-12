@@ -1,6 +1,6 @@
 # Curso Introductorio a Next.js con App Directory
 
-¡Bienvenido/a al curso introductorio a Next.js con App Directory! Durante este curso, apenderás los fundamentos (y no tanto) de Next.js con App Directory para construir una aplicación web: Restaurancy, un catálogo de restaurantes.
+¡Bienvenido/a al curso introductorio a Next.js con App Directory! Durante este curso, apenderás los fundamentos (y no tanto) de Next.js con App Directory para construir una aplicación web: [Restaurancy](https://restaurancy.goncy.dev), un catálogo de restaurantes.
 
 ![](./images/completed.jpg)
 
@@ -63,6 +63,7 @@ A lo largo del curso, utilizaremos algunos conceptos clave que es importante que
 11. [Estrategias de Renderizado](#estrategias-de-renderizado)
     - 11.1 [Renderizado Estático](#renderizado-estático-por-defecto)
     - 11.2 [Renderizado Dinámico](#renderizado-dinámico)
+    - 11.3 [Pre-renderizado Parcial (experimental)](#pre-renderizado-parcial-experimental)
 12. [Caching](#caching)
     - 12.1 [Configuraciones de Revalidación de Caché](#configuraciones-de-revalidación-de-caché)
         - 12.1.1 [cache: no-store](#cache-no-store)
@@ -410,6 +411,8 @@ export default function Loading() {
 
 Ahora, al recargar la página, veremos que mientras se está cargando, se muestra el texto "Loading..." y una vez que termina de cargar, se reemplaza por el contenido de `page.tsx`. Pero también notamos que si vamos a la ruta `/1`, también se muestra el texto "Loading...". ¿Por qué si el `loading.tsx` está definido en la raíz de nuestro proyecto? Esto sucede porque `loading.tsx` es una abstracción sobre React Suspense. Cuando una parte de nuestra aplicación se suspende, busca hacia arriba el Suspense Boundary más cercano y lo utiliza. Si quisieramos, podríamos definir un `loading.tsx` dentro de `[id]` y se usaría en vez del de la raíz, pero por ahora estamos bien con este.
 
+Si quisieramos manejar nuestros estados de carga de una manera más granular, podríamos crear nuestros propios Suspense Boundaries usando el componente `Suspense` de React para envolver componentes específicos que suspendan la aplicación.
+
 ## Manejo de Errores
 
 De momento, nuestra aplicación usa datos de prueba, por lo que es poco probable que ocurran errores. Sin embargo, puede ser que alguien intente acceder a una página que no existe o que simplemente queramos estar preparados para el día de mañana. Creemos el archivo `src/app/error.tsx` y agreguemos el siguiente contenido:
@@ -542,6 +545,16 @@ export async function generateStaticParams() {
 Con el renderizado dinámico, nuestras rutas se renderizan cada vez que un usuario ingresa a ellas. El renderizado dinámico es útil cuando una ruta contiene información personalizada de un usuario, cuando la información de la página no puede calcularse antes de tiempo o cuando la información cambia con mucha frecuencia.
 
 Para optar por una ruta con renderizado dinámico, podemos establecer configuraciones de caché a nivel de `fetch`, ruta/segmento o al usar funciones dinámicas. Hablaremos de esto en la próxima sección.
+
+### Pre-renderizado parcial (experimental)
+
+El problema radica en que nuestras aplicaciones o rutas no suelen ser estáticas o dinámicas (de manera excluyente), sino que una combinación de ambas.
+
+El Pre-renderizado parcial es una optimización de compilador que permite que partes estáticas de una ruta sean pre-renderizadas desde caché con "agujeros" dincámicos donde el contenido se irá streameando, todo en una sola petición.
+
+> PPR ya está habilitado en este proyecto mediante la configuración `experimental.ppr` en el archivo `next.config.js`.
+
+El Pre-renderizado parcial está construido sobre las [APIs concurrentes de React](https://react.dev/blog/2021/12/17/react-conf-2021-recap#react-18-and-concurrent-features) y Suspense. Esto permite que Next.js pueda extraer las partes estáticas de nuestra ruta basado en sus Suspense Boundaries, sin necesidad de que hagamos *ningún cambio* en nuestro código.
 
 ## Caching
 
@@ -908,6 +921,12 @@ Te dejo algunas tareas:
   - Puedes convertir `RestaurantCard` en una carpeta y agregarle un `index.tsx` y un `FavoriteButton.tsx` dentro. De esa manera, los componentes seguirían colocados lo más cerca de donde son relevantes posible. Pero maneja esto a tu gusto.
 - Implementa la funcionalidad de agregar y quitar favoritos en el botón de favorito. Al cargar la página, debería mostrar el estado actual, y al hacer clic en el botón, debería mostrar el estado actualizado y persistir ese estado al recargar la página.
 
+## Pre-renderizado parcial (experimental)
+
+El Pre-renderizado parcial es una optimización de compilador que permite que partes estáticas de una ruta sean pre-renderizadas desde caché con "agujeros" dincámicos donde el contenido se irá streameando, todo en una sola petición.
+
+> PPR ya está habilitado en este proyecto mediante la configuración `experimental.ppr` en el archivo `next.config.js`.
+
 ---
 
 ## Felicitaciones
@@ -924,5 +943,5 @@ Espero que hayas disfrutado del curso. Si encuentras algo que crees que podría 
 ¡Nos vemos! 🚀
 
 ---
-Si te gusta mi contenido, seguime en [Twitter](https://twitter.gonzalopozzo.com), en [Twitch](https://twitch.gonzalopozzo.com), en [YouTube](https://youtube.gonzalopozzo.com), doname un [Cafecito](https://cafecito.gonzalopozzo.com) o volvete [sponsor en github](https://github.com/sponsors/goncy) ✨
 
+Si te gusta mi contenido, seguime en [Twitter](https://twitter.gonzalopozzo.com), en [Twitch](https://twitch.gonzalopozzo.com), en [YouTube](https://youtube.gonzalopozzo.com), doname un [Cafecito](https://cafecito.gonzalopozzo.com) o volvete [sponsor en github](https://github.com/sponsors/goncy) ✨

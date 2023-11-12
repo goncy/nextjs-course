@@ -13,8 +13,8 @@
     "@types/react": "18.2.37",
     "@types/react-dom": "18.2.15",
     "autoprefixer": "10.4.16",
-    "eslint-config-next": "14.0.2",
-    "next": "14.0.2",
+    "eslint-config-next": "canary",
+    "next": "canary",
     "postcss": "8.4.31",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -22,7 +22,7 @@
     "typescript": "5.2.2"
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "^14.0.2",
+    "@next/eslint-plugin-next": "^canary",
     "@vercel/style-guide": "^5.1.0",
     "eslint": "8.53.0",
     "eslint-config-prettier": "^9.0.0",
