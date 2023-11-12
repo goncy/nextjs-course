@@ -1,6 +1,8 @@
 # Curso Introductorio a Next.js con App Directory
 
-¡Bienvenido/a al curso introductorio a Next.js con App Directory! Durante este curso, exploraremos los fundamentos de Next.js utilizando App Directory para construir una aplicación web: Restaurancy, un catálogo de restaurantes.
+¡Bienvenido/a al curso introductorio a Next.js con App Directory! Durante este curso, apenderás los fundamentos (y no tanto) de Next.js con App Directory para construir una aplicación web: Restaurancy, un catálogo de restaurantes.
+
+![](./images/completed.jpg)
 
 El diseño de este curso se plantea de manera incremental, donde cada lección se basa en la anterior. Te recomendamos seguir el orden de las lecciones para obtener el máximo beneficio.
 
@@ -87,7 +89,7 @@ A lo largo del curso, utilizaremos algunos conceptos clave que es importante que
 La forma más sencilla de iniciar una aplicación Next.js en nuestra máquina es mediante el paquete `create-next-app` de npm. Este paquete facilita la creación de una aplicación Next.js con todas las configuraciones esenciales para comenzar a desarrollar.
 
 ```bash
-npx create-next-app@latest --example "https://github.com/goncy/nextjs-course" --example-path "code/starter" restaurancy
+npx create-next-app@latest --example "https://github.com/goncy/nextjs-course" --example-path "code" restaurancy
 ```
 > Puedes omitir los parámetros `--example` y `--example-path` si deseas crear un proyecto personalizado.
 
