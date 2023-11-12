@@ -921,12 +921,6 @@ Te dejo algunas tareas:
   - Puedes convertir `RestaurantCard` en una carpeta y agregarle un `index.tsx` y un `FavoriteButton.tsx` dentro. De esa manera, los componentes seguirían colocados lo más cerca de donde son relevantes posible. Pero maneja esto a tu gusto.
 - Implementa la funcionalidad de agregar y quitar favoritos en el botón de favorito. Al cargar la página, debería mostrar el estado actual, y al hacer clic en el botón, debería mostrar el estado actualizado y persistir ese estado al recargar la página.
 
-## Pre-renderizado parcial (experimental)
-
-El Pre-renderizado parcial es una optimización de compilador que permite que partes estáticas de una ruta sean pre-renderizadas desde caché con "agujeros" dincámicos donde el contenido se irá streameando, todo en una sola petición.
-
-> PPR ya está habilitado en este proyecto mediante la configuración `experimental.ppr` en el archivo `next.config.js`.
-
 ---
 
 ## Felicitaciones
