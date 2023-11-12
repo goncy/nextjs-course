@@ -44,42 +44,46 @@ A lo largo del curso, utilizaremos algunos conceptos clave que es importante que
 
 1. [¿Qué es Next.js?](#¿qué-es-nextjs)
 2. [Creación de una Aplicación con Next.js](#creando-una-aplicación-con-nextjs)
-   - 2.1 [Tecnologías en el Proyecto](#tecnologías-en-el-proyecto)
-   - 2.2 [Estructura del Proyecto](#estructura-del-proyecto)
+  - 2.1 [Tecnologías en el Proyecto](#tecnologías-en-el-proyecto)
+  - 2.2 [Estructura del Proyecto](#estructura-del-proyecto)
 3. [Ambientes de Renderizado (Servidor y Cliente)](#ambientes-de-renderizado-servidor-y-cliente)
-   - 3.1 [Server Components](#server-components)
-   - 3.2 [Client Components](#client-components)
-   - 3.3 [Cuándo Usar Server Components y Client Components](#cuándo-usar-server-components-y-client-components)
+  - 3.1 [Server Components](#server-components)
+  - 3.2 [Client Components](#client-components)
+  - 3.3 [Cuándo Usar Server Components y Client Components](#cuándo-usar-server-components-y-client-components)
 4. [Mostrando los Restaurantes](#mostrando-los-restaurantes)
 5. [Mostrando un Restaurante](#mostrando-un-restaurante)
-   - 5.1 [Router](#router)
-   - 5.2 [Rutas Dinámicas](#rutas-dinámicas)
-   - 5.3 [Colocación](#colocación)
+  - 5.1 [Router](#router)
+  - 5.2 [Rutas Dinámicas](#rutas-dinámicas)
+  - 5.3 [Colocación](#colocación)
 6. [Navegación](#navegación)
-7. [Estados de Carga](#estados-de-carga)
-8. [Manejo de Errores](#manejo-de-errores)
-9. [Uso de una Base de Datos](#usando-una-base-de-datos)
-10. [Compilando Nuestra Aplicación](#compilando-nuestra-aplicación)
-11. [Estrategias de Renderizado](#estrategias-de-renderizado)
-    - 11.1 [Renderizado Estático](#renderizado-estático-por-defecto)
-    - 11.2 [Renderizado Dinámico](#renderizado-dinámico)
-    - 11.3 [Streaming](#streaming)
-      - 11.3.1 [Pre-renderizado Parcial (experimental)](#pre-renderizado-parcial-experimental)
-12. [Caching](#caching)
-    - 12.1 [Configuraciones de Revalidación de Caché](#configuraciones-de-revalidación-de-caché)
-        - 12.1.1 [cache: no-store](#cache-no-store)
-        - 12.1.2 [revalidate: `<number>`](#revalidate-number)
-        - 12.1.3 [Configuración de Segmento de Ruta](#configuración-de-segmento-de-ruta)
-        - 12.1.4 [Funciones Dinámicas](#funciones-dinámicas)
-13. [Revalidación Manual](#revalidación-manual)
-    - 13.1 [revalidatePath](#revalidatepath)
-    - 13.2 [revalidateTag](#revalidatetag)
-14. [Parámetros de URL](#parámetros-de-url)
-15. [Agrupación de Rutas](#agrupado-de-rutas)
-16. [Server Actions](#server-actions)
-17. [Guardado en Favoritos (localStorage)](#guardar-en-favoritos-localstorage)
-    - 17.1 [Pre-renderizado](#pre-renderizado)
-    - 17.2 [Lazy Loading](#lazy-loading)
+7. [Metadatos](#metadatos)
+  - 7.1 [Objeto `metadata`](#objeto-metadata)
+  - 7.2 [`generateMetadata`](#generatemetadata)
+  - 7.3 [Archivos de Metadatos](#archivos-de-metadatos)
+8. [Estados de Carga](#estados-de-carga)
+9. [Manejo de Errores](#manejo-de-errores)
+10. [Uso de una Base de Datos](#usando-una-base-de-datos)
+11. [Compilando Nuestra Aplicación](#compilando-nuestra-aplicación)
+12. [Estrategias de Renderizado](#estrategias-de-renderizado)
+   - 12.1 [Renderizado Estático](#renderizado-estático-por-defecto)
+   - 12.2 [Renderizado Dinámico](#renderizado-dinámico)
+   - 12.3 [Streaming](#streaming)
+    - 12.3.1 [Pre-renderizado Parcial (experimental)](#pre-renderizado-parcial-experimental)
+13. [Caching](#caching)
+   - 13.1 [Configuraciones de Revalidación de Caché](#configuraciones-de-revalidación-de-caché)
+      - 13.1.1 [cache: no-store](#cache-no-store)
+      - 13.1.2 [revalidate: `<number>`](#revalidate-number)
+      - 13.1.3 [Configuración de Segmento de Ruta](#configuración-de-segmento-de-ruta)
+      - 13.1.4 [Funciones Dinámicas](#funciones-dinámicas)
+14. [Revalidación Manual](#revalidación-manual)
+   - 14.1 [revalidatePath](#revalidatepath)
+   - 14.2 [revalidateTag](#revalidatetag)
+15. [Parámetros de URL](#parámetros-de-url)
+16. [Agrupación de Rutas](#agrupado-de-rutas)
+17. [Server Actions](#server-actions)
+18. [Guardado en Favoritos (localStorage)](#guardar-en-favoritos-localstorage)
+   - 18.1 [Pre-renderizado](#pre-renderizado)
+   - 18.2 [Lazy Loading](#lazy-loading)
 
 
 ## ¿Qué es Next.js?
@@ -298,6 +302,7 @@ En resumen, hemos aprendido que, además de ejecutarse en el servidor y aprovech
 Vamos a crear una ruta para visualizar cada restaurante de manera individual. Antes de sumergirnos en el código, echemos un vistazo al funcionamiento del router de Next.js y comprendamos algunas de sus convenciones de archivos.
 
 ### Router
+
 Next.js, con App Directory, utiliza un router construido sobre React Server Components que soporta layouts compartidos, enrutamiento anidado, manejo de estados de carga, manejo de errores y más. El enrutamiento de App Router se basa en archivos, lo que significa que podemos crear rutas y segmentos simplemente creando archivos y carpetas. Entonces, ¿qué archivos y carpetas debemos crear? Ya conocemos `layout.tsx` y `page.tsx`, pero ¿cómo podemos usarlos para crear otras rutas? Veamos algunas convenciones que vamos a utilizar en este curso:
 
 - `layout.tsx`: Envuelve a `page.tsx`, permitiendo compartir un layout entre varias páginas.
@@ -359,6 +364,7 @@ Veamos cómo sucedió esto. Recordamos que los componentes por defecto son Serve
 Ahora tenemos un pequeño problema: acabamos de repetir todo el código de la tarjeta del restaurante. Podríamos crear un componente y reutilizarlo (te dejo esa tarea a ti). Pero... ¿Dónde deberían ir los componentes que no son páginas, layouts o archivos especiales?
 
 ### Colocación
+
 Aunque el router de Next.js se basa en archivos, solo los archivos con nombres especiales se convierten en rutas de nuestra aplicación. Por lo tanto, podríamos crear una carpeta `components` dentro de `app` (o anidada donde la necesitemos) sin ningún problema. Sin embargo, la elección es tuya; si deseas crear una carpeta `components` (o como desees) fuera de `app` (pero dentro de `src`), también puedes hacerlo.
 
 ![Estructura de carpetas](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fproject-organization-colocation.png&w=3840&q=75&dpl=dpl_DzaGxTbCZzXMDg4XPPbArRct6JPH)
@@ -366,7 +372,6 @@ Aunque el router de Next.js se basa en archivos, solo los archivos con nombres e
 Ahora sí, ve y crea ese componente. Luego, reutilízalo en `page.tsx` y `[id]/page.tsx`.
 
 ## Navegación
-
 
 En Next.js, tenemos el componente `Link`, que extiende la etiqueta `<a>` para agregarle funcionalidades de pre-carga y pre-renderizado. Este componente nos permite navegar entre páginas de nuestra aplicación sin tener que recargar la página. Se usa de manera muy similar a la etiqueta `<a>` y lo podemos importar desde `next/link`. Agreguemos a nuestra grilla de restaurantes un enlace para poder navegar a la página de cada restaurante.
 
@@ -395,6 +400,57 @@ export default async function Home() {
 ```
 
 Ahora te toca a ti. Agrega a la página de detalle del restaurante un enlace para volver a la página de inicio y otro enlace al encabezado en el layout para que, al hacer clic, nos lleve al inicio.
+
+## Metadatos
+
+Los metadatos son información adicional para indicarle al navegador y motores de búsqueda que contiene nuestra página. Juega un rol crucial en el SEO (Search Engine Optimization) y en la accesibilidad. En Next.js podemos definir metadatos mediante configuración o mediante archivos.
+
+### Objeto `metadata`
+
+Podemos definir una constante `metadata` en `layout.tsx` o en `page.tsx` para definir metadatos estáticos. En `layout.tsx` modifiquemos la propiedad `title` del objeto `metadata` para que se vea así:
+
+```jsx
+export const metadata: Metadata = {
+  title: 'Restaurancy - Hello World',
+  description: 'The best restaurants in the world',
+  keywords: ['restaurant', 'food', 'eat', 'dinner', 'lunch'],
+}
+```
+
+![](./images/title.jpg)
+
+Ahora deberíamos ver el título de nuestra página actualizado.
+
+![](./images/metadata-1.jpg)
+
+Si abrimos las herramientas de desarrollo veremos que dentro del tag `head` podemos ver los metadatos que definimos.
+
+> Puedes encontrar más información sobre los metadatos disponibles [aqui](https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadata-object).
+
+### `generateMetadata`
+
+Si necesitamos información de la petición para generar metadatos (por ejemplo el nombre de un restaurante) podemos usar la función `generateMetadata` que retorna un objeto con todos los metadatos de nuestra página. En `src/app/[id]/page.tsx` creemos una función `generateMetadata` de la siguiente manera:
+
+```ts
+export async function generateMetadata({params: {id}}) {
+  const restaurant = await api.fetch(id);
+
+  return {
+    title: `${restaurant.name} - Restaurancy`,
+    description: restaurant.description,
+  };
+}
+```
+
+![](./images/metadata.jpg)
+
+Al ingresar a alguno de nuestros restaurantes veremos el título de la página actualizado.
+
+### Archivos de metadatos
+
+Podemos crear [archivos especiales de metadatos](https://nextjs.org/docs/app/api-reference/file-conventions/metadata) dentro de `src/app` o dentro de nuestras rutas. Los archivos de metadatos pueden ser archivos estáticos (como `.jpg`, `.png`, `.txt`) o pueden ser archivos dinámicos (como `.tsx`). Esta última nos permite que podamos generar metadatos, como [imágenes de Open Graph personalizadas basadas en información de la petición](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image).
+
+Te dejo como tarea definir algunos metadatos a nivel aplicación, como title, description, keywords, etc. Y mostrar una imagen de Open Graph personalizada en la página de detalle de cada restaurante.
 
 ## Estados de Carga
 
