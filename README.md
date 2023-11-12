@@ -63,7 +63,8 @@ A lo largo del curso, utilizaremos algunos conceptos clave que es importante que
 11. [Estrategias de Renderizado](#estrategias-de-renderizado)
     - 11.1 [Renderizado Estático](#renderizado-estático-por-defecto)
     - 11.2 [Renderizado Dinámico](#renderizado-dinámico)
-    - 11.3 [Pre-renderizado Parcial (experimental)](#pre-renderizado-parcial-experimental)
+    - 11.3 [Streaming](#streaming)
+      - 11.3.1 [Pre-renderizado Parcial (experimental)](#pre-renderizado-parcial-experimental)
 12. [Caching](#caching)
     - 12.1 [Configuraciones de Revalidación de Caché](#configuraciones-de-revalidación-de-caché)
         - 12.1.1 [cache: no-store](#cache-no-store)
@@ -411,8 +412,6 @@ export default function Loading() {
 
 Ahora, al recargar la página, veremos que mientras se está cargando, se muestra el texto "Loading..." y una vez que termina de cargar, se reemplaza por el contenido de `page.tsx`. Pero también notamos que si vamos a la ruta `/1`, también se muestra el texto "Loading...". ¿Por qué si el `loading.tsx` está definido en la raíz de nuestro proyecto? Esto sucede porque `loading.tsx` es una abstracción sobre React Suspense. Cuando una parte de nuestra aplicación se suspende, busca hacia arriba el Suspense Boundary más cercano y lo utiliza. Si quisieramos, podríamos definir un `loading.tsx` dentro de `[id]` y se usaría en vez del de la raíz, pero por ahora estamos bien con este.
 
-Si quisieramos manejar nuestros estados de carga de una manera más granular, podríamos crear nuestros propios Suspense Boundaries usando el componente `Suspense` de React para envolver componentes específicos que suspendan la aplicación.
-
 ## Manejo de Errores
 
 De momento, nuestra aplicación usa datos de prueba, por lo que es poco probable que ocurran errores. Sin embargo, puede ser que alguien intente acceder a una página que no existe o que simplemente queramos estar preparados para el día de mañana. Creemos el archivo `src/app/error.tsx` y agreguemos el siguiente contenido:
@@ -518,7 +517,7 @@ Podemos ver que la ruta de `/` tiene un ícono de `○` (abajo nos dice que sign
 
 ## Estrategias de Renderizado
 
-En Next.js, existen dos estrategias principales de renderizado: estática y dinámica.
+En Next.js, existen tres estrategias principales de renderizado: estática, dinámica y streaming.
 
 ### Renderizado estático (por defecto)
 
@@ -546,7 +545,13 @@ Con el renderizado dinámico, nuestras rutas se renderizan cada vez que un usuar
 
 Para optar por una ruta con renderizado dinámico, podemos establecer configuraciones de caché a nivel de `fetch`, ruta/segmento o al usar funciones dinámicas. Hablaremos de esto en la próxima sección.
 
-### Pre-renderizado parcial (experimental)
+### Streaming
+
+El Streaming es una técnica de transferencia de datos que nos permite dividir el contenido en trozos más pequeños y enviarlos al cliente a medida que esten disponibles. Esto evita que procesos bloqueantes (como obtener datos) eviten que el usuario no vea nada hasta que todo esté disponible.
+
+Para habilitar streaming basta con tener un Suspense Boundary, definiendo un archivo `loading.tsx` a nivel página o montando un componente Suspense manualmente en algun Server Component.
+
+#### Pre-renderizado parcial (experimental)
 
 El problema radica en que nuestras aplicaciones o rutas no suelen ser estáticas o dinámicas (de manera excluyente), sino que una combinación de ambas.
 
