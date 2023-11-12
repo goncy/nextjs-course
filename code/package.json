@@ -22,7 +22,7 @@
     "typescript": "5.2.2"
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "^canary",
+    "@next/eslint-plugin-next": "canary",
     "@vercel/style-guide": "^5.1.0",
     "eslint": "8.53.0",
     "eslint-config-prettier": "^9.0.0",
