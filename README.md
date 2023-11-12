@@ -42,7 +42,7 @@ A lo largo del curso, utilizaremos algunos conceptos clave que es importante que
 
 ## Índice
 
-1. [¿Qué es Next.js?](#¿qué-es-nextjs)
+1. [¿Qué es Next.js?](#qué-es-nextjs)
 2. [Creación de una Aplicación con Next.js](#creando-una-aplicación-con-nextjs)
    1. [Tecnologías en el Proyecto](#tecnologías-en-el-proyecto)
    2. [Estructura del Proyecto](#estructura-del-proyecto)
