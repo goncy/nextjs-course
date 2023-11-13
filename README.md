@@ -20,7 +20,8 @@ Asegúrate de cumplir con los siguientes requisitos antes de comenzar el curso:
   - En caso de no tener experiencia en React, te sugerimos completar [el curso oficial de React](https://es.react.dev/learn) o el de [React Foundations de Next.js](https://nextjs.org/learn/react-foundations).
 - Tener Node.js instalado en tu computadora.
 - Contar con un editor de código de tu preferencia.
-  - También puedes optar por un entorno en línea, como [CodeSandbox](https://codesandbox.io), si no deseas o no puedes instalar nada en tu computadora.
+
+> Puedes optar por un entorno en línea, como [CodeSandbox](https://codesandbox.io), si no deseas o no puedes instalar nada en tu computadora.
 
 ## Terminología
 
