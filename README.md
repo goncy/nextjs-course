@@ -614,7 +614,18 @@ El problema radica en que nuestras aplicaciones o rutas no suelen ser estáticas
 
 El [Pre-renderizado parcial](https://nextjs.org/docs/app/api-reference/next-config-js/partial-prerendering) es una optimización de compilador que permite que partes estáticas de una ruta sean pre-renderizadas desde caché con "agujeros" dincámicos donde el contenido se irá streameando, todo en una sola petición.
 
-> PPR ya está habilitado en este proyecto mediante la configuración `experimental.ppr` en el archivo `next.config.js`.
+Si quieres habilitar PPR puedes hacerlo de la siguiente manera en el archivo `next.config.js`:
+
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    ppr: true
+  }
+};
+
+module.exports = nextConfig;
+```
 
 El Pre-renderizado parcial está construido sobre las [APIs concurrentes de React](https://react.dev/blog/2021/12/17/react-conf-2021-recap#react-18-and-concurrent-features) y Suspense. Esto permite que Next.js pueda extraer las partes estáticas de nuestra ruta basado en sus Suspense Boundaries, sin necesidad de que hagamos *ningún cambio* en nuestro código.
 
