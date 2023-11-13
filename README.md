@@ -17,7 +17,7 @@ Asegúrate de cumplir con los siguientes requisitos antes de comenzar el curso:
 - Conocimientos básicos de HTML, CSS y JavaScript.
   - Si no estás familiarizado con HTML, CSS y JavaScript, te recomendamos realizar la certificación de [Responsive Web Design](https://www.freecodecamp.org/learn/responsive-web-design) de freeCodeCamp.
 - Conocimientos básicos de React.
-  - En caso de no tener experiencia en React, te sugerimos completar [el curso oficial de React](https://react.dev/learn) o el de [React Foundations de Next.js](https://nextjs.org/learn/react-foundations).
+  - En caso de no tener experiencia en React, te sugerimos completar [el curso oficial de React](https://es.react.dev/learn) o el de [React Foundations de Next.js](https://nextjs.org/learn/react-foundations).
 - Tener Node.js instalado en tu computadora.
 - Contar con un editor de código de tu preferencia.
   - También puedes optar por un entorno en línea, como [CodeSandbox](https://codesandbox.io), si no deseas o no puedes instalar nada en tu computadora.
@@ -256,7 +256,7 @@ export default async function Home() {
 }
 ```
 
-Al observar la consola (no la del navegador, sino la terminal donde ejecutamos `npm run dev`), veremos un listado de `Restaurant`. ¿Cómo es esto posible? 🤯 Como mencionamos anteriormente, los Server Components no se vuelven a renderizar. Por lo tanto, podemos convertir nuestro componente en una función asíncrona y esperar a que la `Promise` se resuelva con los datos de los restaurantes. Luego, utilizamos esos datos para renderizarlos en nuestra página. Iteraremos sobre `restaurants` y crearemos una grilla que muestre la imagen, el título, la descripción y el rating de cada restaurante.
+Al observar la consola (no la del navegador, sino la terminal donde ejecutamos `npm run dev`), veremos un listado de `Restaurant`. ¿Cómo es posible esto? 🤯 Como mencionamos anteriormente, los Server Components no se vuelven a renderizar. Por lo tanto, podemos convertir nuestro componente en una función asíncrona y esperar a que la `Promise` se resuelva con los datos de los restaurantes. Luego, utilizamos esos datos para renderizarlos en nuestra página. Iteraremos sobre `restaurants` y crearemos una grilla que muestre la imagen, el título, la descripción y el rating de cada restaurante.
 
 ```jsx
 import api from "@/api";
@@ -360,7 +360,7 @@ export default async function RestaurantPage({ params: { id } }: { params: { id:
 Al ingresar a la ruta `/1`, deberíamos ver algo así:
 ![Página de un restaurante](./images/restaurant-details.jpg)
 
-Veamos cómo sucedió esto. Recordamos que los componentes por defecto son Server Components, así que hicimos que sea `async` y utilizamos nuestro método `api.fetch` para obtener los datos del restaurante. Además, aprendimos algo nuevo: el archivo `page.tsx` recibe como props una propiedad `params` que contiene los parámetros de la ruta. En este caso, como nuestra ruta es `/[id]`, el parámetro se llama `id`. Desestructuramos `params` para obtener el `id` y lo usamos para obtener los datos del restaurante y renderizarlos en la página.
+Veamos cómo sucedió esto. Recordamos que los componentes por defecto son Server Components, así que hicimos que sea `async` y utilizamos nuestro método `api.fetch` para obtener los datos del restaurante. Además, aprendimos algo nuevo: el archivo `page.tsx` recibe como props una propiedad `params` que contiene los parámetros de la ruta. En este caso, como nuestra ruta es `/[id]`, el parámetro se llama `id`. [Desestructuramos](https://es.javascript.info/destructuring-assignment#desestructuracion-de-objetos) `params` para obtener el `id` y lo usamos para obtener los datos del restaurante y renderizarlos en la página.
 
 Ahora tenemos un pequeño problema: acabamos de repetir todo el código de la tarjeta del restaurante. Podríamos crear un componente y reutilizarlo (te dejo esa tarea a ti). Pero... ¿Dónde deberían ir los componentes que no son páginas, layouts o archivos especiales?
 
@@ -455,7 +455,7 @@ Te dejo como tarea definir algunos metadatos a nivel aplicación, como title, de
 
 ## Estados de Carga
 
-Nuestras páginas cargan bastante rápido (estamos simulando un retardo de 750 ms). Vamos a `api.ts` y cambiemos ese `750` por `7500`. Si recargamos, veremos que la página tarda 7.5 segundos en cargar. El problema es que mientras la página carga, el usuario no ve nada y no sabe si la página no funciona, si su internet anda mal o qué está pasando. En Next.js, podemos definir un archivo `loading.tsx`, el cual está construido sobre [React Suspense](https://react.dev/reference/react/Suspense). Mientras nuestra página esté suspendida (mientras haya operaciones bloqueantes como un `await` de un Server Component asíncrono), se mostrará el contenido de `loading.tsx`. Una vez que esas operaciones terminen, se reemplazará el contenido de `loading.tsx` por el contenido de `page.tsx`. Esto nos permite no solo mostrarle al usuario que "algo está cargando", sino que también nos permite enviar todas las partes de nuestra aplicación que no dependan de esas operaciones bloqueantes, como los componentes que ya terminaron sus operaciones, los layouts y más.
+Nuestras páginas cargan bastante rápido (estamos simulando una demora de 750 ms). Vamos a `api.ts` y cambiemos ese `750` por `7500`. Si recargamos, veremos que la página tarda 7.5 segundos en cargar. El problema es que mientras la página carga, el usuario no ve nada y no sabe si la página no funciona, si su internet anda mal o qué está pasando. En Next.js, podemos definir un archivo `loading.tsx`, el cual está construido sobre [React Suspense](https://react.dev/reference/react/Suspense). Mientras nuestra página esté suspendida (mientras haya operaciones bloqueantes como un `await` de un Server Component asíncrono), se mostrará el contenido de `loading.tsx`. Una vez que esas operaciones terminen, se reemplazará el contenido de `loading.tsx` por el contenido de `page.tsx`. Esto nos permite no solo mostrarle al usuario que "algo está cargando", sino que también nos permite enviar todas las partes de nuestra aplicación que no dependan de esas operaciones bloqueantes, como los componentes que ya terminaron sus operaciones, los layouts y más.
 
 Creemos el archivo `src/app/loading.tsx` y agreguemos el siguiente contenido:
 
@@ -545,11 +545,11 @@ const api = {
 }
 ```
 
-¡Listo! Ahora, al recargar la página, deberíamos ver los datos de Google Sheets. Ten en cuenta que Next.js maneja su propio caché, así que si no ves los cambios, prueba con <kbd>ctrl</kbd> + <kbd>f5</kbd> (<kbd>cmd</kbd> + <kbd>f5</kbd> si usas Mac). Ahora te toca a ti modificar el método `fetch` para traer los datos de un restaurante en particular.
+¡Listo! Ahora, al recargar la página, deberíamos ver los datos de Google Sheets. Ten en cuenta que Next.js maneja su propio caché, así que si no ves los cambios, prueba con <kbd>ctrl</kbd> + <kbd>f5</kbd> (<kbd>cmd</kbd> + <kbd>R</kbd> si usas Mac). Ahora te toca a ti modificar el método `fetch` para traer los datos de un restaurante en particular.
 
 ## Compilando Nuestra Aplicación
 
-Ahora que tenemos una aplicación más o menos completa, vamos a compilarla y ejecutarla localmente para ver más acertadamente qué tan bien funcionaría en un entorno productivo. Para ello, terminemos el comando de nuestro servidor de desarrollo y ejecutemos los siguientes comandos:
+Ahora que tenemos una aplicación más o menos completa, vamos a compilarla y ejecutarla localmente para ver más acertadamente qué tan bien funcionaría en un entorno productivo. Para ello, terminemos el comando de nuestro servidor (<kbd>ctrl</kbd> + <kbd>c</kbd>) de desarrollo y ejecutemos los siguientes comandos:
 
 ```bash
 npm run build
