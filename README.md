@@ -1,6 +1,6 @@
-# Curso Introductorio a Next.js con App Directory
+# Curso Introductorio a Next.js con App Router
 
-¡Bienvenido/a al curso introductorio a Next.js con App Directory! Durante este curso, apenderás los fundamentos (y no tanto) de Next.js con App Directory para construir una aplicación web: [Restaurancy](https://restaurancy.goncy.dev), un catálogo de restaurantes.
+¡Bienvenido/a al curso introductorio a Next.js con App Router! Durante este curso, apenderás los fundamentos (y no tanto) de Next.js con App Router para construir una aplicación web: [Restaurancy](https://restaurancy.goncy.dev), un catálogo de restaurantes.
 
 ![](./images/completed.jpg)
 
@@ -304,7 +304,7 @@ Vamos a crear una ruta para visualizar cada restaurante de manera individual. An
 
 ### Router
 
-Next.js, con App Directory, utiliza un router construido sobre React Server Components que soporta layouts compartidos, enrutamiento anidado, manejo de estados de carga, manejo de errores y más. El enrutamiento de App Router se basa en archivos, lo que significa que podemos crear rutas y segmentos simplemente creando archivos y carpetas. Entonces, ¿qué archivos y carpetas debemos crear? Ya conocemos `layout.tsx` y `page.tsx`, pero ¿cómo podemos usarlos para crear otras rutas? Veamos algunas convenciones que vamos a utilizar en este curso:
+Next.js, con App Router, utiliza un router construido sobre React Server Components que soporta layouts compartidos, enrutamiento anidado, manejo de estados de carga, manejo de errores y más. El enrutamiento de App Router se basa en archivos, lo que significa que podemos crear rutas y segmentos simplemente creando archivos y carpetas. Entonces, ¿qué archivos y carpetas debemos crear? Ya conocemos `layout.tsx` y `page.tsx`, pero ¿cómo podemos usarlos para crear otras rutas? Veamos algunas convenciones que vamos a utilizar en este curso:
 
 - `layout.tsx`: Envuelve a `page.tsx`, permitiendo compartir un layout entre varias páginas.
 - `page.tsx`: Define una página, recibe parámetros y parámetros de búsqueda como props.
@@ -827,7 +827,7 @@ Utilizar `searchParams` en una `page` hace que el segmento sea dinámico, ya que
 
 ## Agrupado de Rutas
 
-Esto es algo personal, pero ahora nos queda una carpeta `components` dentro del directorio `app`, que tiene un solo archivo que es relevante para una sola página (`/app/page.tsx`). No me gusta que esté a nivel de `app` porque no es algo que se comparta entre todas las páginas. Podríamos sacar la carpeta `components` fuera de `app`, pero pasaría lo mismo. Afortunadamente, en App Directory podemos [agrupar rutas](https://nextjs.org/docs/app/building-your-application/routing/route-groups) y archivos de la siguiente manera:
+Esto es algo personal, pero ahora nos queda una carpeta `components` dentro del directorio `app`, que tiene un solo archivo que es relevante para una sola página (`/app/page.tsx`). No me gusta que esté a nivel de `app` porque no es algo que se comparta entre todas las páginas. Podríamos sacar la carpeta `components` fuera de `app`, pero pasaría lo mismo. Afortunadamente, en App Router podemos [agrupar rutas](https://nextjs.org/docs/app/building-your-application/routing/route-groups) y archivos de la siguiente manera:
 
 ```bash
 └── app/
