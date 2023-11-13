@@ -432,7 +432,7 @@ El archivo `error.tsx` funciona con un React Error Boundary cuyo comportamiento 
 
 Vamos a trasladar nuestros datos de prueba a una base de datos para poder modificarlos cuando queramos. En este caso, usaremos Google Sheets, ya que es fácil, gratuito y no requiere configuración. Si no te gusta, puedes usar la base de datos que prefieras. Para ello, accedamos a [https://sheets.new](https://sheets.new) y creemos una nueva hoja con los mismos datos que nuestra data de prueba.
 
-Puedes utilizar ChatGPT para convertir la data de prueba. De todos modos, aquí tienes los datos (cópialos, pégalo en la primera celda de Google Sheets y selecciona del Menu: Datos >> "dividir texto en columnas"):
+Puedes utilizar ChatGPT para convertir la data de prueba. De todos modos, aquí tienes los datos (cópialos, pégalo en la primera celda de Google Sheets y selecciona del Menu: `Datos > dividir texto en columnas`):
 
 ```csv
 id,name,description,address,score,ratings,image
