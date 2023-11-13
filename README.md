@@ -17,7 +17,7 @@ Asegúrate de cumplir con los siguientes requisitos antes de comenzar el curso:
 - Conocimientos básicos de HTML, CSS y JavaScript.
   - Si no estás familiarizado con HTML, CSS y JavaScript, te recomendamos realizar la certificación de [Responsive Web Design](https://www.freecodecamp.org/learn/responsive-web-design) de freeCodeCamp.
 - Conocimientos básicos de React.
-  - En caso de no tener experiencia en React, te sugerimos completar [el curso oficial de React](https://react.dev/learn) o el de [React Foundations de Next.js](https://nextjs.org/learn/react-foundations).
+  - En caso de no tener experiencia en React, te sugerimos completar [el curso oficial de React](https://es.react.dev/learn) o el de [React Foundations de Next.js](https://nextjs.org/learn/react-foundations).
 - Tener Node.js instalado en tu computadora.
 - Contar con un editor de código de tu preferencia.
   - También puedes optar por un entorno en línea, como [CodeSandbox](https://codesandbox.io), si no deseas o no puedes instalar nada en tu computadora.
