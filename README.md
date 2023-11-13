@@ -612,7 +612,7 @@ Para habilitar streaming basta con tener un Suspense Boundary, definiendo un arc
 
 El problema radica en que nuestras aplicaciones o rutas no suelen ser estáticas o dinámicas (de manera excluyente), sino que una combinación de ambas.
 
-El [Pre-renderizado parcial](https://nextjs.org/docs/app/api-reference/next-config-js/partial-prerendering) es una optimización de compilador que permite que partes estáticas de una ruta sean pre-renderizadas desde caché con "agujeros" dincámicos donde el contenido se irá streameando, todo en una sola petición.
+El [Pre-renderizado parcial](https://nextjs.org/docs/app/api-reference/next-config-js/partial-prerendering) es una optimización de compilador que permite que partes estáticas de una ruta sean pre-renderizadas desde caché con "agujeros" dinámicos donde el contenido se irá streameando, todo en una sola petición.
 
 > PPR ya está habilitado en este proyecto mediante la configuración `experimental.ppr` en el archivo `next.config.js`.
 
