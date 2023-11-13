@@ -76,13 +76,13 @@ A lo largo del curso, utilizaremos algunos términos que es importante que conoz
         2. [revalidate: `<number>`](#revalidate-number)
         3. [Configuración de Segmento de Ruta](#configuración-de-segmento-de-ruta)
         4. [Funciones Dinámicas](#funciones-dinámicas)
-14. [Revalidación Manual](#revalidación-manual)
-    1. [revalidatePath](#revalidatepath)
-    2. [revalidateTag](#revalidatetag)
-15. [Parámetros de URL](#parámetros-de-url)
-16. [Agrupación de Rutas](#agrupado-de-rutas)
-17. [Server Actions](#server-actions)
-18. [Guardado en Favoritos (localStorage)](#guardar-en-favoritos-localstorage)
+    2. [Revalidación Manual](#revalidación-manual)
+        1. [revalidatePath](#revalidatepath)
+        2. [revalidateTag](#revalidatetag)
+14. [Parámetros de URL](#parámetros-de-url)
+15. [Agrupación de Rutas](#agrupado-de-rutas)
+16. [Server Actions](#server-actions)
+17. [Guardado en Favoritos (localStorage)](#guardar-en-favoritos-localstorage)
     1. [Pre-renderizado](#pre-renderizado)
     2. [Lazy Loading](#lazy-loading)
 
@@ -704,11 +704,11 @@ Ahora, si definimos `force-dynamic` y `revalidate` en 100, y en el fetch le pone
 
 También hay funciones a las que se las denomina [funciones dinámicas](https://nextjs.org/docs/app/building-your-application/rendering/server-components#dynamic-functions). Estas funciones dependen de información de la petición, como [`cookies`](https://nextjs.org/docs/app/api-reference/functions/cookies), [`headers`](https://nextjs.org/docs/app/api-reference/functions/headers), [`useSearchParams`](https://nextjs.org/docs/app/api-reference/functions/use-search-params) y [`searchParams`](https://nextjs.org/docs/app/api-reference/file-conventions/page#searchparams-optional). Al usar alguna de estas funciones en nuestros segmentos (o funciones llamadas dentro de nuestros segmentos), la ruta optará por un renderizado dinámico.
 
-## Revalidación Manual
+### Revalidación Manual
 
 La revalidación por tiempo es útil, pero no es adecuada para todos los casos. En algunas situaciones, tenemos datos que no cambian con frecuencia, pero cuando cambian, queremos que se actualicen de inmediato. Por ejemplo, un producto en una tienda virtual que cambió su precio después de 15 días y queremos que los usuarios vean el nuevo precio inmediatamente. Para lograr esto, podemos utilizar dos métodos que se ejecutan del lado del servidor: [`revalidatePath`](https://nextjs.org/docs/app/api-reference/functions/revalidatePath) y [`revalidateTag`](https://nextjs.org/docs/app/api-reference/functions/revalidateTag).
 
-### `revalidatePath`
+#### `revalidatePath`
 
 Este método nos permite revalidar el contenido de una ruta en particular, como nuestra ruta `/`, si sabemos que hemos agregado nuevos restaurantes a la base de datos. Dado que nuestra aplicación no tiene un formulario para agregar nuevos restaurantes o modificar existentes, vamos a crear una ruta de API utilitaria para que, al llamarla, se revalide la ruta `/`.
 
@@ -730,7 +730,7 @@ Ahora podemos eliminar todos los `revalidate`, `dynamic` y cualquier cosa que ha
 
 Es una buena práctica proteger nuestras rutas de API con alguna clave secreta para evitar que usuarios malintencionados ejecuten estos métodos. Tu tarea es definir una variable de entorno `REVALIDATE_SECRET` y usarla en nuestra ruta de API para ejecutarla solo cuando nos envíen un parámetro `secret` con el valor correcto. Puedes usar la documentación oficial de Next.js para ver cómo usar variables de entorno.
 
-### `revalidateTag`
+#### `revalidateTag`
 
 Puede suceder que modifiquemos un dato que afecte a varias rutas al mismo tiempo, y cuando las aplicaciones crecen, es muy difícil saber qué rutas se ven afectadas por un cambio. Para abordar esto, podemos usar `revalidateTag`, que nos permite revalidar todas las rutas que tengan un tag en particular.
 
