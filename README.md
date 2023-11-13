@@ -25,14 +25,14 @@ Asegúrate de cumplir con los siguientes requisitos antes de comenzar el curso:
 
 ## Terminología
 
-A lo largo del curso, utilizaremos algunos conceptos clave que es importante que conozcas, aunque no necesariamente debes memorizar. Estos son:
+A lo largo del curso, utilizaremos algunos términos que es importante que conozcas, aunque no necesariamente debes memorizar:
 
 - **Routing (Enrutamiento):** Decide, basado en la URL, qué contenido mostrar al usuario.
 - **Caching (Caché):** Espacio de almacenamiento temporal para guardar datos que se utilizarán en el futuro.
 - **Rendering (Renderizado):** Proceso de convertir un componente en una representación visual.
-- **Layout (Diseño):** Envoltorio de una página que define la estructura o diseño exterior.
-- **Nested layout/pages/etc (Diseño/páginas/etc. anidados):** Por ejemplo, un diseño anidado está dentro de otro diseño.
-- **Tree (Árbol):** Convención para visualizar una estructura jerárquica.
+- **Layout (Envoltorio):** Componente que envuelve a una (o varias) páginas.
+- **Nested layout/pages/etc (Envoltorios/páginas/etc. anidados):** Por ejemplo, un layout que está dentro de otro layout.
+- **Tree (Árbol):** Representación de una estructura jerárquica, componentes que contienen a otros, representado en forma de árbol.
 - **Subtree (Subárbol):** Un árbol dentro de otro árbol.
 - **Leaf/Leaves (Hoja/Hojas):** Nodo sin hijos, como un componente sin componentes internos.
 - **URL segment (Segmento de URL):** Por ejemplo, en la URL `restaurancy.com/restaurante/goncy`, `restaurante` y `goncy` son segmentos de URL.
@@ -45,46 +45,46 @@ A lo largo del curso, utilizaremos algunos conceptos clave que es importante que
 
 1. [¿Qué es Next.js?](#qué-es-nextjs)
 2. [Creación de una Aplicación con Next.js](#creando-una-aplicación-con-nextjs)
-   1. [Tecnologías en el Proyecto](#tecnologías-en-el-proyecto)
-   2. [Estructura del Proyecto](#estructura-del-proyecto)
+    1. [Tecnologías en el Proyecto](#tecnologías-en-el-proyecto)
+    2. [Estructura del Proyecto](#estructura-del-proyecto)
 3. [Ambientes de Renderizado (Servidor y Cliente)](#ambientes-de-renderizado-servidor-y-cliente)
-   1. [Server Components](#server-components)
-   2. [Client Components](#client-components)
-   3. [Cuándo Usar Server Components y Client Components](#cuándo-usar-server-components-y-client-components)
+    1. [Server Components](#server-components)
+    2. [Client Components](#client-components)
+    3. [Cuándo Usar Server Components y Client Components](#cuándo-usar-server-components-y-client-components)
 4. [Mostrando los Restaurantes](#mostrando-los-restaurantes)
 5. [Mostrando un Restaurante](#mostrando-un-restaurante)
-   1. [Router](#router)
-   2. [Rutas Dinámicas](#rutas-dinámicas)
-   3. [Colocación](#colocación)
+    1. [Router](#router)
+    2. [Rutas Dinámicas](#rutas-dinámicas)
+    3. [Colocación](#colocación)
 6. [Navegación](#navegación)
 7. [Metadatos](#metadatos)
-   1. [Objeto `metadata`](#objeto-metadata)
-   2. [`generateMetadata`](#generatemetadata)
-   3. [Archivos de Metadatos](#archivos-de-metadatos)
+    1. [Objeto `metadata`](#objeto-metadata)
+    2. [`generateMetadata`](#generatemetadata)
+    3. [Archivos de Metadatos](#archivos-de-metadatos)
 8. [Estados de Carga](#estados-de-carga)
 9. [Manejo de Errores](#manejo-de-errores)
 10. [Uso de una Base de Datos](#usando-una-base-de-datos)
 11. [Compilando Nuestra Aplicación](#compilando-nuestra-aplicación)
 12. [Estrategias de Renderizado](#estrategias-de-renderizado)
-   1. [Renderizado Estático](#renderizado-estático-por-defecto)
-   2. [Renderizado Dinámico](#renderizado-dinámico)
-   3. [Streaming](#streaming)
-      1. [Pre-renderizado Parcial (experimental)](#pre-renderizado-parcial-experimental)
+    1. [Renderizado Estático](#renderizado-estático-por-defecto)
+    2. [Renderizado Dinámico](#renderizado-dinámico)
+    3. [Streaming](#streaming)
+        1. [Pre-renderizado Parcial (experimental)](#pre-renderizado-parcial-experimental)
 13. [Caching](#caching)
-   1. [Configuraciones de Revalidación de Caché](#configuraciones-de-revalidación-de-caché)
-      1. [cache: no-store](#cache-no-store)
-      2. [revalidate: `<number>`](#revalidate-number)
-      3. [Configuración de Segmento de Ruta](#configuración-de-segmento-de-ruta)
-      4. [Funciones Dinámicas](#funciones-dinámicas)
+    1. [Configuraciones de Revalidación de Caché](#configuraciones-de-revalidación-de-caché)
+        1. [cache: no-store](#cache-no-store)
+        2. [revalidate: `<number>`](#revalidate-number)
+        3. [Configuración de Segmento de Ruta](#configuración-de-segmento-de-ruta)
+        4. [Funciones Dinámicas](#funciones-dinámicas)
 14. [Revalidación Manual](#revalidación-manual)
-   1. [revalidatePath](#revalidatepath)
-   2. [revalidateTag](#revalidatetag)
+    1. [revalidatePath](#revalidatepath)
+    2. [revalidateTag](#revalidatetag)
 15. [Parámetros de URL](#parámetros-de-url)
 16. [Agrupación de Rutas](#agrupado-de-rutas)
 17. [Server Actions](#server-actions)
 18. [Guardado en Favoritos (localStorage)](#guardar-en-favoritos-localstorage)
-   1. [Pre-renderizado](#pre-renderizado)
-   2. [Lazy Loading](#lazy-loading)
+    1. [Pre-renderizado](#pre-renderizado)
+    2. [Lazy Loading](#lazy-loading)
 
 
 
