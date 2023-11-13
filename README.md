@@ -681,6 +681,8 @@ export const dynamic = 'force-dynamic' // por defecto: auto
 export const revalidate = 100 // por defecto: false
 ```
 
+'force-dynamic': Forzar la obtención de datos no almacenados en caché de un layout o page, desactivando toda la caché de las solicitudes y siempre volver a validar.
+
 Existen muchas otras configuraciones que puedes ver [aquí](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config).
 
 Ahora, si definimos `force-dynamic` y `revalidate` en 100, y en el fetch le ponemos `revalidate` en 50. ¿Qué configuración se sobrepone al resto? La respuesta es fácil: la de menor revalidación. En este caso, como definimos `force-dynamic`, los datos se obtendrán de origen en cada petición. Igualmente, por lo general, no suele ser algo por lo que tengamos que preocuparnos, ya que Next.js siempre optimizará lo más posible para que nuestra aplicación sea lo más rápida posible.
