@@ -130,13 +130,13 @@ Además de Next.js y React, este proyecto utiliza [TypeScript](https://www.types
 En la raíz del proyecto, encontrarás varios archivos de configuración y otros elementos que podemos ignorar por el momento. Por ahora, nos centraremos en la carpeta `src` y su contenido.
 
 ```bash
-├── src/
-│   └── app/
-│       ├── globals.css
-│       ├── favicon.ico
-│       ├── layout.tsx
-│       └── page.tsx
-└── api.ts
+└── src/
+    ├── app/
+    │   ├── globals.css
+    │   ├── favicon.ico
+    │   ├── layout.tsx
+    │   └── page.tsx
+    └── api.ts
 ```
 
 - `globals.css`: Este archivo contiene estilos globales para la aplicación, incluyendo los estilos de Tailwind CSS.
@@ -319,14 +319,15 @@ Eso debería ser suficiente por ahora en cuanto a archivos (puedes revisar más 
 Hemos hablado de archivos, pero también mencionamos carpetas y su anidación. ¿Cómo creamos una ruta para mostrar un restaurante basado en su `id`? La estructura de carpetas y archivos se vería así:
 
 ```bash
-├── src/
-│   └── app/
-│       ├── globals.css
-│       ├── layout.tsx
-│       ├── page.tsx
-│       └── [id]/
-│           └── page.tsx
-└── api.ts
+└── src/
+    ├── app/
+    │   ├── globals.css
+    │   ├── favicon.ico
+    │   ├── layout.tsx
+    │   ├── page.tsx
+    │   └── [id]/
+    │       └── page.tsx
+    └── api.ts
 ```
 
 Ahora, creemos la carpeta y el archivo `src/app/[id]/page.tsx` y añadamos el siguiente contenido:
