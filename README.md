@@ -681,7 +681,8 @@ export const dynamic = 'force-dynamic' // por defecto: auto
 export const revalidate = 100 // por defecto: false
 ```
 
-'force-dynamic': Forzar la obtención de datos no almacenados en caché de un layout o page, desactivando toda la caché de las solicitudes y siempre volver a validar.
+- `dynamic`: Cambia la estrategia de renderizado de una ruta para ser estática o dinámica.
+- `revalidate`: Define el tiempo de revalidación por defecto para una ruta.
 
 Existen muchas otras configuraciones que puedes ver [aquí](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config).
 
