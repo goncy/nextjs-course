@@ -132,8 +132,8 @@ En la raíz del proyecto, encontrarás varios archivos de configuración y otros
 ```bash
 └── src/
     ├── app/
-    │   ├── globals.css
     │   ├── favicon.ico
+    │   ├── globals.css
     │   ├── layout.tsx
     │   └── page.tsx
     └── api.ts
@@ -155,7 +155,7 @@ Existen [dos ambientes](https://nextjs.org/docs/app/building-your-application/re
 
 El término `cliente` hace referencia al navegador en el dispositivo del usuario, que envía una solicitud al `servidor` para recibir el código de tu aplicación y convertirlo en una interfaz visual para el usuario.
 
-Por otro lado, el término `servidor` se refiere a una computadora en un centro de datos que almacena el código de tu aplicación y recibe solicitudes de los clientes, proporcionando respuestas a estas solicitudes.
+Por otro lado, el término `servidor` se refiere a una computadora en un centro de datos que almacena el código de tu aplicación y recibe solicitudes de los clientes, proporcionando respuestas a estas solicitudes. Todo lo que pasa en el servidor no es expuesto ni visible para el cliente, solamente lo que se retorna.
 
 Podemos visualizar esta transición como un flujo unidireccional desde el servidor hacia el cliente. Una vez que una solicitud se completa en el servidor y se transfiere al cliente, no puede regresar al servidor (si se necesita volver al servidor, se realiza una nueva solicitud, por ejemplo, accediendo a una nueva ruta). La línea imaginaria que separa el servidor del cliente se conoce como `network boundary`.
 
@@ -163,7 +163,7 @@ Este concepto puede no resultar completamente claro en este momento, pero tomar�
 
 ### Server Components
 
-Por defecto, todos los componentes creados en la carpeta `app` son [React Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components). Los Server Components son componentes que se ejecutan exclusivamente en el servidor y tienen como objetivo describir cómo debería lucir una porción de nuestra interfaz. Estos componentes solo se ejecutan cuando el usuario accede a una ruta o segmento y no vuelven a ejecutarse en el cliente. El cliente simplemente los muestra (recordemos que una vez que se completa la ejecución de la solicitud en el servidor, no puede volver). Esto implica que no pueden manejar eventos del usuario, estados locales ni hooks, pero pueden acceder directamente a datos del servidor, bases de datos, variables de entorno privadas y todo lo que se pueda hacer en el servidor.
+Por defecto, todos los componentes que usamos en la carpeta `app` (en App Router) son [React Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components). Los Server Components son componentes de React que se ejecutan exclusivamente en el servidor. Estos componentes solo se ejecutan cuando el usuario accede a una ruta o segmento y no vuelven a ejecutarse en el cliente. Esto implica que no pueden manejar eventos del usuario, estados locales ni hooks, pero pueden acceder directamente a datos del servidor, bases de datos, variables de entorno privadas y todo lo que se pueda hacer en el servidor.
 
 Sin embargo, una aplicación típica también está compuesta por componentes dinámicos e interactivos que requieren interacciones del usuario, eventos y más. Para estos casos, podemos usar `Client Components`. Los Server Components pueden importar y usar Client Components, pero los Client Components no pueden importar Server Components. No te preocupes si esto aún no tiene mucho sentido; veremos cómo funciona más adelante.
 
@@ -243,7 +243,7 @@ interface Restaurant {
 }
 ```
 
-Además, encontraremos un objeto `api` con un método `list` que devuelve una `Promise` con un array de `Restaurant`. Veamos cómo podemos utilizar este método en nuestro Server Component `page.tsx`.
+Además, encontraremos un objeto `api` con un método `list` que devuelve una `Promise` con un array de `Restaurant`. Veamos cómo podemos utilizar este método en nuestro Server Component `page.tsx`:
 
 ```jsx
 import api from "@/api";
@@ -257,7 +257,9 @@ export default async function Home() {
 }
 ```
 
-Al observar la consola (no la del navegador, sino la terminal donde ejecutamos `npm run dev`), veremos un listado de `Restaurant`. ¿Cómo es posible esto? 🤯 Como mencionamos anteriormente, los Server Components no se vuelven a renderizar. Por lo tanto, podemos convertir nuestro componente en una función asíncrona y esperar a que la `Promise` se resuelva con los datos de los restaurantes. Luego, utilizamos esos datos para renderizarlos en nuestra página. Iteraremos sobre `restaurants` y crearemos una grilla que muestre la imagen, el título, la descripción y el rating de cada restaurante.
+Al observar la consola (no la del navegador, sino la terminal donde ejecutamos `npm run dev`), veremos un listado de `Restaurant`. ¿Cómo es posible esto? 🤯 Como mencionamos anteriormente, los Server Components no se vuelven a renderizar. Por lo tanto, podemos convertir nuestro componente en una función asíncrona y esperar a que la `Promise` se resuelva con los datos de los restaurantes. Luego, utilizamos esos datos para renderizarlos en nuestra página.
+
+Iteremos sobre `restaurants` para crear una grilla que muestre la imagen, el título, la descripción y el rating de cada restaurante.
 
 ```jsx
 import api from "@/api";
@@ -305,7 +307,7 @@ Vamos a crear una ruta para visualizar cada restaurante de manera individual. An
 
 ### Router
 
-Next.js, con App Router, utiliza un router construido sobre React Server Components que soporta layouts compartidos, enrutamiento anidado, manejo de estados de carga, manejo de errores y más. El enrutamiento de App Router se basa en archivos, lo que significa que podemos crear rutas y segmentos simplemente creando archivos y carpetas. Entonces, ¿qué archivos y carpetas debemos crear? Ya conocemos `layout.tsx` y `page.tsx`, pero ¿cómo podemos usarlos para crear otras rutas? Veamos algunas convenciones que vamos a utilizar en este curso:
+Next.js, con App Router, utiliza un router construido sobre React Server Components que soporta layouts compartidos, enrutamiento anidado, manejo de estados de carga, manejo de errores y más. El enrutamiento de App Router se basa en archivos, lo que significa que podemos crear rutas y segmentos simplemente creando archivos y carpetas. Entonces, ¿qué archivos y carpetas debemos crear? Ya conocemos `layout.tsx` y `page.tsx`, pero ¿cómo podemos usarlos para crear otras cosas? Veamos algunas convenciones que vamos a utilizar en este curso:
 
 - `layout.tsx`: Envuelve a `page.tsx`, permitiendo compartir un layout entre varias páginas.
 - `page.tsx`: Define una página, recibe parámetros y parámetros de búsqueda como props.
@@ -313,7 +315,7 @@ Next.js, con App Router, utiliza un router construido sobre React Server Compone
 - `error.tsx`: Página de error que se muestra al haber una excepción o error en la ejecución de una página o layout.
 - `route.tsx`: Define una ruta de API, se ejecuta en el servidor y devuelve datos usando un objeto `Response`.
 
-Eso debería ser suficiente por ahora en cuanto a archivos (puedes revisar más [aquí](https://nextjs.org/docs/app/building-your-application/routing#file-conventions)).
+Eso debería ser suficiente por ahora en cuanto a archivos (puedes ver más [aquí](https://nextjs.org/docs/app/building-your-application/routing#file-conventions)).
 
 ### Rutas Dinámicas
 Hemos hablado de archivos, pero también mencionamos carpetas y su anidación. ¿Cómo creamos una ruta para mostrar un restaurante basado en su `id`? La estructura de carpetas y archivos se vería así:
@@ -321,8 +323,8 @@ Hemos hablado de archivos, pero también mencionamos carpetas y su anidación. �
 ```bash
 └── src/
     ├── app/
-    │   ├── globals.css
     │   ├── favicon.ico
+    │   ├── globals.css
     │   ├── layout.tsx
     │   ├── page.tsx
     │   └── [id]/
@@ -362,7 +364,7 @@ export default async function RestaurantPage({ params: { id } }: { params: { id:
 Al ingresar a la ruta `/1`, deberíamos ver algo así:
 ![Página de un restaurante](./images/restaurant-details.jpg)
 
-Veamos cómo sucedió esto. Recordamos que los componentes por defecto son Server Components, así que hicimos que sea `async` y utilizamos nuestro método `api.fetch` para obtener los datos del restaurante. Además, aprendimos algo nuevo: el archivo `page.tsx` recibe como props una propiedad `params` que contiene los parámetros de la ruta. En este caso, como nuestra ruta es `/[id]`, el parámetro se llama `id`. [Desestructuramos](https://es.javascript.info/destructuring-assignment#desestructuracion-de-objetos) `params` para obtener el `id` y lo usamos para obtener los datos del restaurante y renderizarlos en la página.
+Veamos cómo sucedió esto. Recordamos que los componentes, por defecto son Server Components, así que hicimos que sea `async` y utilizamos nuestro método `api.fetch` para obtener los datos del restaurante. Además, aprendimos algo nuevo: el archivo `page.tsx` recibe como props una propiedad `params` que contiene los parámetros de la ruta. En este caso, como nuestra ruta es `/[id]`, el parámetro se llama `id`. [Desestructuramos](https://es.javascript.info/destructuring-assignment#desestructuracion-de-objetos) `params` para obtener el `id` y lo usamos para obtener los datos del restaurante y renderizarlos en la página.
 
 Ahora tenemos un pequeño problema: acabamos de repetir todo el código de la tarjeta del restaurante. Podríamos crear un componente y reutilizarlo (te dejo esa tarea a ti). Pero... ¿Dónde deberían ir los componentes que no son páginas, layouts o archivos especiales?
 
@@ -1013,6 +1015,11 @@ Si buscas practicar de manera activa, te recomiendo probar algunos de los desaf�
 Espero que hayas disfrutado del curso. Si encuentras algo que crees que podría mejorarse o notas algún error, ¡los Pull Requests son bienvenidos! Abajo encontrarás mis redes sociales y los lugares donde puedes hacer donaciones si te gustó mi contenido.
 
 ¡Nos vemos! 🚀
+
+## Próximos temas a agregar
+
+- Optimización de imágenes (next/image)
+- useFormStatus (server actions)
 
 ---
 

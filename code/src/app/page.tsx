@@ -1,7 +1,3 @@
-export default async function HomePage() {
-  return (
-    <section>
-      👋
-    </section>
-  );
+export default function HomePage() {
+  return <section>👋</section>;
 }
