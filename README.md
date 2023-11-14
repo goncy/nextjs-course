@@ -471,7 +471,7 @@ export default function Loading() {
 }
 ```
 
-Ahora, al recargar la página, veremos que mientras se está cargando, se muestra el texto "Loading..." y una vez que termina de cargar, se reemplaza por el contenido de `page.tsx`. Pero también notamos que si vamos a la ruta `/1`, también se muestra el texto "Loading...". ¿Por qué si el `loading.tsx` está definido en la raíz de nuestro proyecto? Esto sucede porque `loading.tsx` es una abstracción sobre React Suspense. Cuando una parte de nuestra aplicación se suspende, busca hacia arriba el Suspense Boundary más cercano y lo utiliza. Si quisieramos, podríamos definir un `loading.tsx` dentro de `[id]` y se usaría en vez del de la raíz, pero por ahora estamos bien con este.
+Ahora, al recargar la página, veremos que mientras se está cargando, se muestra el texto "Loading..." y una vez que termina de cargar, se reemplaza por el contenido de `page.tsx`. Pero también notamos que si vamos a la ruta `/1`, también se muestra el texto "Loading...". ¿Por qué? Si el `loading.tsx` está definido en la raíz de nuestro proyecto. Cuando una parte de nuestra aplicación se suspende, busca hacia arriba el Suspense Boundary más cercano y lo utiliza (en este caso, al no haber ninguno en `/[id]`, sube y encuentra el definido en la raíz de nuestra aplicación). Si quisieramos, podríamos definir un `loading.tsx` dentro de `[id]` y se usaría en vez del de la raíz, pero por ahora estamos bien con este.
 
 ## Manejo de Errores
 
@@ -493,11 +493,13 @@ Si intentamos entrar a una ruta inexistente, como `/123`, veremos una ventana de
 
 El archivo `error.tsx` funciona con un React Error Boundary cuyo comportamiento es similar al Suspense Boundary, buscando hacia arriba el Error Boundary más cercano. Por ende, si algo falla en `/1` o en `/`, se usará el mismo `error.tsx`.
 
+> Si no definimos un archivo `error.tsx`, se usará el que viene por defecto en Next.js.
+
 ## Usando una Base de Datos
 
-Vamos a trasladar nuestros datos de prueba a una base de datos para poder modificarlos cuando queramos. En este caso, usaremos Google Sheets, ya que es fácil, gratuito y no requiere configuración. Si no te gusta, puedes usar la base de datos que prefieras. Para ello, accedamos a [https://sheets.new](https://sheets.new) y creemos una nueva hoja con los mismos datos que nuestra data de prueba.
+Vamos a trasladar nuestros datos de prueba a una base de datos para poder modificarlos cuando queramos. En este caso, usaremos Google Sheets, ya que es fácil, gratuito y no requiere configuración. Si no te gusta, puedes usar la base de datos que prefieras. Para ello, accedamos a [https://sheets.new](https://sheets.new) y creemos una nueva hoja con los mismos datos que nuestros datos de prueba.
 
-Puedes utilizar ChatGPT para convertir la data de prueba. De todos modos, aquí tienes los datos (cópialos, pégalo en la primera celda de Google Sheets y selecciona del Menu: `Datos > dividir texto en columnas`):
+Puedes utilizar ChatGPT para convertir los datos de prueba. De todos modos, aquí tienes los datos (cópialos, pégalo en la primera celda de Google Sheets y selecciona del Menu: `Datos > dividir texto en columnas`):
 
 ```csv
 id,name,description,address,score,ratings,image
@@ -568,7 +570,7 @@ Si vamos a `http://localhost:3000`, deberíamos ver nuestra aplicación funciona
 
 Mmm... No funciona.
 
-Vayamos a la ruta del elemento que modificamos. Mmm... acá sí funciona, hasta se muestra el componente de carga. Si volvemos al index, la data no concuerda. ¿Qué está pasando?
+Vayamos a la ruta del elemento que modificamos. Mmm... tampoco funciona. ¿Qué está pasando?
 
 Veamos de nuevo la imagen de más arriba:
 
@@ -586,7 +588,7 @@ Con el renderizado estático, nuestras rutas se renderizan en tiempo de compilac
 
 El renderizado estático es muy útil para páginas que no cambian con frecuencia o no incluyen información personalizada sobre el usuario. También podemos combinar el renderizado estático con obtener datos desde el cliente para crear aplicaciones dinámicas y rápidas.
 
-Nuestra ruta `/` tuvo un renderizado estático por defecto, pero ¿por qué nuestra ruta de `/[id]` no? Bueno, porque Next.js no sabe cuáles son los `id` de nuestros restaurantes, por lo tanto, no puede renderizarlos en tiempo de compilación. Sin embargo, si en nuestra página `/[id]/page.tsx` definimos una función [`generateStaticParams`](https://nextjs.org/docs/app/api-reference/functions/generate-static-params) que devuelva los ids, los generará en tiempo de compilación de manera estática:
+Nuestra ruta `/` tuvo un renderizado estático por defecto, pero ¿por qué nuestra ruta de `/[id]` no? Bueno, porque Next.js no sabe cuáles son los `id` de nuestros restaurantes, por lo tanto, no puede renderizarlos en tiempo de compilación. Sin embargo, si en nuestra página `/[id]/page.tsx` definimos una función [`generateStaticParams`](https://nextjs.org/docs/app/api-reference/functions/generate-static-params) que devuelva los ids, generará esos ids en tiempo de compilación de manera estática:
 
 ```jsx
 export async function generateStaticParams() {
@@ -606,17 +608,19 @@ Con el renderizado dinámico, nuestras rutas se renderizan cada vez que un usuar
 
 Para optar por una ruta con renderizado dinámico, podemos establecer configuraciones de caché a nivel de `fetch`, ruta/segmento o al usar funciones dinámicas. Hablaremos de esto en la próxima sección.
 
+> Capaz en este momento te pregunes, si mi ruta `/[id]` es dinámica, ¿por qué no mostraba los datos actualizados? Bueno, porque la grilla de restaurantes en el índice tenía un componente `Link` por cada restaurante. El componente `Link` hace [`prefetching`](https://nextjs.org/docs/app/building-your-application/routing/linking-and-navigating#1-prefetching) por defecto, lo que en segundo plano generaba la ruta dinámica y la cacheaba de manera estática. Por eso tampoco veiamos un loading al entrar. Si queremos evitar esto, podemos agregar la prop `prefetch` en `false` al componente `Link` de nuestra grilla de restaurantes.
+
 ### Streaming
 
 El Streaming es una técnica de transferencia de datos que nos permite dividir el contenido en trozos más pequeños y enviarlos al cliente a medida que esten disponibles. Esto evita que procesos bloqueantes (como obtener datos) eviten que el usuario no vea nada hasta que todo esté disponible.
 
-Para habilitar streaming basta con tener un Suspense Boundary, definiendo un archivo `loading.tsx` a nivel página o montando un componente Suspense manualmente en algun Server Component.
+Para habilitar streaming basta con tener un Suspense Boundary, definiendo un archivo `loading.tsx` o montando un componente Suspense manualmente en algun Server Component.
 
 #### Pre-renderizado parcial (experimental)
 
 El problema radica en que nuestras aplicaciones o rutas no suelen ser estáticas o dinámicas (de manera excluyente), sino que una combinación de ambas.
 
-El [Pre-renderizado parcial](https://nextjs.org/docs/app/api-reference/next-config-js/partial-prerendering) es una optimización de compilador que permite que partes estáticas de una ruta sean pre-renderizadas desde caché con "agujeros" dincámicos donde el contenido se irá streameando, todo en una sola petición.
+El [Pre-renderizado parcial](https://nextjs.org/docs/app/api-reference/next-config-js/partial-prerendering) es una optimización de compilador que permite que partes estáticas de una ruta sean pre-renderizadas desde caché con "agujeros" dinámicos donde el contenido se irá streameando, todo en una sola petición.
 
 Si quieres habilitar PPR puedes hacerlo de la siguiente manera en el archivo `next.config.js`:
 
@@ -682,7 +686,7 @@ Ahora no solo debería funcionar, sino que también podemos ver en el detalle de
 Si no queremos que cada petición traiga información nueva cada vez, sino que queremos que "revalide" esa información cada cierto tiempo, podemos definir la propiedad `revalidate` en nuestros fetch de la siguiente manera:
 
 ```ts
-const [, ...data] = await fetch('...', { revalidate: 100 }).then(res => res.text()).then(text => text.split('\n'))
+const [, ...data] = await fetch('...', { next: { revalidate: 100 } }).then(res => res.text()).then(text => text.split('\n'))
 ```
 
 Esto hará que después de 100 segundos de haber obtenido los datos, la próxima vez que un usuario ingrese a la ruta, se le servirán datos de la caché y, en segundo plano, se obtendrán datos nuevos. Estos datos sobrescribirán la caché y la próxima vez que un usuario ingrese a la ruta, se le servirán los datos nuevos. A esta estrategia se la conoce como `stale-while-revalidate` y definirla por un tiempo determinado se lo conoce como `time-based revalidation`.
@@ -701,7 +705,7 @@ export const revalidate = 100 // por defecto: false
 
 Existen muchas otras configuraciones que puedes ver [aquí](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config).
 
-Ahora, si definimos `force-dynamic` y `revalidate` en 100, y en el fetch le ponemos `revalidate` en 50. ¿Qué configuración se sobrepone al resto? La respuesta es fácil: la de menor revalidación. En este caso, como definimos `force-dynamic`, los datos se obtendrán de origen en cada petición. Igualmente, por lo general, no suele ser algo por lo que tengamos que preocuparnos, ya que Next.js siempre optimizará lo más posible para que nuestra aplicación sea lo más rápida posible.
+Ahora, si definimos `force-dynamic` y `revalidate` en 100, y en el fetch le ponemos `revalidate` en 50. ¿Qué configuración se sobrepone al resto? La respuesta es fácil: la de menor valor. En este caso, como definimos `force-dynamic`, los datos se obtendrán de origen en cada petición. Igualmente, por lo general, no suele ser algo por lo que tengamos que preocuparnos, ya que Next.js siempre optimizará lo más posible para que nuestra aplicación sea lo más rápida posible.
 
 #### Funciones Dinámicas
 
@@ -720,18 +724,18 @@ Creamos un archivo `src/app/api/revalidate/route.ts` con el siguiente contenido:
 ```typescript
 import { revalidatePath } from "next/cache";
 
-export async function GET() {
+export async function POST() {
   revalidatePath('/');
 
   return Response.json({ success: true });
 }
 ```
 
-En un Route Handler, podemos exportar funciones con los nombres de los métodos HTTP habituales, y se llamarán cuando la ruta reciba una petición del mismo método.
+En un [Route Handler](https://nextjs.org/docs/app/building-your-application/routing/route-handlers), podemos exportar funciones con los nombres de los métodos HTTP habituales, y se ejecutarán cuando la ruta reciba una petición del mismo método.
 
-Ahora podemos eliminar todos los `revalidate`, `dynamic` y cualquier cosa que haga que nuestra ruta `/` sea dinámica. Luego, volvemos a compilar y ejecutar nuestra aplicación. Si vamos a `http://localhost:3000`, deberíamos ver nuestros restaurantes. Luego, modificamos uno en la base de datos, vamos manualmente a `http://localhost:3000/api/revalidate` y volvemos a `http://localhost:3000`. Deberíamos ver los datos actualizados.
+Ahora podemos eliminar todos los `revalidate`, `dynamic` y cualquier cosa que haga que nuestra ruta `/` sea dinámica. Luego, volvemos a compilar y ejecutar nuestra aplicación. Si vamos a `http://localhost:3000`, deberíamos ver nuestros restaurantes. Luego, modificamos uno en la base de datos, una petición `POST` manualmente a `http://localhost:3000/api/revalidate` y volvemos a `http://localhost:3000`. Deberíamos ver los datos actualizados.
 
-Es una buena práctica proteger nuestras rutas de API con alguna clave secreta para evitar que usuarios malintencionados ejecuten estos métodos. Tu tarea es definir una variable de entorno `REVALIDATE_SECRET` y usarla en nuestra ruta de API para ejecutarla solo cuando nos envíen un parámetro `secret` con el valor correcto. Puedes usar la documentación oficial de Next.js para ver cómo usar variables de entorno.
+Es una buena práctica proteger nuestras rutas de API con alguna clave secreta para evitar que usuarios malintencionados ejecuten estos métodos. Tu tarea es definir una variable de entorno `REVALIDATE_SECRET` y usarla en nuestra ruta de API para ejecutarla solo cuando nos envíen un parámetro `secret` con el valor correcto. Puedes usar la documentación oficial de Next.js para ver cómo usar [variables de entorno](https://nextjs.org/docs/app/building-your-application/configuring/environment-variables).
 
 #### `revalidateTag`
 
@@ -748,7 +752,7 @@ Ahora, actualizamos nuestra ruta de API utilitaria para usar `revalidateTag`:
 ```typescript
 import { revalidateTag } from "next/cache";
 
-export async function GET() {
+export async function POST() {
   revalidateTag('restaurants');
 
   return Response.json({ success: true });
@@ -767,7 +771,7 @@ Creamos un componente `src/app/components/SearchBox.tsx` que contiene un campo d
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SearchBox() {
-  const { push } = useRouter();
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -778,14 +782,14 @@ export default function SearchBox() {
     const query = event.currentTarget.query.value;
 
     // Redireccionamos al index con una query
-    push(`/?q=${query}`);
+    router.push(`/?q=${query}`);
   }
 
   return (
     <form onSubmit={handleSubmit} className="inline-flex gap-2 mb-4">
       {/* Inicializamos el input para que contenga el valor actual de la query */}
       <input defaultValue={searchParams.get('q') || ''} className="px-2" name="query" />
-      <button className="p-2 bg-white/20">Search</button>
+      <button type="submit" className="p-2 bg-white/20">Search</button>
     </form>
   );
 }
@@ -815,12 +819,17 @@ export default async function Home() {
 const api = {
   ...,
   search: async (query: string): Promise<Restaurant[]> => {
-    const results = await api.list();
+    // Obtenemos los restaurantes
+    const results = await api.list().then((restaurants) =>
+      // Los filtramos por nombre
+      restaurants.filter((restaurant) =>
+        restaurant.name.toLowerCase().includes(query.toLowerCase()),
+      ),
+    );
 
-    return results.filter((restaurant) => {
-      return restaurant.name.toLowerCase().includes(query.toLowerCase());
-    })
-  }
+    // Los retornamos
+    return results;
+  },
 }
 ```
 
@@ -886,7 +895,7 @@ export default async function Home({ searchParams }: { searchParams: { q?: strin
     <section>
       <form action={searchAction} className="inline-flex gap-2 mb-4">
         <input defaultValue={searchParams.q || ''} className="px-2" name="query" />
-        <button className="p-2 bg-white/20">Search</button>
+        <button type="submit" className="p-2 bg-white/20">Search</button>
       </form>
       <section className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
         ...
@@ -906,7 +915,14 @@ Vamos a implementar la funcionalidad de guardar en favoritos. Para eso, vamos a 
 import { Restaurant } from "@/types";
 import Link from "next/link";
 
-export default function RestaurantCard({restaurant}: {restaurant: Restaurant}) {
+export default function RestaurantCard({restaurant}: {restaurant: {
+  id: string;
+  name: string;
+  image: string;
+  description: string;
+  score: number;
+  ratings: number;
+}}) {
   const isFavourite = window.localStorage.getItem('favorites')?.includes(restaurant.id)
 
   return (
@@ -925,7 +941,7 @@ export default function RestaurantCard({restaurant}: {restaurant: Restaurant}) {
           <span>{restaurant.score}</span>
           <span className="font-normal opacity-75">({restaurant.ratings})</span>
         </small>
-        <button className={`text-red-500 text-xl ${isFavourite ? 'opacity-100' : 'opacity-20'}`}>♥</button>
+        <button type="button" className={`text-red-500 text-xl ${isFavourite ? 'opacity-100' : 'opacity-20'}`}>♥</button>
       </h2>
       <p className="opacity-90">{restaurant.description}</p>
     </article>
@@ -955,18 +971,34 @@ Hemos actualizado el código de nuestro componente `RestaurantCard` para que con
 import dynamic from "next/dynamic";
 import Link from "next/link";
 
-function FavoriteButton({restaurant}) {
+function FavoriteButton({restaurant}: {
+  restaurant: {
+    id: string;
+    name: string;
+    image: string;
+    description: string;
+    score: number;
+    ratings: number;
+  }
+}) {
   const isFavourite = window.localStorage.getItem('favorites')?.includes(restaurant.id)
 
   return (
-    <button className={`text-red-500 text-xl ${isFavourite ? 'opacity-100' : 'opacity-20'}`}>♥</button>
+    <button type="button" className={`text-red-500 text-xl ${isFavourite ? 'opacity-100' : 'opacity-20'}`}>♥</button>
   )
 }
 
 // Creamos un componente dinámico para que no se renderice en el servidor
 const DynamicFavoriteButton = dynamic(async () => FavoriteButton, { ssr: false });
 
-export default function RestaurantCard({ restaurant }) {
+export default function RestaurantCard({ restaurant }: { restaurant: {
+  id: string;
+  name: string;
+  image: string;
+  description: string;
+  score: number;
+  ratings: number;
+}}) {
   return (
     <article>
       <img
@@ -1000,6 +1032,7 @@ Te dejo algunas tareas:
 - Nuestro componente `RestaurantCard` contiene dos componentes. El componente que contiene la información no necesita ninguna actividad, por ende, podría seguir siendo un Server Component. Mueve el componente del botón de favorito a otro archivo e impórtalo.
   - Puedes convertir `RestaurantCard` en una carpeta y agregarle un `index.tsx` y un `FavoriteButton.tsx` dentro. De esa manera, los componentes seguirían colocados lo más cerca de donde son relevantes posible. Pero maneja esto a tu gusto.
 - Implementa la funcionalidad de agregar y quitar favoritos en el botón de favorito. Al cargar la página, debería mostrar el estado actual, y al hacer clic en el botón, debería mostrar el estado actualizado y persistir ese estado al recargar la página.
+- Estamos repitiendo los tipos para `Restaurant` muchas veces, mueve la interfaz a un archivo `src/types.ts`, exportala y usala donde sea necesario.
 
 ---
 
