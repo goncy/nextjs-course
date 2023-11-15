@@ -10,6 +10,12 @@ Es natural que algunos conceptos puedan resultar complicados al principio o que 
 
 Si en algún momento sientes que el contenido del curso no es suficiente para abordar los ejercicios o comprender un tema en particular, no dudes en recurrir a la documentación oficial, ya sea de [Next.js](https://docs.nextjs.org/) o de [React](https://react.dev/reference/react).
 
+## Video
+
+Si prefieres seguir este curso en formato de video guiado, puedes verlo aquí:
+
+<iframe width="640" height="480" src="https://www.youtube.com/embed/s5jPwPZrJhw?si=zEM9IsGNIza2YBci" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
 ## Requisitos
 
 Asegúrate de cumplir con los siguientes requisitos antes de comenzar el curso:
