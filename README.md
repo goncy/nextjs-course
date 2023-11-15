@@ -14,7 +14,7 @@ Si en algún momento sientes que el contenido del curso no es suficiente para ab
 
 Si prefieres seguir este curso en formato de video guiado, puedes verlo aquí:
 
-[![Watch the video](https://img.youtube.com/vi/s5jPwPZrJhw/maxresdefault.jpg)](https://youtu.be/s5jPwPZrJhw)
+[![Curso Introductorio a Next.js con App Router](https://img.youtube.com/vi/s5jPwPZrJhw/maxresdefault.jpg)](https://youtu.be/s5jPwPZrJhw)
 
 ## Requisitos
 
