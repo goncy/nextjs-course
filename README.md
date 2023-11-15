@@ -912,7 +912,6 @@ Vamos a implementar la funcionalidad de guardar en favoritos. Para eso, vamos a 
 ```tsx
 'use client'
 
-import { Restaurant } from "@/types";
 import Link from "next/link";
 
 export default function RestaurantCard({restaurant}: {restaurant: {
