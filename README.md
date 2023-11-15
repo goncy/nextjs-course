@@ -14,11 +14,7 @@ Si en algún momento sientes que el contenido del curso no es suficiente para ab
 
 Si prefieres seguir este curso en formato de video guiado, puedes verlo aquí:
 
-[![Watch the video](https://img.youtube.com/vi/s5jPwPZrJhw/default.jpg)](https://youtu.be/s5jPwPZrJhw)
-
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=s5jPwPZrJhw" target="_blank">
- <img src="http://img.youtube.com/vi/s5jPwPZrJhw/mqdefault.jpg" alt="Watch the video" width="640" height="480" border="10" />
-</a>
+[![Watch the video](https://img.youtube.com/vi/s5jPwPZrJhw/maxresdefault.jpg)](https://youtu.be/s5jPwPZrJhw)
 
 ## Requisitos
 
