@@ -14,7 +14,7 @@ Si en algún momento sientes que el contenido del curso no es suficiente para ab
 
 Si prefieres seguir este curso en formato de video guiado, puedes verlo aquí:
 
-<iframe width="640" height="480" src="https://www.youtube.com/embed/s5jPwPZrJhw?si=zEM9IsGNIza2YBci" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+[![Watch the video](https://img.youtube.com/vi/zEM9IsGNIza2YBci/default.jpg)](https://youtu.be/zEM9IsGNIza2YBci)
 
 ## Requisitos
 
