@@ -608,7 +608,7 @@ Con el renderizado dinámico, nuestras rutas se renderizan cada vez que un usuar
 
 Para optar por una ruta con renderizado dinámico, podemos establecer configuraciones de caché a nivel de `fetch`, ruta/segmento o al usar funciones dinámicas. Hablaremos de esto en la próxima sección.
 
-> Capaz en este momento te pregunes, si mi ruta `/[id]` es dinámica, ¿por qué no mostraba los datos actualizados? Bueno, porque la grilla de restaurantes en el índice tenía un componente `Link` por cada restaurante. El componente `Link` hace [`prefetching`](https://nextjs.org/docs/app/building-your-application/routing/linking-and-navigating#1-prefetching) por defecto, lo que en segundo plano generaba la ruta dinámica y la cacheaba de manera estática. Por eso tampoco veiamos un loading al entrar. Si queremos evitar esto, podemos agregar la prop `prefetch` en `false` al componente `Link` de nuestra grilla de restaurantes.
+> Capaz en este momento te preguntes, si mi ruta `/[id]` es dinámica, ¿por qué no mostraba los datos actualizados? Bueno, porque la grilla de restaurantes en el índice tenía un componente `Link` por cada restaurante. El componente `Link` hace [`prefetching`](https://nextjs.org/docs/app/building-your-application/routing/linking-and-navigating#1-prefetching) por defecto, lo que en segundo plano generaba la ruta dinámica y la cacheaba de manera estática. Por eso tampoco veiamos un loading al entrar. Si queremos evitar esto, podemos agregar la prop `prefetch` en `false` al componente `Link` de nuestra grilla de restaurantes.
 
 ### Streaming
 
@@ -641,7 +641,6 @@ El Pre-renderizado parcial está construido sobre las [APIs concurrentes de Reac
 
 Cuando trabajamos con aplicaciones React en Vite, Create React App o similares, generalmente lidiamos con un solo caché, el caché del navegador. En Next.js, tenemos muchos tipos de caché diferentes:
 
-Aquí tienes la traducción al español de la tabla MDX:
 
 | Mecanismo                    | Qué                             | Dónde    | Propósito                                                  | Duración                                    |
 | ---------------------------- | ------------------------------- | -------- | ---------------------------------------------------------- | ------------------------------------------- |
