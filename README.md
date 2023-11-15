@@ -437,7 +437,7 @@ Si abrimos las herramientas de desarrollo veremos que dentro del tag `head` pode
 Si necesitamos información de la petición para generar metadatos (por ejemplo el nombre de un restaurante) podemos usar la función `generateMetadata` que retorna un objeto con todos los metadatos de nuestra página. En `src/app/[id]/page.tsx` creemos una función `generateMetadata` de la siguiente manera:
 
 ```ts
-export async function generateMetadata({params: {id}}) {
+export async function generateMetadata({params: {id}}: {params: {id: string}}) {
   const restaurant = await api.fetch(id);
 
   return {
