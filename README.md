@@ -727,18 +727,23 @@ Este método nos permite revalidar el contenido de una ruta en particular, como 
 Creamos un archivo `src/app/api/revalidate/route.ts` con el siguiente contenido:
 
 ```typescript
-import { revalidatePath } from "next/cache";
+import type {NextRequest} from "next/server";
 
-export async function POST() {
-  revalidatePath('/');
+import {revalidatePath} from "next/cache";
 
-  return Response.json({ success: true });
+export async function GET(request: NextRequest) {
+  const path = request.nextUrl.searchParams.get("path") || "/";
+
+  revalidatePath(path);
+
+  return Response.json({success: true});
 }
 ```
+> Podemos enviar un `path` por `searchParams` así nuestro endpoint utilitario es más flexible.
 
 En un [Route Handler](https://nextjs.org/docs/app/building-your-application/routing/route-handlers), podemos exportar funciones con los nombres de los métodos HTTP habituales, y se ejecutarán cuando la ruta reciba una petición del mismo método.
 
-Ahora podemos eliminar todos los `revalidate`, `dynamic` y cualquier cosa que haga que nuestra ruta `/` sea dinámica. Luego, volvemos a compilar y ejecutar nuestra aplicación. Si vamos a `http://localhost:3000`, deberíamos ver nuestros restaurantes. Luego, modificamos uno en la base de datos, una petición `POST` manualmente a `http://localhost:3000/api/revalidate` y volvemos a `http://localhost:3000`. Deberíamos ver los datos actualizados.
+Ahora podemos eliminar todos los `revalidate`, `dynamic` y cualquier cosa que haga que nuestra ruta `/` sea dinámica. Luego, volvemos a compilar y ejecutar nuestra aplicación. Si vamos a `http://localhost:3000`, deberíamos ver nuestros restaurantes. Luego, modificamos uno en la base de datos, una petición `GET` manualmente a `http://localhost:3000/api/revalidate` y volvemos a `http://localhost:3000`. Deberíamos ver los datos actualizados.
 
 Es una buena práctica proteger nuestras rutas de API con alguna clave secreta para evitar que usuarios malintencionados ejecuten estos métodos. Tu tarea es definir una variable de entorno `REVALIDATE_SECRET` y usarla en nuestra ruta de API para ejecutarla solo cuando nos envíen un parámetro `secret` con el valor correcto. Puedes usar la documentación oficial de Next.js para ver cómo usar [variables de entorno](https://nextjs.org/docs/app/building-your-application/configuring/environment-variables).
 
@@ -755,14 +760,19 @@ const [, ...data] = await fetch('...', { next: { tags: ['restaurants'] } }).then
 Ahora, actualizamos nuestra ruta de API utilitaria para usar `revalidateTag`:
 
 ```typescript
-import { revalidateTag } from "next/cache";
+import type {NextRequest} from "next/server";
 
-export async function POST() {
-  revalidateTag('restaurants');
+import {revalidateTag} from "next/cache";
 
-  return Response.json({ success: true });
+export async function GET(request: NextRequest) {
+  const tag = request.nextUrl.searchParams.get("tag") || "restaurants";
+
+  revalidateTag(tag);
+
+  return Response.json({success: true});
 }
 ```
+> Podemos enviar un `tag` por `searchParams` así nuestro endpoint utilitario es más flexible.
 
 ## Parámetros de URL
 
