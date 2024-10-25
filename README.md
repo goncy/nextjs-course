@@ -21,6 +21,7 @@ Asegúrate de cumplir con los siguientes requisitos antes de comenzar el curso:
 - Tener Node.js instalado en tu computadora.
 - Contar con un editor de código de tu preferencia.
 
+> [!NOTE]
 > Puedes optar por un entorno en línea, como [CodeSandbox](https://codesandbox.io), si no deseas o no puedes instalar nada en tu computadora.
 
 ## Terminología
@@ -122,6 +123,7 @@ La forma más sencilla de crear una aplicación Next.js en nuestra máquina es m
 ```bash
 npx create-next-app@latest --example "https://github.com/goncy/nextjs-course" --example-path "code" restaurancy
 ```
+> [!NOTE]
 > Puedes omitir los parámetros `--example` y `--example-path` si deseas crear un proyecto personalizado. En este caso `--example` es la URL de este repositorio mientras que `example-path "code"` es donde se encuentra el proyecto base para este curso y `restaurancy` es el nombre que se le dará a la carpeta del proyecto.
 
 Una vez completada la ejecución del comando, se generará una carpeta llamada `restaurancy` con todos los archivos necesarios para ejecutar la aplicación.
@@ -180,6 +182,7 @@ El término `cliente` hace referencia al navegador en el dispositivo del usuario
 
 Por otro lado, el término `servidor` se refiere a una computadora en un centro de datos que almacena el código de tu aplicación y recibe solicitudes de los clientes, proporcionando respuestas a estas solicitudes. Todo lo que pasa en el servidor no es expuesto ni visible para el cliente, solamente lo que se retorna.
 
+> [!NOTE]
 > Mientras estámos en modo de desarrollo, corriendo `npm run dev`, el servidor es tu computadora.
 
 Podemos visualizar esta transición como un flujo unidireccional desde el servidor hacia el cliente. Una vez que una solicitud se completa en el servidor y se transfiere al cliente, no puede regresar al servidor. Si se necesita volver al servidor, se realiza una nueva solicitud, por ejemplo, accediendo a una nueva ruta. La línea imaginaria que separa el servidor del cliente se conoce como `network boundary`.
@@ -216,6 +219,7 @@ Ahora, la pregunta clave es: ¿por qué renderizaríamos algo en el servidor? Bu
 
 Los `Client Components` nos permiten escribir interfaces interactivas y dinámicas que se ejecutan en el cliente. Los Client Components pueden usar hooks, estados locales, eventos, APIs del navegador y más. Podemos pensar en los Client Components como "los componentes habituales que usamos en React en nuestras aplicaciones con Vite o Create React App". Aunque con algunas diferencias, como que se renderizan una vez en el servidor antes de renderizarse en el cliente.
 
+> [!NOTE]
 > Puedes leer más [aquí](https://nextjs.org/docs/app/building-your-application/rendering/client-components#how-are-client-components-rendered)
 
 Para marcar un componente como Client Component, debemos agregar la directiva `"use client"` al inicio del archivo.
@@ -325,7 +329,7 @@ El resultado es el siguiente:
 
 En resumen, hemos aprendido que, además de ejecutarse en el servidor y aprovechar todos los beneficios mencionados anteriormente, los Server Components pueden utilizar `async/await`. Esto nos ayuda a reducir el boilerplate y la complejidad de nuestra aplicación al obtener datos de manera eficiente.
 
-> **Bonus:** Personaliza la grilla de restaurantes con tu propio toque mágico de estilos. ¡Diviértete explorando y mejorando la presentación visual!
+**Bonus:** Personaliza la grilla de restaurantes con tu propio toque mágico de estilos. ¡Diviértete explorando y mejorando la presentación visual!
 
 ## Mostrando un Restaurante
 
@@ -457,6 +461,7 @@ Ahora deberíamos ver el título de nuestra página actualizado.
 
 Si abrimos las herramientas de desarrollo veremos que dentro del tag `head` podemos ver los metadatos que definimos.
 
+> [!NOTE]
 > Puedes encontrar más información sobre los metadatos disponibles [aqui](https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadata-object).
 
 ### `generateMetadata`
@@ -521,6 +526,7 @@ Si intentamos entrar a una ruta inexistente, como `/123`, veremos una ventana de
 
 El archivo `error.tsx` funciona con un React Error Boundary cuyo comportamiento es similar al Suspense Boundary, buscando hacia arriba el Error Boundary más cercano. Por ende, si algo falla en `/1` o en `/`, se usará el mismo `error.tsx`.
 
+> [!NOTE]
 > Si no definimos un archivo `error.tsx`, se usará el que viene por defecto en Next.js.
 
 ## Usando una Base de Datos
@@ -547,6 +553,7 @@ id,name,description,address,score,ratings,image
 
 Luego, para acceder a esta data desde nuestra app, vayamos a `Archivo > Compartir > Publicar en la web`, publiquemos y copiemos el enlace que nos da para acceder a la data en formato `.csv`.
 
+> [!TIP]
 > Si sabes que los campos contienen `,` en sus columnas, podrías usar el formato `.tsv` en vez de `.csv`, ya que usa `\t` en vez de `,` como separador, lo cual es menos frecuente.
 
 ![Compartir en la web](./images/share-web-0.jpg)
