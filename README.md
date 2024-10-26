@@ -10,6 +10,15 @@ Es natural que algunos conceptos puedan resultar complicados al principio o que 
 
 Si en algún momento sientes que el contenido del curso no es suficiente para abordar los ejercicios o comprender un tema en particular, no dudes en recurrir a la documentación oficial, ya sea de [Next.js](https://docs.nextjs.org/) o de [React](https://react.dev/reference/react).
 
+## Video
+
+Si prefieres seguir este curso en formato de video guiado, puedes verlo aquí:
+
+[![Curso Introductorio a Next.js con App Router](https://img.youtube.com/vi/s5jPwPZrJhw/maxresdefault.jpg)](https://youtu.be/s5jPwPZrJhw)
+
+> [!WARNING]
+> El video no está actualizado con el código de este repositorio. Pero sigue siendo válido para la mayoría de los temas.
+
 ## Requisitos
 
 Asegúrate de cumplir con los siguientes requisitos antes de comenzar el curso:
@@ -635,10 +644,7 @@ Veamos de nuevo la imagen de más arriba:
 
 ![Salida de la compilación](./images/build-output.jpg)
 
-Podemos ver que la ruta de `/` tiene un ícono de `○` (abajo nos dice que significa estático), mientras que nuestra ruta de `/[id]` tiene un ícono de `ƒ` o `λ` (abajo nos dice que significa `Server` o `Dynamic`).
-
-> [!NOTE]
-> Que diga `Server` o `Dynamic` depende de la versión de Next.js que estemos usando.
+Podemos ver que la ruta de `/` tiene un ícono de `○` (abajo nos dice que significa estático), mientras que nuestra ruta de `/[id]` tiene un ícono de `ƒ` (abajo nos dice que significa `Dynamic`).
 
 ## Estrategias de Renderizado
 
@@ -735,7 +741,7 @@ npm start
 
 ![Salida de la compilación](./images/build-output-1.jpg)
 
-Ahora no solo debería funcionar, sino que también podemos ver en el detalle de la compilación que la ruta `/` está marcada como `Server` o `Dynamic`. En este caso, sabemos que nuestros restaurantes no van a cambiar frecuentemente, por lo tanto no es necesario que sean dinámicos, volvamos a cambiar el `cache` de `no-store` a `force-cache`.
+Ahora no solo debería funcionar, sino que también podemos ver en el detalle de la compilación que la ruta `/` está marcada como `Dynamic`. En este caso, sabemos que nuestros restaurantes no van a cambiar frecuentemente, por lo tanto no es necesario que sean dinámicos, volvamos a cambiar el `cache` de `no-store` a `force-cache`.
 
 > [!IMPORTANT]
 > Terminemos el proceso y volvamos a ejecutar el servidor de desarrollo con `npm run dev`.
