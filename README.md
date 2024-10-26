@@ -220,7 +220,7 @@ Ahora, la pregunta clave es: ¿por qué renderizaríamos algo en el servidor? Bu
 Los `Client Components` nos permiten escribir interfaces interactivas y dinámicas que se ejecutan en el cliente. Los Client Components pueden usar hooks, estados locales, eventos, APIs del navegador y más. Podemos pensar en los Client Components como "los componentes habituales que usamos en React en nuestras aplicaciones con Vite o Create React App". Aunque con algunas diferencias, como que se renderizan una vez en el servidor antes de renderizarse en el cliente.
 
 > [!NOTE]
-> Puedes leer más [aquí](https://nextjs.org/docs/app/building-your-application/rendering/client-components#how-are-client-components-rendered)
+> Puedes leer más acerca de los client components y como son renderizados [aquí](https://nextjs.org/docs/app/building-your-application/rendering/client-components#how-are-client-components-rendered)
 
 Para marcar un componente como Client Component, debemos agregar la directiva `"use client"` al inicio del archivo.
 
@@ -247,15 +247,18 @@ Aunque hay excepciones para cada uno, esta lista resume cuándo deberías usar c
 
 | ¿Qué debes hacer?                                                                                     | Componente del Servidor | Componente del Cliente |
 |-------------------------------------------------------------------------------------------------------|-------------------------|------------------------|
-| Obtener datos                                                                                         | ✅                      | ⛔                     |
 | Acceder a recursos del backend (directamente)                                                         | ✅                      | ⛔                     |
 | Manejar información sensible (tokens de acceso, claves API, etc.)                                     | ✅                      | ⛔                     |
 | Manejar dependencias grandes / Reducir JavaScript del lado del cliente                                | ✅                      | ⛔                     |
+| Obtener datos                                                                                         | ✅                      | ⌚                     |
 | Agregar interactividad y escuchadores de eventos (`onClick`, `onChange`, etc.)                        | ⛔                      | ✅                     |
 | Utilizar Estado y Efectos del Ciclo de Vida (`useState`, `useReducer`, `useEffect`, etc.)             | ⛔                      | ✅                     |
 | Utilizar APIs exclusivas del navegador                                                                | ⛔                      | ✅                     |
 | Utilizar hooks personalizados que dependen del estado, efectos o APIs exclusivas del navegador        | ⛔                      | ✅                     |
 | Utilizar [Componentes de Clase de React](https://react.dev/reference/react/Component)                 | ⛔                      | ✅                     |
+
+> [!NOTE]
+> No está mal obtener datos desde un Client Component, pero si podemos hacerlo del servidor y optimizarlo, mejor. Optamos por obtener datos desde el cliente cuando: hay interacciones del usuario que tienen que actualizar una porción de los datos, hacer polling o cuando toda nuestra página es estática excepto por un dato entonces la mantenemos estática y obtenemos ese dato desde el cliente.
 
 ## Mostrando los Restaurantes
 
@@ -367,8 +370,8 @@ Ahora, creemos la carpeta y el archivo `src/app/[id]/page.tsx` y añadamos el si
 ```jsx
 import api from "@/api";
 
-export default async function RestaurantPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function RestaurantPage({params}: {params: Promise<{id: string}>}) {
+  const {id} = await params;
   const restaurant = await api.fetch(id);
 
   return (
@@ -397,7 +400,12 @@ Al ingresar a la ruta `/1`, deberíamos ver algo así:
 
 Veamos cómo sucedió esto. Recordamos que los componentes, por defecto son Server Components, así que hicimos que sea `async` y utilizamos nuestro método `api.fetch` para obtener los datos del restaurante. Además, aprendimos algo nuevo: el archivo `page.tsx` recibe como props una propiedad `params` que contiene los parámetros de la ruta. En este caso, como nuestra ruta es `/[id]`, el parámetro se llama `id`. [Desestructuramos](https://es.javascript.info/destructuring-assignment#desestructuracion-de-objetos) `params` para obtener el `id` y lo usamos para obtener los datos del restaurante y renderizarlos en la página.
 
-Ahora tenemos un pequeño problema: acabamos de repetir todo el código de la tarjeta del restaurante. Podríamos crear un componente y reutilizarlo (te dejo esa tarea a ti). Pero... ¿Dónde deberían ir los componentes que no son páginas, layouts o archivos especiales?
+Ahora tenemos un pequeño problema: acabamos de repetir todo el código de la tarjeta del restaurante.
+
+> [!IMPORTANT]
+> Crea un componente para la tarjeta del restaurante y reutilizalo en `page.tsx` y `[id]/page.tsx`.
+
+Pero... ¿Dónde deberían ir los componentes que no son páginas, layouts o archivos especiales?
 
 ### Colocación
 
@@ -435,7 +443,8 @@ export default async function Home() {
 }
 ```
 
-Ahora te toca a ti. Agrega a la página de detalle del restaurante un enlace para volver a la página de inicio y otro enlace al encabezado en el layout para que, al hacer clic en el logo, nos lleve al inicio.
+> [!IMPORTANT]
+> Agrega a la página de detalle del restaurante un enlace para volver a la página de inicio y otro enlace al encabezado en el layout para que, al hacer clic en el logo, nos lleve al inicio.
 
 ## Metadatos
 
@@ -462,15 +471,15 @@ Ahora deberíamos ver el título de nuestra página actualizado.
 Si abrimos las herramientas de desarrollo veremos que dentro del tag `head` podemos ver los metadatos que definimos.
 
 > [!NOTE]
-> Puedes encontrar más información sobre los metadatos disponibles [aqui](https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadata-object).
+> Puedes encontrar más información sobre las propiedades disponibles en el `metadata object` [aqui](https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadata-object).
 
 ### `generateMetadata`
 
 Si necesitamos información de la petición para generar metadatos (por ejemplo el nombre de un restaurante) podemos usar la función `generateMetadata` y retornar un objeto con todos los metadatos de nuestra página. En `src/app/[id]/page.tsx` creemos una función `generateMetadata` de la siguiente manera:
 
 ```ts
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export async function generateMetadata({params}: {params: Promise<{id: string}>}) {
+  const {id} = await params;
   const restaurant = await api.fetch(id);
 
   return {
@@ -488,11 +497,14 @@ Al ingresar a alguno de nuestros restaurantes veremos el título de la página a
 
 Podemos crear [archivos especiales de metadatos](https://nextjs.org/docs/app/api-reference/file-conventions/metadata) dentro de `src/app` o dentro de nuestras rutas. Los archivos de metadatos pueden ser archivos estáticos (como `.jpg`, `.png`, `.txt`) o pueden ser archivos dinámicos (como `.tsx`). Esta última nos permite generar metadatos, como [imágenes de Open Graph personalizadas basadas en información de la petición](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image).
 
-Te dejo como tarea definir algunos metadatos a nivel aplicación, como title, description, keywords, etc. Y mostrar una imagen de Open Graph personalizada en la página de detalle de cada restaurante.
+> [!IMPORTANT]
+> Define algunos metadatos a nivel aplicación, como title, description, keywords, etc. Y muestra una imagen de Open Graph personalizada en la página de detalle de cada restaurante.
 
 ## Estados de Carga
 
-Nuestras páginas cargan bastante rápido (estamos simulando una demora de 750 ms). Vamos a `api.ts` y cambiemos ese `750` por `7500`. Si recargamos, veremos que la página tarda 7.5 segundos en cargar. El problema es que mientras la página carga, el usuario no ve nada y no sabe si la página funciona o no, si su internet anda mal o qué está pasando. En Next.js, podemos definir un archivo `loading.tsx`, el cual está construido sobre [React Suspense](https://react.dev/reference/react/Suspense). Mientras nuestra página esté suspendida (mientras haya operaciones bloqueantes como una petición en curso en un Server Component), se mostrará el contenido de `loading.tsx`. Una vez que esas operaciones terminen, se reemplazará el contenido de `loading.tsx` por el contenido de `page.tsx`. Esto nos permite no solo mostrarle al usuario que "algo está cargando", sino que también nos permite enviar todas las partes de nuestra aplicación que no dependan de esas operaciones bloqueantes, como el header, footer o los componentes que ya terminaron sus operaciones.
+Nuestras páginas cargan bastante rápido (estamos simulando una demora de 750 ms). Vamos a `api.ts` y cambiemos ese `750` por `7500`. Si recargamos, veremos que la página tarda 7.5 segundos en cargar. El problema es que mientras la página carga, el usuario no ve nada y no sabe si la página funciona o no, si su internet anda mal o qué está pasando.
+
+En Next.js, podemos definir un archivo `loading.tsx`, el cual está construido sobre [React Suspense](https://react.dev/reference/react/Suspense). Mientras nuestra página esté suspendida (mientras haya operaciones bloqueantes como una petición en curso en un Server Component), se mostrará el contenido de `loading.tsx`. Una vez que esas operaciones terminen, se reemplazará el contenido de `loading.tsx` por el contenido de `page.tsx`. Esto nos permite no solo mostrarle al usuario que "algo está cargando", sino que también nos permite enviar todas las partes de nuestra aplicación que no dependan de esas operaciones bloqueantes, como el header, footer o los componentes que ya terminaron sus operaciones.
 
 Creemos el archivo `src/app/loading.tsx` y agreguemos el siguiente contenido:
 
@@ -504,11 +516,20 @@ export default function Loading() {
 }
 ```
 
-Ahora, al recargar la página, veremos que mientras se está cargando, se muestra el texto "Loading..." y una vez que termina de cargar, se reemplaza por el contenido de `page.tsx`. Pero también notamos que si vamos a la ruta `/1`, también se muestra el texto "Loading...". ¿Por qué? Si el `loading.tsx` está definido en la raíz de nuestro proyecto. Cuando una parte de nuestra aplicación se suspende, busca hacia arriba el Suspense Boundary más cercano y lo utiliza. En este caso, al no haber ninguno en `/[id]`, sube y encuentra el definido en la raíz de nuestra aplicación. Si quisieramos, podríamos definir un nuevo `loading.tsx` dentro de `[id]` y se usaría ese en vez del de la raíz, pero por ahora estamos bien con este.
+Ahora, al recargar la página, veremos que mientras se está cargando, se muestra el texto "Loading..." y una vez que termina de cargar, se reemplaza por el contenido de `page.tsx`.
+
+Pero también notamos que si vamos a la ruta `/1`, también se muestra el texto "Loading...". ¿Por qué? Si el `loading.tsx` está definido en la raíz de nuestro proyecto.
+
+Cuando una parte de nuestra aplicación se suspende, busca hacia arriba el Suspense Boundary más cercano y lo utiliza. En este caso, al no haber ninguno en `/[id]`, sube y encuentra el definido en la raíz de nuestra aplicación.
+
+> [!NOTE]
+> Si quisieramos, podríamos definir un nuevo `loading.tsx` dentro de `[id]` y se usaría ese en vez del de la raíz, pero por ahora estamos bien con este.
 
 ## Manejo de Errores
 
-De momento, nuestra aplicación usa datos de prueba, por lo que es poco probable que ocurran errores. Sin embargo, puede ser que alguien intente acceder a una página que no existe o que simplemente queramos estar preparados para el día de mañana. Creemos el archivo `src/app/error.tsx` y agreguemos el siguiente contenido:
+De momento, nuestra aplicación usa datos de prueba, por lo que es poco probable que ocurran errores. Sin embargo, puede ser que alguien intente acceder a una página que no existe o que simplemente queramos estar preparados para el día de mañana.
+
+Creemos el archivo `src/app/error.tsx` y agreguemos el siguiente contenido:
 
 ```jsx
 'use client'
@@ -522,7 +543,7 @@ export default function ErrorPage({ error }: { error: Error }) {
 }
 ```
 
-Si intentamos entrar a una ruta inexistente, como `/123`, veremos una ventana de error (en desarrollo) y el contenido de nuestra página de error correctamente. Un detalle es que el archivo `error.tsx` siempre debe ser un Client Component, ya que recibe por props, opcionalmente, una función `reset` a la que podemos llamar para re-renderizar nuestra página.
+Si intentamos entrar a una ruta inexistente, como `/123`, veremos una ventana de error (en desarrollo) y el contenido de nuestra página de error correctamente. Un detalle es que el archivo `error.tsx` siempre debe ser un Client Component, ya que recibe por props, una función `reset` a la que podemos llamar para re-renderizar nuestra página.
 
 El archivo `error.tsx` funciona con un React Error Boundary cuyo comportamiento es similar al Suspense Boundary, buscando hacia arriba el Error Boundary más cercano. Por ende, si algo falla en `/1` o en `/`, se usará el mismo `error.tsx`.
 
@@ -588,11 +609,14 @@ const api = {
 }
 ```
 
-¡Listo! Ahora, al recargar la página, deberíamos ver los datos de Google Sheets. Toma en cuenta que Google Sheets podría tardar unos segundos en reflejar los cambios, así que si no ves los datos actualizados, prueba con <kbd>ctrl</kbd> + <kbd>f5</kbd> (<kbd>cmd</kbd> + <kbd>R</kbd> si usas Mac). Ahora te toca a ti asegurarte de que el método `fetch` funcione correctamente en la ruta `/[id]`.
+¡Listo! Ahora, al recargar la página, deberíamos ver los datos de Google Sheets. Toma en cuenta que Google Sheets podría tardar unos segundos en reflejar los cambios, así que si no ves los datos actualizados, prueba con <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>R</kbd> (<kbd>cmd</kbd> + <kbd>shift</kbd> + <kbd>R</kbd> si usas Mac).
+
+> [!IMPORTANT]
+> Asegurarte de que el método `fetch` funcione correctamente en la ruta `/[id]`.
 
 ## Compilando Nuestra Aplicación
 
-Ahora que tenemos una aplicación más o menos completa, vamos a compilarla y ejecutarla localmente para ver más acertadamente qué tan bien funcionaría en un entorno productivo. Para ello, terminemos el comando de nuestro servidor (<kbd>ctrl</kbd> + <kbd>c</kbd>) de desarrollo y ejecutemos los siguientes comandos:
+Ahora que tenemos una aplicación más o menos completa, vamos a compilarla y ejecutarla localmente para ver más acertadamente qué tan bien funcionaría en un entorno productivo. Para ello, terminemos el comando de nuestro servidor (<kbd>ctrl</kbd> + <kbd>c</kbd> o <kbd>cmd</kbd> + <kbd>c</kbd> en Mac) de desarrollo y ejecutemos los siguientes comandos:
 
 ```bash
 npm run build
@@ -611,7 +635,10 @@ Veamos de nuevo la imagen de más arriba:
 
 ![Salida de la compilación](./images/build-output.jpg)
 
-Podemos ver que la ruta de `/` tiene un ícono de `○` (abajo nos dice que significa estático), mientras que nuestra ruta de `/[id]` tiene un ícono de `ƒ` (abajo nos dice que significa server).
+Podemos ver que la ruta de `/` tiene un ícono de `○` (abajo nos dice que significa estático), mientras que nuestra ruta de `/[id]` tiene un ícono de `ƒ` o `λ` (abajo nos dice que significa `Server` o `Dynamic`).
+
+> [!NOTE]
+> Que diga `Server` o `Dynamic` depende de la versión de Next.js que estemos usando.
 
 ## Estrategias de Renderizado
 
@@ -622,9 +649,6 @@ En Next.js, existen tres estrategias principales de renderizado: estática, din�
 Con el renderizado estático, nuestras rutas se renderizan en tiempo de compilación. Esto permite que los datos estén disponibles desde la primera visita de un usuario. Estos datos se persisten a lo largo del tiempo, y las siguientes visitas de un usuario no impactarán nuestro origen de datos. Esto nos permite tener una aplicación con un tiempo de carga muy rápido y un bajo consumo de recursos.
 
 El renderizado estático es muy útil para páginas que no cambian con frecuencia o no incluyen información proveniente de la petición.
-
-> [!TIP]
-> Si quisieramos beneficiarnos de contenido estático pero obtener datos dinámicos, podemos combinar el renderizado estático con obtener datos desde el cliente para crear aplicaciones dinámicas y rápidas.
 
 Nuestra ruta `/` tuvo un renderizado estático por defecto, pero ¿por qué nuestra ruta de `/[id]` no? Bueno, porque Next.js no sabe cuáles son los `id` de nuestros restaurantes, por lo tanto, no puede renderizarlos en tiempo de compilación. Sin embargo, si en nuestra página `/[id]/page.tsx` definimos una función [`generateStaticParams`](https://nextjs.org/docs/app/api-reference/functions/generate-static-params) que devuelva los ids que queremos generar, generará esos ids en tiempo de compilación de manera estática:
 
@@ -653,6 +677,11 @@ El Streaming es una técnica de transferencia de datos que nos permite dividir e
 
 Para habilitar streaming basta con tener un Suspense Boundary, definiendo un archivo `loading.tsx` o montando un componente Suspense manualmente en algun Server Component. Ahora nuestra ruta está dividida en partes, cada vez que un Suspense Boundary superior termine de procesar, enviará su contenido al usuario, permitiendo que el usuario vea el contenido a medida que esté disponible.
 
+> [!NOTE]
+> Ya usamos los 3 métodos de renderizado. Estático: Nuestra página de inicio, dinámico: Nuestra página de detalle antes de agregar el `loading.tsx`, streaming: Nuestra página de detalle luego de agregar el `loading.tsx` y antes de agregar el `generateStaticParams`.
+
+**Pregunta**: ¿Que tipo de renderizado estamos usando en nuestra página de de inicio y en la de detalle ahora?
+
 ## Caching
 
 Cuando trabajamos con aplicaciones React en Vite, Create React App o similares, generalmente lidiamos con un solo caché, el caché del navegador. En Next.js, tenemos muchos tipos de caché diferentes:
@@ -671,6 +700,7 @@ Next.js, por defecto, intentará cachear tanto como sea posible para mejorar el 
 
 El comportamiento del caché dependerá de si tu ruta tiene renderizado estático o dinámico, si los datos están en caché o no, o si una solicitud es parte de una visita inicial o una navegación subsecuente. Esto puede parecer un poco abrumador, pero con el tiempo y la práctica, veremos que los beneficios son muchos.
 
+> [!NOTE]
 > Saber esto sobre el caching ayuda a entender cómo funciona Next.js, pero no es contenido esencial para ser productivo en Next.js.
 
 ### Configuraciones de Revalidación de Caché
@@ -693,7 +723,7 @@ Reemplaza la propiedad `cache: 'force-cache'` por `cache: 'no-store'` en nuestro
 const [, ...data] = await fetch('...', { cache: 'no-store' }).then(res => res.text()).then(text => text.split('\n'))
 ```
 
-Esto le indicará a Next.js que cada vez que una ruta deba obtener los datos de `list`, no debe usar la caché de datos. Para probar si funcionó, detén el servidor (`ctrl` + `c` / `cmd` + `c`), y vuelve a ejecutar:
+Esto le indicará a Next.js que cada vez que una ruta deba obtener los datos de `list`, no debe usar la caché de datos. Para probar si funcionó, detén el servidor y vuelve a ejecutar:
 
 ```bash
 npm run build
@@ -705,7 +735,10 @@ npm start
 
 ![Salida de la compilación](./images/build-output-1.jpg)
 
-Ahora no solo debería funcionar, sino que también podemos ver en el detalle de la compilación que la ruta `/` está marcada como `Dynamic`. En este caso, sabemos que nuestros restaurantes no van a cambiar frecuentemente, por lo tanto no es necesario que sean dinámicos, volvamos a cambiar el `cache` de `no-store` a `force-cache`.
+Ahora no solo debería funcionar, sino que también podemos ver en el detalle de la compilación que la ruta `/` está marcada como `Server` o `Dynamic`. En este caso, sabemos que nuestros restaurantes no van a cambiar frecuentemente, por lo tanto no es necesario que sean dinámicos, volvamos a cambiar el `cache` de `no-store` a `force-cache`.
+
+> [!IMPORTANT]
+> Terminemos el proceso y volvamos a ejecutar el servidor de desarrollo con `npm run dev`.
 
 #### `revalidate: number`
 
@@ -719,7 +752,7 @@ Esto hará que después de 100 segundos de haber obtenido los datos, la próxima
 
 #### Configuración de Segmento de Ruta
 
-Las rutas pueden exportar constantes de configuración para definir ciertos comportamientos, incluyendo la revalidación y la estrategia de renderizado. Podríamos hacer lo siguiente en nuestro `page.tsx`:
+Las rutas pueden exportar constantes de configuración para definir ciertos comportamientos, incluyendo la revalidación y la estrategia de renderizado. Podríamos hacer lo siguiente en nuestro `src/app/page.tsx`:
 
 ```tsx
 export const dynamic = 'force-static' // por defecto: auto
@@ -729,7 +762,10 @@ export const revalidate = 100 // por defecto: false
 - `dynamic`: Cambia la estrategia de renderizado de una ruta para ser estática o dinámica.
 - `revalidate`: Define el tiempo de revalidación por defecto para una ruta.
 
-Existen muchas otras configuraciones que puedes ver [aquí](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config).
+De esta manera nos aseguramos de que nuestra ruta `/` sea estática y que obtenga datos nuevos cada 100 segundos.
+
+> [!NOTE]
+> Existen muchas otras configuraciones que puedes ver [aquí](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config).
 
 #### Funciones Dinámicas
 
@@ -768,7 +804,10 @@ En un [Route Handler](https://nextjs.org/docs/app/building-your-application/rout
 
 Ahora podemos eliminar todos los `revalidate`, `dynamic` y cualquier cosa que haga que nuestra ruta `/` sea dinámica. Luego, volvemos a compilar y ejecutar nuestra aplicación. Si vamos a `http://localhost:3000`, deberíamos ver nuestros restaurantes. Luego, modificamos uno en la base de datos, una petición `GET` manualmente a `http://localhost:3000/api/revalidate` y volvemos a `http://localhost:3000`. Deberíamos ver los datos actualizados.
 
-Es una buena práctica proteger nuestras rutas de API con alguna clave secreta para evitar que usuarios malintencionados ejecuten estos métodos. Tu tarea es definir una variable de entorno `REVALIDATE_SECRET` y usarla en nuestra ruta de API para ejecutarla solo cuando nos envíen un parámetro `secret` con el valor correcto. Puedes usar la documentación oficial de Next.js para ver cómo usar [variables de entorno](https://nextjs.org/docs/app/building-your-application/configuring/environment-variables).
+Es una buena práctica proteger nuestras rutas de API con alguna clave secreta para evitar que usuarios malintencionados ejecuten estos métodos.
+
+> [!IMPORTANT]
+> Define una variable de entorno `REVALIDATE_SECRET` y usala en nuestra ruta de API para ejecutarla solo cuando nos envíen un parámetro `secret` con el valor correcto. Puedes usar la documentación oficial de Next.js para ver cómo usar [variables de entorno](https://nextjs.org/docs/app/building-your-application/configuring/environment-variables).
 
 #### `revalidateTag`
 
@@ -795,6 +834,7 @@ export async function GET(request: NextRequest) {
   return Response.json({success: true});
 }
 ```
+> [!TIP]
 > Podemos enviar un `tag` por `searchParams` así nuestro endpoint utilitario es más flexible.
 
 ## Parámetros de URL
@@ -804,9 +844,9 @@ Manejar el estado de nuestra aplicación en la URL es una buena práctica; nos p
 Creamos un componente `src/app/components/SearchBox.tsx` que contiene un campo dentro de un formulario. Al enviar el formulario, actualizamos la URL con el valor del campo y dejamos que Next.js haga el resto. Agregamos el siguiente contenido:
 
 ```tsx
-'use client'
+"use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 
 export default function SearchBox() {
   const router = useRouter();
@@ -816,18 +856,23 @@ export default function SearchBox() {
     // Prevenimos que la página se refresque al enviar el formulario
     event.preventDefault();
 
+    // Obtenemos los datos del formulario
+    const formData = new FormData(event.currentTarget);
+
     // Obtenemos el valor del input
-    const query = event.currentTarget.query.value;
+    const query = formData.get("query");
 
     // Redireccionamos al index con una query
     router.push(`/?q=${query}`);
   }
 
   return (
-    <form onSubmit={handleSubmit} className="inline-flex gap-2 mb-4">
+    <form className="mb-4 inline-flex gap-2" onSubmit={handleSubmit}>
       {/* Inicializamos el input para que contenga el valor actual de la query */}
-      <input defaultValue={searchParams.get('q') || ''} className="px-2" name="query" />
-      <button type="submit" className="p-2 bg-white/20">Search</button>
+      <input className="px-2" defaultValue={searchParams.get("q") || ""} name="query" />
+      <button className="bg-white/20 p-2" type="submit">
+        Search
+      </button>
     </form>
   );
 }
@@ -858,15 +903,12 @@ const api = {
   ...,
   search: async (query: string): Promise<Restaurant[]> => {
     // Obtenemos los restaurantes
-    const results = await api.list().then((restaurants) =>
-      // Los filtramos por nombre
-      restaurants.filter((restaurant) =>
-        restaurant.name.toLowerCase().includes(query.toLowerCase()),
-      ),
-    );
+    const results = await api.list();
 
-    // Los retornamos
-    return results;
+    // Los filtramos por nombre
+    return results.filter((restaurant) =>
+      restaurant.name.toLowerCase().includes(query.toLowerCase()),
+    );
   },
 }
 ```
@@ -876,8 +918,9 @@ Dado que estamos obteniendo el contenido en `.csv` de Google Sheets, no podemos 
 Luego, pasamos `searchParams.q` (todas las `page` reciben la prop `searchParams`) a `api.search` en lugar de `api.list` en nuestro `src/app/page.tsx`:
 
 ```tsx
-export default async function Home({ searchParams }: { searchParams: { q: string } }) {
-  const restaurants = await api.search(searchParams.q);
+export default async function Home({searchParams}: {searchParams: Promise<{q: string}>}) {
+  const {q} = await searchParams;
+  const restaurants = await api.search(q);
 
   ...
 }
@@ -885,7 +928,10 @@ export default async function Home({ searchParams }: { searchParams: { q: string
 
 Utilizar `searchParams` en una `page` hace que el segmento sea dinámico, ya que necesita ejecutarse en cada petición para obtener los valores correctos.
 
-¡Bien! Nuestra búsqueda funciona correctamente. Pero... Si un usuario busca algo que no existe, no se muestra nada. Asegúrate de mostrar algún mensaje cuando no haya resultados como tarea.
+¡Bien! Nuestra búsqueda funciona correctamente.
+
+> [!IMPORTANT]
+> Si un usuario busca algo que no existe, no se muestra nada. Asegúrate de mostrar algún mensaje cuando no haya resultados como tarea.
 
 ## Agrupado de Rutas
 
@@ -907,6 +953,7 @@ Esto es algo personal, pero ahora nos queda una carpeta `components` dentro del 
         └── page.tsx
 ```
 
+> [!NOTE]
 > `(index)` es solo un nombre; puede llamarse como desees.
 
 Al crear una carpeta envuelta en `(parentesis)`, no solo podemos organizar mejor nuestros archivos, sino que también podríamos definir diferentes `layout` / `loading` / `error` para grupos de rutas que están al mismo nivel (o incluso tener layouts anidados). Ahora, nuestra carpeta `components` está colocada lo más cerca de donde es relevante posible. No te olvides de actualizar las importaciones para que nuestra aplicación siga funcionando.
@@ -942,6 +989,9 @@ export default async function Home({ searchParams }: { searchParams: { q?: strin
 Los Server Actions requieren que especifiquemos la directiva `'use server'` en la función de nuestra acción (o en la parte superior del archivo si vamos a tener un archivo con muchas acciones). Luego, pasamos esta función a la propiedad `action` de nuestro formulario. Al enviar el formulario, se ejecutará la función `searchAction` y se redireccionará a la ruta `/` con el valor del campo `q` como query string.
 
 Ahora puedes borrar la carpeta `components` y el grupo `(index)` o mover el Server Action al componente `SearchBox`. Decide lo que prefieras.
+
+> [!TIP]
+> Podemos usar los server actions como funciones, no solo en submit del formularios. Podemos pensarlo como "route handlers" pero usando funciones en vez de `fetch`.
 
 ## Guardar en Favoritos (localStorage)
 
@@ -1067,7 +1117,7 @@ Si actualizamos manualmente la clave `favorites` en `localStorage` para incluir 
 Te dejo algunas tareas:
 
 - Nuestro componente `RestaurantCard` contiene dos componentes. El componente que contiene la información no necesita ninguna actividad, por ende, podría seguir siendo un Server Component. Mueve el componente del botón de favorito a otro archivo e impórtalo.
-  - Puedes convertir `RestaurantCard` en una carpeta y agregarle un `index.tsx` y un `FavoriteButton.tsx` dentro. De esa manera, los componentes seguirían colocados lo más cerca de donde son relevantes posible. Pero maneja esto a tu gusto.
+    - Puedes convertir `RestaurantCard` en una carpeta y agregarle un `index.tsx` y un `FavoriteButton.tsx` dentro. De esa manera, los componentes seguirían colocados lo más cerca de donde son relevantes posible. Pero maneja esto a tu gusto.
 - Implementa la funcionalidad de agregar y quitar favoritos en el botón de favorito. Al cargar la página, debería mostrar el estado actual, y al hacer clic en el botón, debería mostrar el estado actualizado y persistir ese estado al recargar la página.
 - Estamos repitiendo los tipos para `Restaurant` muchas veces, mueve la interfaz a un archivo `src/types.ts`, exportala y usala donde sea necesario.
 
@@ -1091,6 +1141,7 @@ Espero que hayas disfrutado del curso. Si encuentras algo que crees que podría 
 - Route Handlers antes de revalidación
 - Optimización de imágenes (next/image)
 - useFormStatus (server actions)
+- next/form
 - El futuro de Next.js
     - dynamicIO
     - "use cache"
