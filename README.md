@@ -739,7 +739,7 @@ npm start
 > [!NOTE]
 > `no-store` es el valor por defecto de `cache` en la versión `canary` de Next.js y va a ser el valor por defecto en el futuro.
 
-![Salida de la compilación](./images/build-output-1.jpg)
+![Salida de la compilación](./images/build-output.jpg)
 
 Ahora no solo debería funcionar, sino que también podemos ver en el detalle de la compilación que la ruta `/` está marcada como `Dynamic`. En este caso, sabemos que nuestros restaurantes no van a cambiar frecuentemente, por lo tanto no es necesario que sean dinámicos, volvamos a cambiar el `cache` de `no-store` a `force-cache`.
 
