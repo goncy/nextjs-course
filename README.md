@@ -130,8 +130,16 @@ También nos dijo que te sientas libre de agregar las funcionalidades que consid
 La forma más sencilla de crear una aplicación Next.js en nuestra máquina es mediante el paquete `create-next-app` publicado en npm. Este paquete facilita la creación de una aplicación Next.js con todas las configuraciones esenciales para comenzar a desarrollar.
 
 ```bash
+# PNPM
+pnpm dlx create-next-app@latest --example "https://github.com/goncy/nextjs-course" --example-path "code" restaurancy
+
+# NPM
 npx create-next-app@latest --example "https://github.com/goncy/nextjs-course" --example-path "code" restaurancy
 ```
+
+> [!WARNING]
+> Si usas `npm` posiblemente falle la instalación, no importa. Una vez que falle hace `cd restaurancy` y corré `npm install --force`.
+
 > [!NOTE]
 > Puedes omitir los parámetros `--example` y `--example-path` si deseas crear un proyecto personalizado. En este caso `--example` es la URL de este repositorio mientras que `example-path "code"` es donde se encuentra el proyecto base para este curso y `restaurancy` es el nombre que se le dará a la carpeta del proyecto.
 
