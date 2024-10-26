@@ -130,7 +130,7 @@ También nos dijo que te sientas libre de agregar las funcionalidades que consid
 Para este proyecto vamos a usar un código base que se encuentra en la carpeta `code` de este repositorio. Para clonarlo a tu computadora vamos a ir a la terminal y ejecutar el siguiente comando:
 
 ```bash
-npx degit goncy/nextjs-course restaurancy
+npx degit goncy/nextjs-course/code restaurancy
 ```
 
 Una vez completada la ejecución del comando, se generará una carpeta llamada `restaurancy` con todos los archivos necesarios para ejecutar la aplicación.
