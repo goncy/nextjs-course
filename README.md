@@ -105,7 +105,8 @@ También nos dijo que te sientas libre de agregar las funcionalidades que consid
     1. [Renderizado Estático](#renderizado-estático-por-defecto)
     2. [Renderizado Dinámico](#renderizado-dinámico)
     3. [Streaming](#streaming)
-13. [Caching](#caching)
+13. [Route Handlers](#route-handlers)
+14. [Caching](#caching)
     1. [Configuraciones de Revalidación de Caché](#configuraciones-de-revalidación-de-caché)
         1. [cache: no-store](#cache-no-store)
         2. [revalidate: `<number>`](#revalidate-number)
@@ -114,10 +115,10 @@ También nos dijo que te sientas libre de agregar las funcionalidades que consid
     2. [Revalidación Manual](#revalidación-manual)
         1. [revalidatePath](#revalidatepath)
         2. [revalidateTag](#revalidatetag)
-14. [Parámetros de URL](#parámetros-de-url)
-15. [Agrupación de Rutas](#agrupado-de-rutas)
-16. [Server Actions](#server-actions)
-17. [Guardado en Favoritos (localStorage)](#guardar-en-favoritos-localstorage)
+15. [Parámetros de URL](#parámetros-de-url)
+16. [Agrupación de Rutas](#agrupado-de-rutas)
+17. [Server Actions](#server-actions)
+18. [Guardado en Favoritos (localStorage)](#guardar-en-favoritos-localstorage)
     1. [Pre-renderizado](#pre-renderizado)
     2. [Lazy Loading](#lazy-loading)
 
@@ -175,7 +176,8 @@ En la raíz del proyecto, encontrarás varios archivos de configuración y otros
     │   ├── globals.css
     │   ├── layout.tsx
     │   └── page.tsx
-    └── api.ts
+    ├── api.ts
+    └── types.ts
 ```
 
 - `globals.css`: Este archivo contiene estilos globales para la aplicación, incluyendo los estilos de Tailwind CSS.
@@ -183,6 +185,7 @@ En la raíz del proyecto, encontrarás varios archivos de configuración y otros
 - `layout.tsx`: Este archivo, específico de Next.js, nos permite definir un envoltorio para nuestra aplicación o página. En este caso, se encarga de establecer la estructura básica de la página (html y body), importar estilos globales, y agregar un encabezado, un pie de página y un contenedor para el contenido de la página. Recibe una prop `children`, que representa el contenido de la página que verá el usuario.
 - `page.tsx`: Otro archivo especial de Next.js que nos permite definir una página. Dado que está en la raíz de nuestro directorio `app`, será la página que se mostrará al usuario al acceder al inicio (ruta `/`).
 - `api.ts`: Este archivo define algunos métodos que utilizaremos a lo largo del curso para obtener información sobre restaurantes. Por ahora, solo devuelve datos de prueba, pero más adelante lo emplearemos para obtener datos reales.
+- `types.ts`: Este archivo define una interfaz para los restaurantes, que usaremos para tipar los datos que obtenemos de la API.
 
 Tómate un tiempo para modificar el contenido de estos archivos y observa cómo afecta a la aplicación. Mientras el servidor de desarrollo esté en ejecución, bastará con guardar un archivo para ver los cambios reflejados en la pantalla.
 
@@ -276,21 +279,7 @@ Aunque hay excepciones para cada uno, esta lista resume cuándo deberías usar c
 
 ## Mostrando los Restaurantes
 
-Ahora que ya tenemos un poco de teoría, vamos a ver realmente como usar Server Components en nuestra aplicación. ¿Recuerdas el archivo `api.ts` que mencionamos para obtener datos? Ahora es el momento de utilizarlo. Al abrir el archivo, observaremos que define una interfaz para `Restaurant` con varios campos.
-
-```ts
-interface Restaurant {
-  id: number;
-  name: string;
-  image: string;
-  description: string;
-  address: string;
-  score: number;
-  ratings: number;
-}
-```
-
-Además, encontraremos un objeto `api` con un método `list` que devuelve una `Promise` con un array de `Restaurant`. Veamos cómo podemos utilizar este método en nuestro Server Component `page.tsx`:
+Ahora que ya tenemos un poco de teoría, vamos a ver realmente como usar Server Components en nuestra aplicación. En `api.ts`, encontraremos un objeto `api` con un método `list` que devuelve una `Promise` con un array de `Restaurant`. Veamos cómo podemos utilizar este método en nuestro Server Component `page.tsx`:
 
 ```jsx
 import api from "@/api";
@@ -376,7 +365,8 @@ Hemos hablado de archivos, pero también mencionamos carpetas y su anidación. �
     │   ├── page.tsx
     │   └── [id]/
     │       └── page.tsx
-    └── api.ts
+    ├── api.ts
+    └── types.ts
 ```
 
 Ahora, creemos la carpeta y el archivo `src/app/[id]/page.tsx` y añadamos el siguiente contenido:
@@ -417,13 +407,13 @@ Veamos cómo sucedió esto. Recordamos que los componentes, por defecto son Serv
 Ahora tenemos un pequeño problema: acabamos de repetir todo el código de la tarjeta del restaurante.
 
 > [!IMPORTANT]
-> Crea un componente para la tarjeta del restaurante y reutilizalo en `page.tsx` y `[id]/page.tsx`.
+> Crea un componente `RestaurantCard` para la tarjeta del restaurante y reutilizalo en `page.tsx` y `[id]/page.tsx`.
 
 Pero... ¿Dónde deberían ir los componentes que no son páginas, layouts o archivos especiales?
 
 ### Colocación
 
-Aunque el router de Next.js se basa en archivos, solo los archivos con nombres especiales se convierten en rutas de nuestra aplicación. Por lo tanto, podríamos crear una carpeta `components` dentro de `app` (o anidada donde la necesitemos) sin ningún problema. Sin embargo, la elección es tuya; si deseas crear una carpeta `components` (o como desees) fuera de `app` (pero dentro de `src`), también puedes hacerlo.
+Aunque el router de Next.js se basa en archivos, solo los archivos con nombres especiales se convierten en rutas de nuestra aplicación. Por lo tanto, podríamos crear una carpeta `components` dentro de `app` (o anidada donde la necesitemos) sin ningún problema.
 
 ![Estructura de carpetas](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fproject-organization-colocation.png&w=3840&q=75&dpl=dpl_DzaGxTbCZzXMDg4XPPbArRct6JPH)
 
@@ -693,6 +683,29 @@ Para habilitar streaming basta con tener un Suspense Boundary, definiendo un arc
 
 **Pregunta**: ¿Que tipo de renderizado estamos usando en nuestra página de de inicio y en la de detalle ahora?
 
+## Route Handlers
+
+Habremos escuchado el stack MERN (MongoDB, Express, React, Node.js) u otros similares. Si pensamos en Next.js: Tenemos un servidor Node.js que puede consumir datos de una DB y retornar una UI usando componentes de React. Pero, que podemos hacer si necesitamos un endpoint, un `/api/restaurants` por ejemplo, para consumir datos desde una aplicación mobile?
+
+Tenemos los [Route Handlers](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) disponibles mediante el uso del archivo especial `route.ts`. Podemos exportar funciones con los nombres de los métodos HTTP habituales, y se ejecutarán cuando la ruta reciba una petición del mismo método. Por ejemplo, si creamos un archivo `src/app/api/restaurants/route.ts` con el siguiente contenido:
+
+```ts
+import type {NextRequest} from "next/server";
+
+import {api} from "@/api";
+
+export async function GET(request: NextRequest) {
+  const restaurants = await api.list();
+
+  return Response.json(restaurants);
+}
+```
+
+De esta manera, cuando hagamos una petición `GET` a `/api/restaurants`, se ejecutará la función `GET` y retornará el listado de restaurantes.
+
+> [!TIP]
+> Podemos exportar multiples funciones en el mismo archivo y se ejecutarán según el método de la petición.
+
 ## Caching
 
 Cuando trabajamos con aplicaciones React en Vite, Create React App o similares, generalmente lidiamos con un solo caché, el caché del navegador. En Next.js, tenemos muchos tipos de caché diferentes:
@@ -811,8 +824,6 @@ export async function GET(request: NextRequest) {
 > [!TIP]
 > Podemos enviar un `path` por `searchParams` así nuestro endpoint utilitario es más flexible.
 
-En un [Route Handler](https://nextjs.org/docs/app/building-your-application/routing/route-handlers), podemos exportar funciones con los nombres de los métodos HTTP habituales, y se ejecutarán cuando la ruta reciba una petición del mismo método.
-
 Ahora podemos eliminar todos los `revalidate`, `dynamic` y cualquier cosa que haga que nuestra ruta `/` sea dinámica. Luego, volvemos a compilar y ejecutar nuestra aplicación. Si vamos a `http://localhost:3000`, deberíamos ver nuestros restaurantes. Luego, modificamos uno en la base de datos, una petición `GET` manualmente a `http://localhost:3000/api/revalidate` y volvemos a `http://localhost:3000`. Deberíamos ver los datos actualizados.
 
 Es una buena práctica proteger nuestras rutas de API con alguna clave secreta para evitar que usuarios malintencionados ejecuten estos métodos.
@@ -857,6 +868,7 @@ Creamos un componente `src/app/components/SearchBox.tsx` que contiene un campo d
 ```tsx
 "use client";
 
+import Form from "next/form";
 import {useRouter, useSearchParams} from "next/navigation";
 
 export default function SearchBox() {
@@ -878,16 +890,19 @@ export default function SearchBox() {
   }
 
   return (
-    <form className="mb-4 inline-flex gap-2" onSubmit={handleSubmit}>
+    <Form className="mb-4 inline-flex gap-2" onSubmit={handleSubmit}>
       {/* Inicializamos el input para que contenga el valor actual de la query */}
       <input className="px-2" defaultValue={searchParams.get("q") || ""} name="query" />
       <button className="bg-white/20 p-2" type="submit">
         Search
       </button>
-    </form>
+    </Form>
   );
 }
 ```
+
+> [!NOTE]
+> El componente [`Form` de Next.js](https://nextjs.org/docs/app/api-reference/components/form) extiende el elemento `<form>` de HTML brindando ventajas como prefetching de UIs de carga, navegaciones del lado del cliente y mejora progresiva.
 
 Ahora, agregamos la caja de búsqueda en nuestro `src/app/page.tsx` y probamos que funcione.
 
@@ -912,7 +927,7 @@ export default async function Home() {
 ```typescript
 const api = {
   ...,
-  search: async (query: string): Promise<Restaurant[]> => {
+  search: async (query: string = ""): Promise<Restaurant[]> => {
     // Obtenemos los restaurantes
     const results = await api.list();
 
@@ -978,8 +993,9 @@ Los [Server Actions](https://nextjs.org/docs/app/api-reference/functions/server-
 ```tsx
 import { redirect } from "next/navigation";
 
-export default async function Home({ searchParams }: { searchParams: { q?: string } }) {
-  const restaurants = await api.search(searchParams.q);
+export default async function Home({searchParams}: {searchParams: Promise<{q?: string}>}) {
+  const {q} = await searchParams;
+  const restaurants = await api.search(q);
 
   async function searchAction(formData: FormData) {
     'use server'
@@ -990,7 +1006,7 @@ export default async function Home({ searchParams }: { searchParams: { q?: strin
   return (
     <section>
       <form action={searchAction} className="inline-flex gap-2 mb-4">
-        <input defaultValue={searchParams.q || ''} className="px-2" name="query" />
+        <input defaultValue={q || ''} className="px-2" name="query" />
         <button type="submit" className="p-2 bg-white/20">Search</button>
       </form>
       <section className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
@@ -999,10 +1015,8 @@ export default async function Home({ searchParams }: { searchParams: { q?: strin
 
 Los Server Actions requieren que especifiquemos la directiva `'use server'` en la función de nuestra acción (o en la parte superior del archivo si vamos a tener un archivo con muchas acciones). Luego, pasamos esta función a la propiedad `action` de nuestro formulario. Al enviar el formulario, se ejecutará la función `searchAction` y se redireccionará a la ruta `/` con el valor del campo `q` como query string.
 
-Ahora puedes borrar la carpeta `components` y el grupo `(index)` o mover el Server Action al componente `SearchBox`. Decide lo que prefieras.
-
 > [!TIP]
-> Podemos usar los server actions como funciones, no solo en submit del formularios. Podemos pensarlo como "route handlers" pero usando funciones en vez de `fetch`.
+> Podemos usar los server actions como funciones asíncronas, no solo en submit de formularios. Podemos pensarlos como "route handlers" pero usando funciones en vez de `fetch`.
 
 ## Guardar en Favoritos (localStorage)
 
@@ -1149,10 +1163,6 @@ Espero que hayas disfrutado del curso. Si encuentras algo que crees que podría 
 
 ## Próximos temas a agregar
 
-- Route Handlers antes de revalidación
-- Optimización de imágenes (next/image)
-- useFormState (server actions)
-- next/form
 - El futuro de Next.js
     - dynamicIO
     - "use cache"

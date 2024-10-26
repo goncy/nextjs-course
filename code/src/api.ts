@@ -1,15 +1,6 @@
-// Define the structure for a restaurant
-interface Restaurant {
-  id: string;
-  name: string;
-  image: string;
-  description: string;
-  address: string;
-  score: number;
-  ratings: number;
-}
+import {Restaurant} from "./types";
 
-// Array of restaurant data
+// Listado de restaurantes
 const restaurants: Restaurant[] = [
   {
     id: "1",
@@ -124,26 +115,26 @@ const restaurants: Restaurant[] = [
   },
 ];
 
-// Utility function to simulate API delay
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+// Simular un delay en la respuesta de la API
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, Math.random() * ms));
 
 const api = {
-  // Retrieve all restaurants
+  // Obtener todos los restaurantes
   list: async (): Promise<Restaurant[]> => {
-    // Simulate API delay
+    // Simular un delay en la respuesta de la API
     await sleep(750);
 
     return restaurants;
   },
-  // Fetch a specific restaurant by ID
+  // Obtener un restaurante específico por su ID
   fetch: async (id: Restaurant["id"]): Promise<Restaurant> => {
-    // Simulate API delay
+    // Simular un delay en la respuesta de la API
     await sleep(750);
 
-    // Find the restaurant with the matching ID
+    // Buscar el restaurante con el ID correspondiente
     const restaurant = restaurants.find((restaurant) => restaurant.id === id);
 
-    // Throw an error if the restaurant is not found
+    // Lanzar un error si el restaurante no es encontrado
     if (!restaurant) {
       throw new Error(`Restaurant with id ${id} not found`);
     }
