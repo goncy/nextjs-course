@@ -1,3 +1,4 @@
+// Define the structure for a restaurant
 interface Restaurant {
   id: string;
   name: string;
@@ -8,6 +9,7 @@ interface Restaurant {
   ratings: number;
 }
 
+// Array of restaurant data
 const restaurants: Restaurant[] = [
   {
     id: "1",
@@ -17,7 +19,7 @@ const restaurants: Restaurant[] = [
     address: "123 Main St. Anytown USA",
     score: 4.5,
     ratings: 100,
-    image: "https://source.unsplash.com/480x300/?restaurant&random=1",
+    image: "https://picsum.photos/id/30/480/300",
   },
   {
     id: "2",
@@ -26,7 +28,7 @@ const restaurants: Restaurant[] = [
     address: "456 Oak Ave. Anytown USA",
     score: 4.2,
     ratings: 80,
-    image: "https://source.unsplash.com/480x300/?restaurant&random=2",
+    image: "https://picsum.photos/id/42/480/300",
   },
   {
     id: "3",
@@ -36,7 +38,7 @@ const restaurants: Restaurant[] = [
     address: "789 Elm St. Anytown USA",
     score: 4.8,
     ratings: 120,
-    image: "https://source.unsplash.com/480x300/?restaurant&random=3",
+    image: "https://picsum.photos/id/163/480/300",
   },
   {
     id: "4",
@@ -45,7 +47,7 @@ const restaurants: Restaurant[] = [
     address: "101 Forest Rd. Anytown USA",
     score: 4.0,
     ratings: 60,
-    image: "https://source.unsplash.com/480x300/?restaurant&random=4",
+    image: "https://picsum.photos/id/192/480/300",
   },
   {
     id: "5",
@@ -54,7 +56,7 @@ const restaurants: Restaurant[] = [
     address: "246 Main St. Anytown USA",
     score: 4.6,
     ratings: 90,
-    image: "https://source.unsplash.com/480x300/?restaurant&random=5",
+    image: "https://picsum.photos/id/195/480/300",
   },
   {
     id: "6",
@@ -63,7 +65,7 @@ const restaurants: Restaurant[] = [
     address: "369 Beach Blvd. Anytown USA",
     score: 4.3,
     ratings: 70,
-    image: "https://source.unsplash.com/480x300/?restaurant&random=6",
+    image: "https://picsum.photos/id/225/480/300",
   },
   {
     id: "7",
@@ -72,7 +74,7 @@ const restaurants: Restaurant[] = [
     address: "753 Maple St. Anytown USA",
     score: 4.9,
     ratings: 150,
-    image: "https://source.unsplash.com/480x300/?restaurant&random=7",
+    image: "https://picsum.photos/id/292/480/300",
   },
   {
     id: "8",
@@ -81,7 +83,7 @@ const restaurants: Restaurant[] = [
     address: "852 Oak Ave. Anytown USA",
     score: 3.9,
     ratings: 50,
-    image: "https://source.unsplash.com/480x300/?restaurant&random=8",
+    image: "https://picsum.photos/id/326/480/300",
   },
   {
     id: "9",
@@ -91,7 +93,7 @@ const restaurants: Restaurant[] = [
     address: "963 Main St. Anytown USA",
     score: 4.7,
     ratings: 110,
-    image: "https://source.unsplash.com/480x300/?restaurant&random=9",
+    image: "https://picsum.photos/id/365/480/300",
   },
   {
     id: "10",
@@ -100,7 +102,7 @@ const restaurants: Restaurant[] = [
     address: "1479 Elm St. Anytown USA",
     score: 4.1,
     ratings: 75,
-    image: "https://source.unsplash.com/480x300/?restaurant&random=10",
+    image: "https://picsum.photos/id/395/480/300",
   },
   {
     id: "11",
@@ -109,7 +111,7 @@ const restaurants: Restaurant[] = [
     address: "753 Main St. Anytown USA",
     score: 4.4,
     ratings: 65,
-    image: "https://source.unsplash.com/480x300/?restaurant&random=11",
+    image: "https://picsum.photos/id/429/480/300",
   },
   {
     id: "12",
@@ -118,23 +120,30 @@ const restaurants: Restaurant[] = [
     address: "852 Oak Ave. Anytown USA",
     score: 4.9,
     ratings: 150,
-    image: "https://source.unsplash.com/480x300/?restaurant&random=12",
+    image: "https://picsum.photos/id/431/480/300",
   },
 ];
 
+// Utility function to simulate API delay
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const api = {
+  // Retrieve all restaurants
   list: async (): Promise<Restaurant[]> => {
+    // Simulate API delay
     await sleep(750);
 
     return restaurants;
   },
+  // Fetch a specific restaurant by ID
   fetch: async (id: Restaurant["id"]): Promise<Restaurant> => {
+    // Simulate API delay
     await sleep(750);
 
+    // Find the restaurant with the matching ID
     const restaurant = restaurants.find((restaurant) => restaurant.id === id);
 
+    // Throw an error if the restaurant is not found
     if (!restaurant) {
       throw new Error(`Restaurant with id ${id} not found`);
     }
