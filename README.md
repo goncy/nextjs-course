@@ -127,21 +127,11 @@ También nos dijo que te sientas libre de agregar las funcionalidades que consid
 
 ## Creando una Aplicación con Next.js
 
-La forma más sencilla de crear una aplicación Next.js en nuestra máquina es mediante el paquete `create-next-app` publicado en npm. Este paquete facilita la creación de una aplicación Next.js con todas las configuraciones esenciales para comenzar a desarrollar.
+Para este proyecto vamos a usar un código base que se encuentra en la carpeta `code` de este repositorio. Para clonarlo a tu computadora vamos a ir a la terminal y ejecutar el siguiente comando:
 
 ```bash
-# PNPM
-pnpm dlx create-next-app@latest --example "https://github.com/goncy/nextjs-course" --example-path "code" restaurancy
-
-# NPM
-npx create-next-app@latest --example "https://github.com/goncy/nextjs-course" --example-path "code" restaurancy
+npx degit goncy/nextjs-course restaurancy
 ```
-
-> [!WARNING]
-> Si usas `npm` posiblemente falle la instalación, no importa. Una vez que falle hace `cd restaurancy` y corré `npm install --force`.
-
-> [!NOTE]
-> Puedes omitir los parámetros `--example` y `--example-path` si deseas crear un proyecto personalizado. En este caso `--example` es la URL de este repositorio mientras que `example-path "code"` es donde se encuentra el proyecto base para este curso y `restaurancy` es el nombre que se le dará a la carpeta del proyecto.
 
 Una vez completada la ejecución del comando, se generará una carpeta llamada `restaurancy` con todos los archivos necesarios para ejecutar la aplicación.
 
@@ -149,8 +139,12 @@ A continuación, ejecutemos los siguientes comandos:
 
 ```bash
 cd restaurancy
+npm install --force
 npm run dev
 ```
+
+> [!WARNING]
+> Si usas `npm` el `--force` es necesario para que se instale correctamente ya que hay conflictos con las versiones de algunas dependencias de desarrollo.
 
 Después de unos segundos, deberías ver un mensaje como este:
 
@@ -162,6 +156,9 @@ Después de unos segundos, deberías ver un mensaje como este:
 Si abres el navegador en la dirección `http://localhost:3000`, deberías visualizar una página de bienvenida similar a la siguiente:
 
 ![Página de bienvenida de Next.js](./images/starter.jpg)
+
+> [!TIP]
+> Si quisieras crear un proyecto Next.js desde cero para otros proyectos, puedes usar el paquete [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ### Tecnologías en el Proyecto
 
