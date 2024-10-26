@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "next": "15.0.1",
-    "react": "19.0.0-rc-1631855f-20241023",
-    "react-dom": "19.0.0-rc-1631855f-20241023",
+    "react": "19.0.0-rc-cae764ce-20241025",
+    "react-dom": "19.0.0-rc-cae764ce-20241025",
     "tailwindcss": "^3.4.10"
   },
   "devDependencies": {
