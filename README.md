@@ -1140,7 +1140,7 @@ Espero que hayas disfrutado del curso. Si encuentras algo que crees que podría 
 
 - Route Handlers antes de revalidación
 - Optimización de imágenes (next/image)
-- useFormStatus (server actions)
+- useFormState (server actions)
 - next/form
 - El futuro de Next.js
     - dynamicIO
