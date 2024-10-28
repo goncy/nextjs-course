@@ -121,6 +121,11 @@ También nos dijo que te sientas libre de agregar las funcionalidades que consid
 18. [Guardado en Favoritos (localStorage)](#guardar-en-favoritos-localstorage)
     1. [Pre-renderizado](#pre-renderizado)
     2. [Lazy Loading](#lazy-loading)
+19. [El futuro de Next.js](#el-futuro-de-nextjs)
+    1. [Dynamic IO](#dynamic-io)
+        1. [`use cache`](#use-cache)
+        2. [`cacheLife`](#cachelife)
+        3. [`cacheTag`](#cachetag)
 
 ## ¿Qué es Next.js?
 
@@ -1146,6 +1151,201 @@ Te dejo algunas tareas:
 - Implementa la funcionalidad de agregar y quitar favoritos en el botón de favorito. Al cargar la página, debería mostrar el estado actual, y al hacer clic en el botón, debería mostrar el estado actualizado y persistir ese estado al recargar la página.
 - Estamos repitiendo los tipos para `Restaurant` muchas veces, mueve la interfaz a un archivo `src/types.ts`, exportala y usala donde sea necesario.
 
+## El futuro de Next.js
+
+Lo que vimos a lo largo de este curso es todo lo que se encuentra en la versión estable de Next.js a la versión 15.0.1, pero el futuro de Next.js está lleno de cambios interesantes. Si bien esto que vamos a ver ahora no es estable, está bueno saberlo para estar preparado para lo que viene.
+
+### Dynamic IO
+
+Como te habrás dado cuenta, el caché y sus configuraciones, cuando las cosas son estáticas, cuando no, como hacer determinadas cosas hace que algo que era estático ahora sea dinámico, es confuso. Dynamic IO es un flag experimental que nos permite que las operaciones de obtención de datos en Next.js sean dinámicas a menos que se especifique lo contrario de manera explícita.
+
+Para habilitarlo vamos a modificar nuestro `next.config.ts` para agregar el flag `dynamicIO` dentro de `experimental`:
+
+```ts
+import type { NextConfig } from 'next'
+ 
+const nextConfig: NextConfig = {
+  experimental: {
+    ...
+    dynamicIO: true,
+  },
+  ...
+}
+ 
+export default nextConfig
+```
+
+Cuando Dynamic IO esté habilitado, vamos a poder hacer uso de [`use cache`](https://nextjs.org/docs/canary/app/api-reference/directives/use-cache), [`cacheLife`](https://nextjs.org/docs/canary/app/api-reference/next-config-js/cacheLife) y [`cacheTag`](https://nextjs.org/docs/canary/app/api-reference/functions/cacheTag).
+
+También, al usar `dynamicIO`, no vamos a poder usar configuraciones de segmentos como `dynamic`, `revalidate` y más, vamos a tener otras alternativas para lograr esas funcionalidades.
+
+#### `use cache`
+
+Es una directiva que define si un componente, función o archivo debería ser cacheado. Su uso es similar al de `use server`, podemos usarlo dentro de una función o componente para marcarlo como cacheable o podemos definirlo en la parte superior de un archivo para indicar que todas las funciones de ese archivo deberían ser cacheadas.
+
+> [!NOTE]
+> Esta directiva es una funcionalidad de Next.js, no como `use client` o `use server`, que son directivas de React.
+
+Por ejemplo, podríamos definir nuestro método `api.list` como cacheable así todos los métodos que lo usan siempre traerían los datos actualizados:
+
+```ts
+const api = {
+  ...
+  list: async (): Promise<Restaurant[]> => {
+    // Definimos la función como cacheable
+    "use cache";
+
+    // Obtenemos la información de Google Sheets en formato texto y la dividimos por líneas, nos saltamos la primera línea porque es el encabezado
+    const [, ...data] = await fetch("...")
+      .then((res) => res.text())
+      .then((text) => text.split("\n"));
+
+    // Convertimos cada línea en un objeto Restaurant, asegúrate de que los campos no posean `,`
+    const restaurants: Restaurant[] = data.map((row) => {
+      const [id, name, description, address, score, ratings, image] = row.split(",");
+
+      return {
+        id,
+        name,
+        description,
+        address,
+        score: Number(score),
+        ratings: Number(ratings),
+        image,
+      };
+    });
+
+    // Lo retornamos
+    return restaurants;
+  },
+}
+```
+
+> [!TIP]
+> Como decíamos antes, podríamos hacer esto en un componente para lograr el mismo resultado.
+
+#### `cacheLife`
+
+Una de las funcionalidades más interesantes del contenido estático es la posibilidad de revalidarlo. En este paradigma de `use cache`, podemos definir un tiempo de vida para ese caché usando la función `cacheLife`.
+
+Imaginemos que queremos que el caché de nuestro listado de restaurantes expire una vez por día:
+
+```ts
+import {
+  unstable_cacheLife as cacheLife,
+} from 'next/cache'
+
+const api = {
+  ...
+  list: async (): Promise<Restaurant[]> => {
+    // Definimos la función como cacheable
+    "use cache";
+
+    // Definimos que el caché expire una vez por día
+    cacheLife("days");
+    ...
+  },
+}
+```
+
+El caché tiene 3 propiedades:
+
+- `stale`: Duración durante la que el cliente puede usar este dato sin tener que preguntarle al servidor si sigue siendo válido.
+- `revalidate`: Frecuencia con la que el servidor debería revalidar estos datos. Puede ser que mientras los datos estén siendo revalidados, al usuario se le sirva el dato viejo.
+- `expire`: Duración máxima que puede tener el dato, si excede este tiempo se cambiará a renderizado dinámico para asegurarse de mostrar datos actualizados.
+
+Más arriba usamos el perfil `days` para definir que el caché expire una vez por día. En Next.js tenemos varios perfiles por defecto que podemos usar:
+
+| **Perfil**  | **Stale** | **Revalidate** | **Expire**     | **Descripción**                                                                        |
+| ----------- | --------- | -------------- | -------------- | -------------------------------------------------------------------------------------- |
+| `default`   | undefined | 15 minutos     | INFINITE_CACHE | Perfil por defecto, adecuado para contenido que no necesita actualizaciones frecuentes |
+| `seconds`   | undefined | 1 segundo      | 1 minuto       | Para contenido que cambia rápidamente requiriendo actualizaciones en tiempo real       |
+| `minutes`   | 5 minutos | 1 minuto       | 1 hora         | Para contenido que se actualiza frecuentemente dentro de una hora                      |
+| `hours`     | 5 minutos | 1 hora         | 1 día          | Para contenido que se actualiza diariamente pero puede ser ligeramente desactualizado  |
+| `days`      | 5 minutos | 1 día          | 1 semana       | Para contenido que se actualiza diariamente pero puede ser ligeramente desactualizado  |
+| `weeks`     | 5 minutos | 1 semana       | 1 mes          | Para contenido que se actualiza mensualmente pero puede ser una semana antigua         |
+| `max`       | 5 minutos | 1 mes          | INFINITE_CACHE | Para contenido muy estable que rara vez necesita actualizaciones                       |
+
+Entonces, para nuestro caso de arriba, mientras el usuario esté en la página navegando, cada 5 minutos verificará si el listado de restaurantes sigue siendo válido. Si no lo es, se revalidará en segundo plano y en la siguiente navegación el usuario verá los datos actualizados. Si nadie visitó la web por 1 semana, el primer usuario que acceda, verá la pantalla de carga en vez de los datos desactualizados y se le servirán los datos actualizados.
+
+También podemos definir perfiles personalizados para nuestros datos. Podemos hacerlo en nuestro `next.config.ts`:
+
+```ts
+const nextConfig = {
+  experimental: {
+    dynamicIO: true,
+    cacheLife: {
+      biweekly: {
+        stale: 60 * 60 * 24 * 14, // 14 días
+        revalidate: 60 * 60 * 24, // 1 día
+        expire: 60 * 60 * 24 * 14, // 14 días
+      },
+    },
+  },
+  ...
+}
+```
+
+Y luego usarlo como `cacheLife("biweekly")`. O podemos hacerlo en linea:
+
+```ts
+import {
+  unstable_cacheLife as cacheLife,
+} from 'next/cache'
+
+const api = {
+  ...
+  list: async (): Promise<Restaurant[]> => {
+    // Definimos la función como cacheable
+    "use cache";
+
+    // Definimos que el caché expire una vez por día
+    cacheLife({
+      stale: 3600, // 1 hora
+      revalidate: 900, // 15 minutos
+      expire: 86400, // 1 día
+    })
+    ...
+  },
+}
+```
+
+La directiva de `use cache` con `cacheLife` puede ser anidada y en caso de no ser especificada, los padres más cercanos heredarán su configuración.
+
+#### `cacheTag`
+
+En el paradigma anterior teniamos los `tags` que podíamos definir a nivel `fetch`, ahora tenemos `cacheTag` con la que podemos definir un tag para una función o componente cacheable:
+
+```ts
+import {
+  unstable_cacheTag as cacheTag,
+  unstable_cacheLife as cacheLife,
+} from 'next/cache'
+
+const api = {
+  ...
+  list: async (): Promise<Restaurant[]> => {
+    // Definimos la función como cacheable
+    "use cache";
+
+    // Definimos que el caché expire una vez por día
+    cacheLife("days");
+    cacheTag("restaurants")
+    ...
+  },
+}
+```
+
+Y al igual que antes, podemos purgar ese cache usando `revalidateTag`.
+
+Una de las ventajas más grandes de esto, es que podemos definir un tag, o listado de tags basado en una respuesta, por ejemplo, si nuestra página de inicio muestra 10 restaurantes, podríamos hacer:
+
+```ts
+cacheTag(["1", "2", ...])
+```
+
+Y si cambia el restaurante `3` y nosotros hacemos `revalidateTag("3")` solo se va a renderizar la página de inicio si el restaurante `3` estaba presente.
+
 ---
 
 ## Felicitaciones
@@ -1160,12 +1360,6 @@ Si buscas practicar de manera activa, te recomiendo probar algunos de los desaf�
 Espero que hayas disfrutado del curso. Si encuentras algo que crees que podría mejorarse o notas algún error, ¡los Pull Requests son bienvenidos! Abajo encontrarás mis redes sociales y los lugares donde puedes hacer donaciones si te gustó mi contenido.
 
 ¡Nos vemos! 🚀
-
-## Próximos temas a agregar
-
-- El futuro de Next.js
-    - dynamicIO
-    - "use cache"
 
 ---
 
