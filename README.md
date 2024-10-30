@@ -53,7 +53,7 @@ A lo largo del curso, utilizaremos algunos términos que es importante que conoz
 
 ## Tareas
 
-Nuestro cliente Goncy es un reconocido chef de la ciudad de Quil-Mez, Francia. Con uno de los paladares más finos, visita todos los restaurantes en sus cercanias para puntuar su comida y atención. Para eso, nos contrato a desarrollar Restaurancy, un catálogo de los mas finos restaurantes a sus alrededores. Nos dió plenas libertades en el diseño y librerías a usar, pero nos pidió que usemos Next.js y el App Router por que su hermano gemelo Argentino (también llamado Goncy), le dijo que no estaba mal. Algunas de las tareas que Goncy dejo en nuestro tablero son:
+Nuestro cliente Goncy es un reconocido chef de la ciudad de Quil-Mez, Francia. Con uno de los paladares más finos, visita todos los restaurantes en sus cercanias para puntuar su comida y atención. Para eso, nos contrato a desarrollar Restaurancy, un catálogo de los mas finos restaurantes a sus alrededores. Nos dio plenas libertades en el diseño y librerías a usar, pero nos pidió que usemos Next.js y el App Router por que su hermano gemelo Argentino (también llamado Goncy), le dijo que no estaba mal. Algunas de las tareas que Goncy dejo en nuestro tablero son:
 
 - Crear una ruta principal que muestre un listado de restaurantes, incluyendo su foto, nombre, descripción, puntaje y cantidad de valoraciones.
 - Crear una ruta personalizada para cada restaurante que muestre la misma información que la ruta principal.
