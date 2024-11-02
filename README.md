@@ -1175,9 +1175,43 @@ const nextConfig: NextConfig = {
 export default nextConfig
 ```
 
-Cuando Dynamic IO esté habilitado, vamos a poder hacer uso de [`use cache`](https://nextjs.org/docs/canary/app/api-reference/directives/use-cache), [`cacheLife`](https://nextjs.org/docs/canary/app/api-reference/next-config-js/cacheLife) y [`cacheTag`](https://nextjs.org/docs/canary/app/api-reference/functions/cacheTag).
+Cuando Dynamic IO esté habilitado, vamos a ver que cada vez que intentemos acceder a una página que pueda ser dinámica (que acceda a params, searchParams, headers, tenga un fetch, etc.) vamos a ver un error como este:
 
-También, al usar `dynamicIO`, no vamos a poder usar configuraciones de segmentos como `dynamic`, `revalidate` y más, vamos a tener otras alternativas para lograr esas funcionalidades.
+![](./images/dynamic-error.jpg)
+
+Eso es porque debemos ser explícitos sobre como queremos que nuestra ruta, componente o función se renderice.
+
+Si queremos que una parte de nuestra ruta sea dinámica, vamos a envolver lo que necesitamos que sea dinámico, con un `Suspense`:
+
+```tsx
+async function RestaurantContent({id}: {id: string}) {
+  const restaurant = await api.fetch(id);
+  
+  return <div>{restaurant.name}</div>;
+}
+
+export default async function RestaurantPage({params}: {params: Promise<{id: string}>}) {
+  return (
+    <main>
+      <header>...</header>
+      <Suspense fallback={<div>Loading...</div>}>
+        <RestaurantContent id={(await params).id} />
+      </Suspense>
+      <footer>...</footer>
+    </main>
+  );
+}
+```
+
+Ahora si intentamos acceder a esa página, vamos a ver nuestro `header`, `footer` y un `Loading...` donde debería estar el contenido del restaurante, mientras el servidor obtiene los datos.
+
+Si qusieramos que nuestra ruta o partes de ella sean estáticas, vamos a poder usar [`use cache`](https://nextjs.org/docs/canary/app/api-reference/directives/use-cache), [`cacheLife`](https://nextjs.org/docs/canary/app/api-reference/next-config-js/cacheLife) y [`cacheTag`](https://nextjs.org/docs/canary/app/api-reference/functions/cacheTag).
+
+> [!NOTE]
+> Al usar `dynamicIO`, no vamos a poder usar configuraciones de segmentos como `dynamic`, `revalidate` y más, vamos a tener otras alternativas para lograr esas funcionalidades.
+
+> [!TIP]
+> Hay funciones como `Math.random()`, `Date.now()` que para usarlas debemos usarlas dentro de `use cache` o con [`connection`](https://nextjs.org/docs/app/api-reference/functions/connection) para indicarle a Next.js que debe obtener un nuevo valor en cada petición.
 
 #### `use cache`
 
@@ -1345,6 +1379,9 @@ cacheTag(["1", "2", ...])
 ```
 
 Y si cambia el restaurante `3` y nosotros hacemos `revalidateTag("3")` solo se va a renderizar la página de inicio si el restaurante `3` estaba presente.
+
+> [!NOTE]
+> Actualiza toda la aplicación para usar `dynamicIO` y `use cache`.
 
 ---
 
