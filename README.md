@@ -1,6 +1,6 @@
 # Curso Introductorio a Next.js 15 con App Router
 
-¡Bienvenido/a al curso introductorio a Next.js 15 con App Router! Durante este curso, apenderás los fundamentos (y no tanto) de Next.js con App Router para construir una aplicación web: [Restaurancy](https://restaurancy.goncy.dev), un catálogo de restaurantes.
+¡Bienvenido/a al curso introductorio a Next.js 15 con App Router! Durante este curso, aprenderás los fundamentos (y no tanto) de Next.js con App Router para construir una aplicación web: [Restaurancy](https://restaurancy.goncy.dev), un catálogo de restaurantes.
 
 ![](./images/completed.jpg)
 
@@ -53,7 +53,7 @@ A lo largo del curso, utilizaremos algunos términos que es importante que conoz
 
 ## Tareas
 
-Nuestro cliente Goncy es un reconocido chef de la ciudad de Quil-Mez, Francia. Con uno de los paladares más finos, visita todos los restaurantes en sus cercanias para puntuar su comida y atención. Para eso, nos contrato a desarrollar Restaurancy, un catálogo de los mas finos restaurantes a sus alrededores. Nos dio plenas libertades en el diseño y librerías a usar, pero nos pidió que usemos Next.js y el App Router por que su hermano gemelo Argentino (también llamado Goncy), le dijo que no estaba mal. Algunas de las tareas que Goncy dejo en nuestro tablero son:
+Nuestro cliente Goncy es un reconocido chef de la ciudad de Quil-Mez, Francia. Con uno de los paladares más finos, visita todos los restaurantes en sus cercanías para puntuar su comida y atención. Para eso, nos contrató a desarrollar Restaurancy, un catálogo de los más finos restaurantes a sus alrededores. Nos dio plenas libertades en el diseño y librerías a usar, pero nos pidió que usemos Next.js y el App Router por que su hermano gemelo Argentino (también llamado Goncy), le dijo que no estaba mal. Algunas de las tareas que Goncy dejó en nuestro tablero son:
 
 - Crear una ruta principal que muestre un listado de restaurantes, incluyendo su foto, nombre, descripción, puntaje y cantidad de valoraciones.
 - Crear una ruta personalizada para cada restaurante que muestre la misma información que la ruta principal.
@@ -64,14 +64,14 @@ Nuestro cliente Goncy es un reconocido chef de la ciudad de Quil-Mez, Francia. C
 - Revalidar los datos de los restaurantes cada 24 horas.
 - Crear un endpoint utilitario que permita revalidar rutas on-demand.
 - Crear una caja de búsqueda en nuestra ruta principal para poder buscar restaurantes por nombre.
-- Poder compartir en enlace de la búsqueda para que otros usuarios puedan acceder directamente a nuestra bùsqueda.
+- Poder compartir en enlace de la búsqueda para que otros usuarios puedan acceder directamente a nuestra búsqueda.
 - Poder agregar y eliminar restaurantes de una lista de favoritos que se persiste en el dispositivo del usuario.
 
 Opcionalmente también:
 - Todas las páginas posibles deberían ser generadas de manera estática.
 - En caso de acceder a una ruta no generada estáticamente deberíamos intentar renderizarla
 - Mostrar estados de carga mientras obtenemos la información de rutas no generadas estáticamente.
-- Mostrar una página de error si accedemos a una ruta erronea o hay un error en nuestra aplicación.
+- Mostrar una página de error si accedemos a una ruta errónea o hay un error en nuestra aplicación.
 
 Goncy nos dijo que no tiene apuro para desarrollar esta aplicación así que puedes tomarte el tiempo que consideres necesario.
 
@@ -205,7 +205,7 @@ El término `cliente` hace referencia al navegador en el dispositivo del usuario
 Por otro lado, el término `servidor` se refiere a una computadora en un centro de datos que almacena el código de tu aplicación y recibe solicitudes de los clientes, proporcionando respuestas a estas solicitudes. Todo lo que pasa en el servidor no es expuesto ni visible para el cliente, solamente lo que se retorna.
 
 > [!NOTE]
-> Mientras estámos en modo de desarrollo, corriendo `npm run dev`, el servidor es tu computadora.
+> Mientras estamos en modo de desarrollo, corriendo `npm run dev`, el servidor es tu computadora.
 
 Podemos visualizar esta transición como un flujo unidireccional desde el servidor hacia el cliente. Una vez que una solicitud se completa en el servidor y se transfiere al cliente, no puede regresar al servidor. Si se necesita volver al servidor, se realiza una nueva solicitud, por ejemplo, accediendo a una nueva ruta. La línea imaginaria que separa el servidor del cliente se conoce como `network boundary`.
 
@@ -532,7 +532,7 @@ Pero también notamos que si vamos a la ruta `/1`, también se muestra el texto 
 Cuando una parte de nuestra aplicación se suspende, busca hacia arriba el Suspense Boundary más cercano y lo utiliza. En este caso, al no haber ninguno en `/[id]`, sube y encuentra el definido en la raíz de nuestra aplicación.
 
 > [!NOTE]
-> Si quisieramos, podríamos definir un nuevo `loading.tsx` dentro de `[id]` y se usaría ese en vez del de la raíz, pero por ahora estamos bien con este.
+> Si quisiéramos, podríamos definir un nuevo `loading.tsx` dentro de `[id]` y se usaría ese en vez del de la raíz, pero por ahora estamos bien con este.
 
 ## Manejo de Errores
 
@@ -686,7 +686,7 @@ Para habilitar streaming basta con tener un Suspense Boundary, definiendo un arc
 > [!NOTE]
 > Ya usamos los 3 métodos de renderizado. Estático: Nuestra página de inicio, dinámico: Nuestra página de detalle antes de agregar el `loading.tsx`, streaming: Nuestra página de detalle luego de agregar el `loading.tsx` y antes de agregar el `generateStaticParams`.
 
-**Pregunta**: ¿Que tipo de renderizado estamos usando en nuestra página de de inicio y en la de detalle ahora?
+**Pregunta**: ¿Que tipo de renderizado estamos usando en nuestra página de inicio y en la de detalle ahora?
 
 ## Route Handlers
 
@@ -709,7 +709,7 @@ export async function GET(request: NextRequest) {
 De esta manera, cuando hagamos una petición `GET` a `/api/restaurants`, se ejecutará la función `GET` y retornará el listado de restaurantes.
 
 > [!TIP]
-> Podemos exportar multiples funciones en el mismo archivo y se ejecutarán según el método de la petición.
+> Podemos exportar múltiples funciones en el mismo archivo y se ejecutarán según el método de la petición.
 
 ## Caching
 
@@ -1370,7 +1370,7 @@ const api = {
 }
 ```
 
-Y al igual que antes, podemos purgar ese cache usando `revalidateTag`.
+Y al igual que antes, podemos purgar ese caché usando `revalidateTag`.
 
 Una de las ventajas más grandes de esto, es que podemos definir un tag, o listado de tags basado en una respuesta, por ejemplo, si nuestra página de inicio muestra 10 restaurantes, podríamos hacer:
 
