@@ -1,8 +1,6 @@
 # Curso Introdutório de Next.js 15 com App Router
 
----
 🇦🇷 [Versión en español](./README.md)
----
 
 Bem-vindo(a) ao curso introdutório de Next.js 15 com App Router! Durante este curso, você aprenderá os fundamentos (e não só) do Next.js com App Router para construir uma aplicação web: [Restaurancy](https://restaurancy.goncy.dev), um catálogo de restaurantes.
 
