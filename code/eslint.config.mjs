@@ -1,64 +1,94 @@
-import globals from "globals";
+import {FlatCompat} from "@eslint/eslintrc";
+import {defineConfig, globalIgnores} from "eslint/config";
 import tseslint from "typescript-eslint";
-import eslintPluginReact from "eslint-plugin-react";
-import eslintPluginReactHooks from "eslint-plugin-react-hooks";
-import {fixupPluginRules} from "@eslint/compat";
-import eslintPluginPrettier from "eslint-plugin-prettier/recommended";
+import eslintJs from "@eslint/js";
+import eslintReact from "@eslint-react/eslint-plugin";
+import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import eslintPluginImport from "eslint-plugin-import";
-import eslintPluginReactCompiler from "eslint-plugin-react-compiler";
-import eslintPluginNext from "@next/eslint-plugin-next";
+import eslintPluginReactHooks from "eslint-plugin-react-hooks";
 import eslintPluginJsxA11y from "eslint-plugin-jsx-a11y";
-import vercelStyleGuideTypescript from "@vercel/style-guide/eslint/typescript";
-import vercelStyleGuideReact from "@vercel/style-guide/eslint/rules/react";
-import vercelStyleGuideNext from "@vercel/style-guide/eslint/next";
+import eslintPluginReact from "eslint-plugin-react";
+import eslintPluginStylistic from "@stylistic/eslint-plugin";
 
-export default [
-  // Ignores configuration
+const compat = new FlatCompat({
+  baseDirectory: import.meta.dirname,
+});
+
+const ignoresLintingConfig = defineConfig([
+  globalIgnores([".next/", "node_modules/", "next-env.d.ts"]),
+]);
+
+const languageLintingConfig = defineConfig([
   {
-    ignores: ["node_modules", ".next", "out", "coverage", ".idea"],
+    files: ["**/*.{ts,tsx,js,mjs,cjs}"],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        projectService: {
+          allowDefaultProject: ["*.js", "*.mjs", "*.cjs"],
+        },
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
   },
-  // General configuration
+  eslintJs.configs.recommended,
+  tseslint.configs.strictTypeChecked,
+  tseslint.configs.stylisticTypeChecked,
+  eslintPluginStylistic.configs.recommended,
   {
     rules: {
-      "padding-line-between-statements": [
+      "no-console": ["warn", {allow: ["error"]}],
+      "@stylistic/padding-line-between-statements": [
         "warn",
         {blankLine: "always", prev: "*", next: ["return", "export"]},
         {blankLine: "always", prev: ["const", "let", "var"], next: "*"},
-        {blankLine: "any", prev: ["const", "let", "var"], next: ["const", "let", "var"]},
+        {
+          blankLine: "any",
+          prev: ["const", "let", "var"],
+          next: ["const", "let", "var"],
+        },
       ],
-      "no-console": "warn",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          args: "after-used",
+          ignoreRestSiblings: false,
+          argsIgnorePattern: "^_.*?$",
+          caughtErrorsIgnorePattern: "^_.*?$",
+        },
+      ],
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-confusing-void-expression": "off",
+      "@typescript-eslint/ban-ts-comment": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-inferrable-types": "off",
+      // Optionals
+      // "@typescript-eslint/no-floating-promises": "off",
+      // "@typescript-eslint/no-non-null-assertion": "off",
     },
   },
-  // React configuration
+]);
+
+const reactLintingConfig = defineConfig([
   {
-    plugins: {
-      react: fixupPluginRules(eslintPluginReact),
-      "react-hooks": fixupPluginRules(eslintPluginReactHooks),
-      "react-compiler": fixupPluginRules(eslintPluginReactCompiler),
-      "jsx-a11y": fixupPluginRules(eslintPluginJsxA11y),
-    },
-    languageOptions: {
-      parserOptions: {
-        ecmaFeatures: {jsx: true},
-      },
-      globals: {
-        ...globals.browser,
-        ...globals.serviceworker,
-        ...globals.node,
-      },
-    },
+    files: ["**/*.{tsx,jsx}"],
     settings: {
-      react: {version: "detect"},
+      react: {
+        version: "detect",
+      },
     },
+  },
+  eslintPluginReact.configs.flat.recommended,
+  eslintPluginReact.configs.flat["jsx-runtime"],
+  eslintReact.configs["recommended-type-checked"],
+  eslintPluginReactHooks.configs["recommended-latest"],
+  {
     rules: {
-      ...eslintPluginReact.configs.recommended.rules,
-      ...eslintPluginJsxA11y.configs.recommended.rules,
-      ...eslintPluginReactHooks.configs.recommended.rules,
-      ...vercelStyleGuideReact.rules,
-      "react/prop-types": "off",
-      "react/jsx-uses-react": "off",
-      "react/react-in-jsx-scope": "off",
+      "@eslint-react/no-useless-fragment": "error",
+      "@eslint-react/no-missing-key": "warn",
+      "react/no-array-index-key": "off",
       "react/self-closing-comp": "warn",
+      "react/jsx-curly-brace-presence": ["error", {props: "never", children: "never"}],
       "react/jsx-sort-props": [
         "warn",
         {
@@ -68,34 +98,88 @@ export default [
           reservedFirst: true,
         },
       ],
-      "react-compiler/react-compiler": "error",
-      "jsx-a11y/no-static-element-interactions": "off",
+    },
+  },
+]);
+
+const reactA11yLintingConfig = defineConfig([
+  {
+    files: ["**/*.{tsx,jsx}"],
+  },
+  eslintPluginJsxA11y.flatConfigs.recommended,
+  {
+    rules: {
       "jsx-a11y/click-events-have-key-events": "off",
     },
   },
-  // TypeScript configuration
-  ...tseslint.configs.recommended,
+]);
+
+const nextLintingConfig = defineConfig([
+  {
+    files: ["**/*.{tsx,jsx}"],
+  },
+  compat.extends("plugin:@next/next/recommended"),
   {
     rules: {
-      ...vercelStyleGuideTypescript.rules,
-      "@typescript-eslint/no-non-null-assertion": "off",
-      "@typescript-eslint/no-shadow": "off",
-      "@typescript-eslint/explicit-function-return-type": "off",
-      "@typescript-eslint/require-await": "off",
-      "@typescript-eslint/no-floating-promises": "off",
-      "@typescript-eslint/no-confusing-void-expression": "off",
-      "@typescript-eslint/no-unused-vars": [
+      "@next/next/no-img-element": "off",
+    },
+  },
+]);
+
+const importLintingConfig = defineConfig([
+  {
+    files: ["**/*.{ts,tsx,js,mjs,cjs}"],
+  },
+  {
+    settings: {
+      "import/resolver": {
+        typescript: true,
+        node: true,
+      },
+    },
+  },
+  eslintPluginImport.flatConfigs.recommended,
+  eslintPluginImport.flatConfigs.typescript,
+  {
+    rules: {
+      "import/no-default-export": "off",
+      "import/no-named-as-default-member": "off",
+      "import/named": "off",
+      "import/namespace": "off",
+      "import/default": "off",
+      "import/no-unresolved": "off",
+      "import/order": [
         "warn",
         {
-          args: "after-used",
-          ignoreRestSiblings: false,
-          argsIgnorePattern: "^_.*?$",
+          groups: [
+            "type",
+            "builtin",
+            "object",
+            "external",
+            "internal",
+            "parent",
+            "sibling",
+            "index",
+          ],
+          pathGroups: [
+            {
+              pattern: "@/*",
+              group: "external",
+              position: "after",
+            },
+          ],
+          "newlines-between": "always",
         },
       ],
     },
   },
-  // Prettier configuration
-  eslintPluginPrettier,
+]);
+
+const prettierLintingConfig = defineConfig([
+  {
+    files: ["**/*.{ts,tsx,js,mjs,cjs}"],
+  },
+  eslintPluginPrettierRecommended,
   {
     rules: {
       "prettier/prettier": [
@@ -114,53 +198,14 @@ export default [
       ],
     },
   },
-  // Import configuration
-  {
-    plugins: {
-      import: fixupPluginRules(eslintPluginImport),
-    },
-    rules: {
-      "import/no-default-export": "off",
-      "import/order": [
-        "warn",
-        {
-          groups: [
-            "type",
-            "builtin",
-            "object",
-            "external",
-            "internal",
-            "parent",
-            "sibling",
-            "index",
-          ],
-          pathGroups: [
-            {
-              pattern: "~/**",
-              group: "external",
-              position: "after",
-            },
-          ],
-          "newlines-between": "always",
-        },
-      ],
-    },
-  },
-  // Next configuration
-  {
-    plugins: {
-      next: fixupPluginRules(eslintPluginNext),
-    },
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.serviceworker,
-        ...globals.node,
-      },
-    },
-    rules: {
-      ...vercelStyleGuideNext.rules,
-      "@next/next/no-img-element": "off",
-    },
-  },
-];
+]);
+
+export default defineConfig([
+  ignoresLintingConfig,
+  languageLintingConfig,
+  reactLintingConfig,
+  reactA11yLintingConfig,
+  nextLintingConfig,
+  importLintingConfig,
+  prettierLintingConfig,
+]);
