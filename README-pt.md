@@ -153,12 +153,9 @@ Em seguida, executamos os seguintes comandos:
 
 ```bash
 cd restaurancy
-npm install --force
+npm install
 npm run dev
 ```
-
-> [!WARNING]
-> Se você usa `npm` o `--force` é necessário para que seja instalado corretamente, já que há conflitos com as versões de algumas dependências de desenvolvimento.
 
 Depois de alguns segundos, você deve ver uma mensagem como esta:
 
