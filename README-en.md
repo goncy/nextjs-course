@@ -113,10 +113,11 @@ He also told us to feel free to add any functionalities you consider useful for 
 13. [Route Handlers](#route-handlers)
 14. [Caching](#caching)
     1. [Cache Revalidation Configurations](#cache-revalidation-configurations)
-        1. [cache: no-store](#cache-no-store)
-        2. [revalidate: `<number>`](#revalidate-number)
-        3. [Route Segment Configuration](#route-segment-configuration)
-        4. [Dynamic Functions](#dynamic-functions)
+        1. [cache: "force-cache" (Default)](#cache-force-cache-default)
+        2. [cache: "no-store"](#cache-no-store)
+        3. [revalidate: number](#revalidate-number)
+        4. [Route Segment Configuration](#route-segment-configuration)
+        5. [Dynamic Functions](#dynamic-functions)
     2. [Manual Revalidation](#manual-revalidation)
         1. [revalidatePath](#revalidatepath)
         2. [revalidateTag](#revalidatetag)
@@ -127,10 +128,12 @@ He also told us to feel free to add any functionalities you consider useful for 
     1. [Pre-rendering](#pre-rendering)
     2. [Lazy Loading](#lazy-loading)
 19. [The Future of Next.js](#the-future-of-nextjs)
-    1. [Cache Components](#cache-components)
-        1. [`use cache`](#use-cache)
-        2. [`cacheLife`](#cachelife)
-        3. [`cacheTag`](#cachetag)
+    1. [Partial Prerendering (PPR)](#partial-prerendering-ppr)
+        1. [Using PPR](#using-ppr)
+        2. [Benefits of PPR](#benefits-of-ppr)
+    2. [Cache Components](#cache-components)
+        1. [`cacheLife`](#cachelife)
+        2. [`cacheTag`](#cachetag)
 
 ## What is Next.js?
 
@@ -294,7 +297,7 @@ Now that we have a bit of theory, let's see how to actually use Server Component
 ```jsx
 import api from "@/api";
 
-export default async function Home() {
+export default async function HomePage() {
   const restaurants = await api.list();
 
   console.log(restaurants);
@@ -310,7 +313,7 @@ Let's iterate over `restaurants` to create a grid that shows the image, title, d
 ```jsx
 import api from "@/api";
 
-export default async function Home() {
+export default async function HomePage() {
   const restaurants = await api.list();
 
   return (
@@ -438,7 +441,7 @@ import Link from "next/link";
 
 import api from "@/api";
 
-export default async function Home() {
+export default async function HomePage() {
   const restaurants = await api.list();
 
   return (
@@ -920,7 +923,7 @@ Now, we add the search box in our `src/app/page.tsx` and test that it works.
 
 import SearchBox from "./components/SearchBox";
 
-export default async function Home() {
+export default async function HomePage() {
   const restaurants = await api.list();
 
   return (
@@ -1159,6 +1162,69 @@ I leave you with some tasks:
 
 What we saw throughout this course is everything in the stable version of Next.js up to version 15.0.1, but the future of Next.js is full of interesting changes. Although what we are going to see now is not stable, it is good to know it to be prepared for what is coming.
 
+### Partial Prerendering (PPR)
+
+Partial Prerendering is a rendering strategy that combines static and dynamic content in the same route.
+
+- Next.js generates at build time a static "shell" with all non-dynamic content, leaving holes for dynamic content.
+- The holes for dynamic content are marked using `Suspense`
+- When visiting the page, the user instantly receives the static shell
+- Dynamic content is streamed in parallel as it becomes available
+
+For example, on a restaurant detail page:
+- **Static shell:** navigation, basic restaurant information, layout
+- **Dynamic content:** real-time availability, personalized recommendations, updated prices, etc.
+
+#### Using PPR
+
+To enable PPR you need to enable the `ppr` flag in your `next.config.ts` configuration:
+
+```ts
+import type { NextConfig } from 'next'
+ 
+const nextConfig: NextConfig = {
+  experimental: {
+    ppr: true
+  },
+}
+ 
+export default nextConfig
+```
+
+Now let's modify our `RestaurantCard` component to only show the favorite button if the `session` cookie is defined. Change this:
+
+```tsx
+<DynamicFavoriteButton restaurant={restaurant} />
+```
+
+For this:
+
+```tsx
+import { Suspense } from "react"
+import { cookies } from "next/headers"
+
+...
+
+<Suspense fallback="...">
+  {(await cookies()).get("session") && <DynamicFavoriteButton restaurant={restaurant} />}
+</Suspense>
+```
+
+> [!TIP]
+> You can go to the browser devtools and add in the (usually) `application` tab the `session` cookie with the value `test` to test the functionality.
+
+All content outside of `Suspense`, which includes the restaurant information, will be generated statically at build time, while content inside `Suspense` will be generated dynamically at runtime.
+
+> [!NOTE]
+> Update the `Suspense` fallback to be more appropriate to the context.
+
+#### Benefits of PPR
+
+- **Better initial performance**: The static shell loads instantly from the CDN
+- **Personalized content**: Maintains the ability to show user-specific data
+- **Parallel streaming**: Dynamic components load simultaneously, not sequentially
+- **Single HTTP request**: Everything is sent in one response, reducing latency
+
 ### Cache Components
 
 As you may have realized, caching and its configurations, when things are static, when they are not, how doing certain things makes something that was static now dynamic, is confusing. Cache Components is an experimental flag that allows data fetching operations in the App Router to be excluded from pre-renders unless they are explicitly cached.
@@ -1166,63 +1232,44 @@ As you may have realized, caching and its configurations, when things are static
 To enable it, we will modify our `next.config.ts` to add the `cacheComponents` flag inside `experimental`:
 
 ```ts
-import type { NextConfig } from 'next'
+import type { NextConfig } from "next"
  
 const nextConfig: NextConfig = {
   experimental: {
-    ...
     cacheComponents: true,
   },
-  ...
 }
  
 export default nextConfig
 ```
+> [!NOTE]
+> When using `cacheComponents`, we will not be able to use segment configurations like `dynamic`, `revalidate` and more, we will have other alternatives to achieve those functionalities.
 
-When Cache Components is enabled, we will see that every time we try to access a page that could be dynamic (that accesses params, searchParams, headers, has a fetch, etc.) we will see an error like this:
+When Cache Components is enabled, we will see that every time we try to access a page that could be dynamic (that accesses `params`, `searchParams`, `headers`, has a `fetch`, etc.) we will see an error like this:
 
 ![](./images/dynamic-error.jpg)
 
 This is because we must be explicit about how we want our route, component, or function to be rendered.
 
-If we want a part of our route to be dynamic, we will wrap what we need to be dynamic with a `Suspense`:
+If we want a part of our route to be dynamic, we will wrap what we need to be dynamic with a `Suspense`, as we did for the favorite button:
 
 ```tsx
-async function RestaurantContent({id}: {id: string}) {
-  const restaurant = await api.fetch(id);
-  
-  return <div>{restaurant.name}</div>;
-}
+<Suspense fallback="...">
+  {(await cookies()).get("session") && <DynamicFavoriteButton restaurant={restaurant} />}
+</Suspense>
+```
+
+If we wanted our route or parts of it to be static, we will have to define it using the [`use cache`](https://nextjs.org/docs/app/api-reference/directives/use-cache) directive. Let's go to our `src/app/[id]/page.tsx` file and add the `use cache` directive:
+
+```ts
+"use cache";
 
 export default async function RestaurantPage({params}: {params: Promise<{id: string}>}) {
-  return (
-    <main>
-      <header>...</header>
-      <Suspense fallback={<div>Loading...</div>}>
-        <RestaurantContent id={(await params).id} />
-      </Suspense>
-      <footer>...</footer>
-    </main>
-  );
+  ...
 }
 ```
 
-Now if we try to access that page, we will see our `header`, `footer`, and a `Loading...` where the restaurant content should be, while the server fetches the data.
-
-If we wanted our route or parts of it to be static, we will be able to use [`use cache`](https://nextjs.org/docs/app/api-reference/directives/use-cache), [`cacheLife`](https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheLife) and [`cacheTag`](https://nextjs.org/docs/app/api-reference/functions/cacheTag).
-
-> [!NOTE]
-> When using `cacheComponents`, we will not be able to use segment configurations like `dynamic`, `revalidate` and more, we will have other alternatives to achieve those functionalities.
-
-> [!TIP]
-> There are functions like `Math.random()`, `Date.now()` that to use them we must use them inside `use cache` or with [`connection`](https://nextjs.org/docs/app/api-reference/functions/connection) to tell Next.js that it must fetch a new value on each request.
-
-#### `use cache`
-
-It is a directive that defines whether a component, function, or file should be cached. Its use is similar to `use server`, we can use it inside a function or component to mark it as cacheable, or we can define it at the top of a file to indicate that all functions in that file should be cached.
-
-> [!NOTE]
-> This directive is a Next.js functionality, unlike `use client` or `use server`, which are React directives.
+`use cache` is a directive that defines whether a component, function, or file should be cached. Its use is similar to `use server`, we can use it inside a function or component to mark it as cacheable, or we can define it at the top of a file to indicate that all functions in that file should be cached.
 
 For example, we could define our `api.list` method as cacheable so that all methods that use it will always fetch the updated data:
 
@@ -1233,34 +1280,12 @@ const api = {
     // Define the function as cacheable
     "use cache";
 
-    // Get the information from Google Sheets in text format and split it by lines, skipping the first line because it is the header
-    const [, ...data] = await fetch("...")
-      .then((res) => res.text())
-      .then((text) => text.split("\n"));
-
-    // Convert each line into a Restaurant object, make sure the fields do not contain `,`
-    const restaurants: Restaurant[] = data.map((row) => {
-      const [id, name, description, address, score, ratings, image] = row.split(",");
-
-      return {
-        id,
-        name,
-        description,
-        address,
-        score: Number(score),
-        ratings: Number(ratings),
-        image,
-      };
-    });
-
-    // Return it
-    return restaurants;
+    ...
   },
 }
 ```
-
-> [!TIP]
-> As we said before, we could do this in a component to achieve the same result.
+> [!NOTE]
+> This directive is a Next.js functionality, unlike `use client` or `use server`, which are React directives.
 
 Some important points about `use cache`:
 
@@ -1385,7 +1410,7 @@ const api = {
 }
 ```
 
-**Important points about `cacheTag`:**
+Some important points about `cacheTag`:
 
 - **Idempotent Tags**: Applying the same tag multiple times has no additional effect.
 - **Multiple Tags**: You can assign multiple tags to a single cache entry by passing multiple string values: `cacheTag('tag-one', 'tag-two')`
