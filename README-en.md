@@ -1191,23 +1191,30 @@ const nextConfig: NextConfig = {
 export default nextConfig
 ```
 
-Now let's modify our `RestaurantCard` component to only show the favorite button if the `session` cookie is defined. Change this:
+Now let's create a `GreetUser` component where we will greet the user if the `session` cookie is defined.
 
 ```tsx
-<DynamicFavoriteButton restaurant={restaurant} />
+import {cookies} from "next/headers";
+
+export default async function GreetUser() {
+  const store = await cookies();
+
+  return <div>Hello {store.get("session")?.value ?? "guest"}</div>;
+}
 ```
 
-For this:
+Now on our home page, let's use the `GreetUser` component and wrap it in a `Suspense`:
 
 ```tsx
-import { Suspense } from "react"
-import { cookies } from "next/headers"
+export default async function HomePage({searchParams}: {searchParams: Promise<{q?: string}>}) {
+  ...
 
-...
-
-<Suspense fallback="...">
-  {(await cookies()).get("session") && <DynamicFavoriteButton restaurant={restaurant} />}
-</Suspense>
+  return (
+    <section>
+      <Suspense fallback="...">
+        <GreetUser />
+      </Suspense>
+      ...
 ```
 
 > [!TIP]
@@ -1255,7 +1262,7 @@ If we want a part of our route to be dynamic, we will wrap what we need to be dy
 
 ```tsx
 <Suspense fallback="...">
-  {(await cookies()).get("session") && <DynamicFavoriteButton restaurant={restaurant} />}
+  <GreetUser />
 </Suspense>
 ```
 

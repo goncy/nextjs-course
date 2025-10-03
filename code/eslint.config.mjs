@@ -37,6 +37,7 @@ const languageLintingConfig = defineConfig([
   eslintPluginStylistic.configs.recommended,
   {
     rules: {
+      "@typescript-eslint/require-await": "off",
       "no-console": ["warn", {allow: ["error"]}],
       "@stylistic/padding-line-between-statements": [
         "warn",
