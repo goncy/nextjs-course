@@ -604,12 +604,12 @@ const api = {
       const [id, name, description, address, score, ratings, image] = row.split(',')
       return {
         id,
-        name,
-        description,
-        address,
+        name.trim(),
+        description.trim(),
+        address.trim(),
         score: Number(score),
         ratings: Number(ratings),
-        image
+        image.trim()
       }
     })
 
