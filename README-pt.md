@@ -425,8 +425,6 @@ Mas... Onde deveriam ir os componentes que não são páginas, layouts ou arquiv
 
 Embora o router do Next.js se baseie em arquivos, somente os arquivos com nomes especiais se convertem em rotas da nossa aplicação. Portanto, poderíamos criar uma pasta `components` dentro de `app` (ou aninhada onde precisarmos) sem nenhum problema.
 
-![Estrutura de pastas](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fproject-organization-colocation.png&w=3840&q=75&dpl=dpl_DzaGxTbCZzXMDg4XPPbArRct6JPH)
-
 Agora sim, vá e crie esse componente. Depois, reutilize-o em `page.tsx` e `[id]/page.tsx`.
 
 ## Navegação
@@ -728,9 +726,7 @@ Quando trabalhamos com aplicações React em Vite, Create React App ou similares
 | Cache de Rota Completa       | HTML e carga RSC                 | Servidor | Reduzir o custo de renderização e melhorar o desempenho      | Persistente (pode ser revalidado)           |
 | Cache de Roteamento          | Carga RSC                        | Cliente  | Reduzir as requisições ao servidor durante a navegação       | Sessão de usuário ou baseado no tempo       |
 
-Next.js, por padrão, tentará cachear o máximo possível para melhorar o desempenho e reduzir os custos. Quando temos um segmento dinâmico, mas uma requisição de dados ainda tem cache relevante, em vez de ir à origem, Next.js tentará obtê-lo do cache de dados. A seguir, podemos ver um diagrama de como funcionam os diferentes tipos de cache.
-
-![Visão Geral do Cache](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fcaching-overview.png&w=3840&q=75&dpl=dpl_Ejtt9BCyCFNeRJdBoVsM9Es9x8xe)
+Next.js, por padrão, tentará cachear o máximo possível para melhorar o desempenho e reduzir os custos. Quando temos um segmento dinâmico, mas uma requisição de dados ainda tem cache relevante, em vez de ir à origem, Next.js tentará obtê-lo do cache de dados.
 
 O comportamento do cache dependerá de se sua rota tem renderização estática ou dinâmica, se os dados estão em cache ou não, ou se uma solicitação é parte de uma visita inicial ou uma navegação subsequente. Isto pode parecer um pouco esmagador, mas com o tempo e a prática, veremos que os benefícios são muitos.
 

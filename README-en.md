@@ -425,8 +425,6 @@ But... Where should components that are not pages, layouts, or special files go?
 
 Although Next.js routing is file-based, only files with special names become routes in our application. Therefore, we could create a `components` folder inside `app` (or nested where we need it) without any problem.
 
-![Folder Structure](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fproject-organization-colocation.png&w=3840&q=75&dpl=dpl_DzaGxTbCZzXMDg4XPPbArRct6JPH)
-
 Now, go ahead and create that component. Then, reuse it in `page.tsx` and `[id]/page.tsx`.
 
 ## Navigation
@@ -728,9 +726,7 @@ When working with React applications in Vite, Create React App, or similar, we g
 | Full Route Cache             | HTML and RSC payload             | Server   | Reduce rendering cost and improve performance                  | Persistent (can be revalidated)               |
 | Router Cache                 | RSC payload                      | Client   | Reduce requests to the server during navigation                | User session or time-based                    |
 
-Next.js, by default, will try to cache as much as possible to improve performance and reduce costs. When we have a dynamic segment but a data request still has relevant cache, instead of going to the source, Next.js will try to get it from the data cache. Below, we can see a diagram of how the different types of cache work.
-
-![Cache Overview](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fcaching-overview.png&w=3840&q=75&dpl=dpl_Ejtt9BCyCFNeRJdBoVsM9Es9x8xe)
+Next.js, by default, will try to cache as much as possible to improve performance and reduce costs. When we have a dynamic segment but a data request still has relevant cache, instead of going to the source, Next.js will try to get it from the data cache.
 
 The cache behavior will depend on whether your route has static or dynamic rendering, whether the data is cached or not, or if a request is part of an initial visit or a subsequent navigation. This may seem a bit overwhelming, but with time and practice, we will see that the benefits are many.
 
