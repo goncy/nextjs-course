@@ -14,17 +14,17 @@
     "react-dom": "19.2.0"
   },
   "devDependencies": {
-    "@eslint-react/eslint-plugin": "^2.0.5",
+    "@eslint-react/eslint-plugin": "^2.0.6",
     "@eslint/eslintrc": "^3.3.1",
-    "@eslint/js": "^9.36.0",
+    "@eslint/js": "^9.37.0",
     "@next/eslint-plugin-next": "^15.5.4",
     "@stylistic/eslint-plugin": "^5.4.0",
     "@tailwindcss/postcss": "^4.1.14",
     "@types/node": "^22.18.8",
-    "@types/react": "^18.3.25",
+    "@types/react": "^18.3.26",
     "@types/react-dom": "^18.3.7",
     "babel-plugin-react-compiler": "0.0.0-experimental-592953e-20240517",
-    "eslint": "^9.36.0",
+    "eslint": "^9.37.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
@@ -38,6 +38,6 @@
     "prettier-plugin-tailwindcss": "^0.6.14",
     "tailwindcss": "^4.1.14",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.45.0"
+    "typescript-eslint": "^8.46.0"
   }
 }
