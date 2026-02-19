@@ -1005,7 +1005,9 @@ export default async function HomePage({searchParams}: {searchParams: Promise<{q
 
   async function searchAction(formData: FormData) {
     'use server'
+
     const query = formData.get('query') as string
+    
     redirect(`/?q=${query}`);
   }
 
