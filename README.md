@@ -198,7 +198,7 @@ Tómate un tiempo para modificar el contenido de estos archivos y observa cómo 
 
 ## Ambientes de Renderizado (Servidor y Cliente)
 
-Existen [dos ambientes](https://nextjs.org/docs/app/building-your-application/rendering#rendering-environments) en los cuales las aplicaciones web con Next.js pueden renderizarse: el cliente y el servidor.
+Existen [dos ambientes](https://nextjs.org/docs/app/getting-started/server-and-client-components) en los cuales las aplicaciones web con Next.js pueden renderizarse: el cliente y el servidor.
 
 ![](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fclient-and-server-environments.png&w=3840&q=75&dpl=dpl_DzaGxTbCZzXMDg4XPPbArRct6JPH)
 
@@ -599,7 +599,7 @@ const api = {
 
     // Convertimos cada línea en un objeto Restaurant, asegúrate de que los campos no posean `,`
     const restaurants: Restaurant[] = data.map((row) => {
-      const [id, name, description, address, score, ratings, image] = row.split(',')
+      const [id, name, description, address, score, ratings, image] = row.trim().split(',')
       return {
         id,
         name,
@@ -645,6 +645,9 @@ Veamos de nuevo la imagen de más arriba:
 ![Salida de la compilación](./images/build-output.jpg)
 
 Podemos ver que la ruta de `/` tiene un ícono de `○` (abajo nos dice que significa estático), mientras que nuestra ruta de `/[id]` tiene un ícono de `ƒ` (abajo nos dice que significa `Dynamic`).
+
+> [!TIP]
+> En algunos casos, después de realizar modificaciones, los cambios pueden no reflejarse inmediatamente luego de ejecutar una build. Para evitar este comportamiento, se recomienda eliminar la carpeta `.next` antes de generar una nueva build, asegurando así que el proceso se ejecute desde cero.
 
 ## Estrategias de Renderizado
 
@@ -697,7 +700,7 @@ Tenemos los [Route Handlers](https://nextjs.org/docs/app/building-your-applicati
 ```ts
 import type {NextRequest} from "next/server";
 
-import {api} from "@/api";
+import api from "@/api";
 
 export async function GET(request: NextRequest) {
   const restaurants = await api.list();
@@ -796,7 +799,7 @@ De esta manera nos aseguramos de que nuestra ruta `/` sea estática y que obteng
 
 #### Funciones Dinámicas
 
-También hay funciones a las que se las denomina [funciones dinámicas](https://nextjs.org/docs/app/building-your-application/rendering/server-components#dynamic-functions). Estas funciones dependen de información de la petición, como [`cookies`](https://nextjs.org/docs/app/api-reference/functions/cookies), [`headers`](https://nextjs.org/docs/app/api-reference/functions/headers), [`useSearchParams`](https://nextjs.org/docs/app/api-reference/functions/use-search-params) y [`searchParams`](https://nextjs.org/docs/app/api-reference/file-conventions/page#searchparams-optional). Al usar alguna de estas funciones en nuestros segmentos (o funciones llamadas dentro de nuestros segmentos), la ruta optará por un renderizado dinámico.
+También hay funciones a las que se las denomina [funciones dinámicas](https://nextjs.org/docs/app/guides/caching#dynamic-apis). Estas funciones dependen de información de la petición, como [`cookies`](https://nextjs.org/docs/app/api-reference/functions/cookies), [`headers`](https://nextjs.org/docs/app/api-reference/functions/headers), [`useSearchParams`](https://nextjs.org/docs/app/api-reference/functions/use-search-params) y [`searchParams`](https://nextjs.org/docs/app/api-reference/file-conventions/page#searchparams-optional). Al usar alguna de estas funciones en nuestros segmentos (o funciones llamadas dentro de nuestros segmentos), la ruta optará por un renderizado dinámico.
 
 > [!TIP]
 > El renderizado por defecto de una página es `auto`. Si nosotros sabemos que nuestra página debe ser estática o dinámica, yo prefiero definirlo explícitamente. Si es estática y queremos usar `headers` o `cookies`, los resultados vendrán vacíos. Si queremos que sea dinámica, definimos `dynamic: "force-dynamic"` y sabemos que siempre va a serlo.
@@ -817,7 +820,7 @@ import type {NextRequest} from "next/server";
 import {revalidatePath} from "next/cache";
 
 export async function GET(request: NextRequest) {
-  const path = request.nextUrl.searchParams.get("path") || "/";
+  const path = request.nextUrl.searchParams.get("path") ?? "/";
 
   revalidatePath(path);
 
@@ -852,7 +855,7 @@ import type {NextRequest} from "next/server";
 import {revalidateTag} from "next/cache";
 
 export async function GET(request: NextRequest) {
-  const tag = request.nextUrl.searchParams.get("tag") || "restaurants";
+  const tag = request.nextUrl.searchParams.get("tag") ?? "restaurants";
 
   revalidateTag(tag);
 
@@ -886,7 +889,7 @@ export default function SearchBox() {
     const formData = new FormData(event.currentTarget);
 
     // Obtenemos el valor del input
-    const query = formData.get("query");
+    const query = formData.get("query") as string;
 
     // Redireccionamos al index con una query
     router.push(`/?q=${query}`);
@@ -1003,7 +1006,9 @@ export default async function HomePage({searchParams}: {searchParams: Promise<{q
   async function searchAction(formData: FormData) {
     'use server'
 
-    redirect(`/?q=${formData.get('query')}`);
+    const query = formData.get('query') as string
+    
+    redirect(`/?q=${query}`);
   }
 
   return (
